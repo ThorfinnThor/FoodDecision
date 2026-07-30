@@ -28,6 +28,11 @@ This starter does not use `wrangler.jsonc`.
 - `db/schema.ts` and `drizzle/` contain a local Drizzle schema scaffold.
 - `supabase/migrations/` contains the Postgres migration aligned to the product
   plan's Supabase target architecture.
+- `scripts/ingest/open-food-facts.mjs` fetches Open Food Facts data into a raw
+  Supabase landing table.
+- `.github/workflows/` contains CI, Supabase migration, Open Food Facts
+  ingestion, and Vercel deployment workflows.
+- `docs/platform-setup.md` explains the exact setup clicks and required secrets.
 
 ## Workspace Auth Headers
 
@@ -67,6 +72,20 @@ export default async function Home() {
   needs to bind a local helper port during CSS processing.
 - `npm run dev` with the Sites runtime cannot run on this machine because the
   bundled Cloudflare runtime requires macOS 13.5+ and the host reports 13.1.
+
+## Ingestion
+
+Dry run:
+
+```bash
+npm run ingest:off:dry
+```
+
+Real Supabase write:
+
+```bash
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... OFF_USER_AGENT="food-decision-engine/0.1 (contact: you@example.com)" npm run ingest:off
+```
 
 ## Optional Dispatch-Owned ChatGPT Sign-In
 
