@@ -47,6 +47,7 @@ const fields = [
   "countries_tags",
   "ingredients_text",
   "ingredients_text_de",
+  "ingredients",
   "allergens_tags",
   "nutriments",
   "image_front_url",

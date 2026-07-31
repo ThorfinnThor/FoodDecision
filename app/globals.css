@@ -300,6 +300,21 @@ nav a,
   min-height: 100%;
 }
 
+.product-image {
+  height: min(420px, 100%);
+  min-height: 240px;
+  position: relative;
+  width: 100%;
+}
+
+.product-image img {
+  object-fit: contain;
+}
+
+.product-visual-compact .product-image {
+  min-height: 150px;
+}
+
 .tone-blue {
   background: linear-gradient(140deg, #e8f1fb, #ffffff 58%, #cfdff1);
 }

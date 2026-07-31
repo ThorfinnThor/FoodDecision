@@ -11,7 +11,16 @@ export function DataQualityNotice({ product }: { product: Product }) {
       </div>
       <p>
         Status: <strong>{product.publishability}</strong>. Quelle: {product.source}, importiert am{" "}
-        {product.importedAt}. Nutzer sollten Produktetikett und Allergene vor dem Kauf pruefen.
+        {product.importedAt}. Nutzer sollten Produktetikett und Allergene vor dem Kauf pruefen.{" "}
+        {product.source === "Open Food Facts" ? (
+          <>
+            Daten: {" "}
+            <a href="https://world.openfoodfacts.org" rel="license noreferrer" target="_blank">
+              Open Food Facts
+            </a>{" "}
+            (ODbL); Produktbilder CC BY-SA.
+          </>
+        ) : null}
       </p>
       {hasFlags ? (
         <ul className="inline-list">

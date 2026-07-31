@@ -76,7 +76,8 @@ The project includes these workflows:
 
 The Vercel workflow exports static JSON from Supabase before building. This
 keeps Supabase as the master database, while public pages are served from static
-HTML and JSON through Vercel.
+HTML and JSON through Vercel. Production deployment is manual until the Vercel
+project and all three Vercel secrets have been configured.
 
 Run the first migration manually:
 
@@ -105,10 +106,11 @@ After the dry run passes:
 5. Keep `max_pages` at `1` for the first real import.
 6. Click **Run workflow**.
 
-The first real ingestion currently fills the raw Open Food Facts landing table.
-The static export step is wired into the workflow, but production data should be
-published only after normalization and score calculation are enabled for the
-imported rows.
+The real ingestion workflow fills the raw Open Food Facts landing table, then
+normalizes products, applies publishability checks, calculates scores, rebuilds
+rankings, and verifies the Supabase-backed static export. Run **Supabase
+Migrations** after pulling a commit that adds a new migration and before running
+the ingestion workflow.
 
 ## Vercel
 

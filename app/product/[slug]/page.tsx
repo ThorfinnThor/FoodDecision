@@ -90,7 +90,7 @@ export default async function ProductPage({ params }: Props) {
           <div>
             <h3>Allergene</h3>
             <ul className="inline-list">
-              {(product.allergens.length ? product.allergens : ["Keine Fixture-Allergene"]).map((item) => (
+              {(product.allergens.length ? product.allergens : ["Keine bestaetigten Allergendaten"]).map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>

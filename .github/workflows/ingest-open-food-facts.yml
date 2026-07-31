@@ -62,6 +62,13 @@ jobs:
         if: ${{ inputs.import_mode == 'dry-run' }}
         run: npm run export:static-data
 
+      - name: Normalize products and calculate scores
+        if: ${{ inputs.import_mode != 'dry-run' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run normalize:off
+
       - name: Export static JSON from Supabase
         if: ${{ inputs.import_mode != 'dry-run' }}
         env:

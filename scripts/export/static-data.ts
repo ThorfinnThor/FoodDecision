@@ -93,6 +93,16 @@ type SupabaseProductRow = {
       label: string;
     } | null;
   }>;
+  product_labels?: Array<{
+    labels?: { name: string } | null;
+  }>;
+  product_ingredients?: Array<{
+    position: number | null;
+    ingredients?: { name: string } | null;
+  }>;
+  product_allergens?: Array<{
+    allergens?: { name: string } | null;
+  }>;
   data_quality_flags?: Array<{
     flag: string;
   }>;
@@ -120,10 +130,15 @@ function mapSupabaseProduct(row: SupabaseProductRow): Product {
     category: category.slug,
     categoryLabel: category.label,
     imageTone: "oat",
+    imageUrl: row.image_url,
     description: `${row.name} aus der Kategorie ${category.label}.`,
-    labels: [],
-    ingredients: [],
-    allergens: [],
+    labels: row.product_labels?.flatMap((entry) => entry.labels?.name ?? []) ?? [],
+    ingredients:
+      row.product_ingredients
+        ?.slice()
+        .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
+        .flatMap((entry) => entry.ingredients?.name ?? []) ?? [],
+    allergens: row.product_allergens?.flatMap((entry) => entry.allergens?.name ?? []) ?? [],
     nutrition: {
       energyKcal: nutrition.energy_kcal,
       fat: nutrition.fat,
@@ -135,7 +150,7 @@ function mapSupabaseProduct(row: SupabaseProductRow): Product {
       salt: nutrition.salt,
       basis: nutrition.basis,
     },
-    source: "Open Food Facts Fixture",
+    source: "Open Food Facts",
     importedAt: row.imported_at,
     sourceUpdatedAt: row.source_updated_at ?? row.imported_at,
     affiliateAvailable: Boolean(activeOffer),
@@ -160,9 +175,11 @@ function mapSupabaseProduct(row: SupabaseProductRow): Product {
 async function loadSupabaseData() {
   const [productRows, categoryRows, rankingRows] = await Promise.all([
     supabaseRequest<SupabaseProductRow[]>(
-      "products?select=id,gtin,slug,name,image_url,imported_at,source_updated_at,publishability,brands(name),nutrition_facts(*),product_scores(*),product_categories(categories(slug,label)),data_quality_flags(flag),affiliate_offers(price_hint,active)&publishability=in.(published,ranking_eligible)&order=slug",
+      "products?select=id,gtin,slug,name,image_url,imported_at,source_updated_at,publishability,brands(name),nutrition_facts(*),product_scores(*),product_categories(categories(slug,label)),product_labels(labels(name)),product_ingredients(position,ingredients(name)),product_allergens(allergens(name)),data_quality_flags(flag),affiliate_offers(price_hint,active)&publishability=in.(published,ranking_eligible)&order=slug",
     ),
-    supabaseRequest<Category[]>("categories?select=slug,label&order=slug"),
+    supabaseRequest<Category[]>(
+      "categories?select=slug,label,intent,description,rankingAttributes:ranking_attributes&order=slug",
+    ),
     supabaseRequest<RankingPage[]>(
       "ranking_pages?select=attribute,category:category_slug,title,intro,sortScore:sort_score,indexable,minProductsRequired:min_products_required&order=category_slug",
     ),

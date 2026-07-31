@@ -30,6 +30,8 @@ This starter does not use `wrangler.jsonc`.
   plan's Supabase target architecture.
 - `scripts/ingest/open-food-facts.mjs` fetches Open Food Facts data into a raw
   Supabase landing table.
+- `scripts/normalize/open-food-facts.ts` normalizes the latest import, applies
+  publishability checks, calculates versioned scores, and rebuilds rankings.
 - `scripts/export/static-data.ts` exports split static JSON into `public/data/`
   for static page generation and lightweight finder indexes.
 - `.github/workflows/` contains CI, Supabase migration, Open Food Facts
@@ -100,6 +102,15 @@ Real Supabase write:
 ```bash
 SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... OFF_USER_AGENT="food-decision-engine/0.1 (contact: you@example.com)" npm run ingest:off
 ```
+
+Normalize the latest successful import:
+
+```bash
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run normalize:off
+```
+
+The GitHub ingestion workflow runs ingestion, normalization, scoring, ranking
+updates, and the Supabase-backed static export in that order.
 
 ## Optional Dispatch-Owned ChatGPT Sign-In
 

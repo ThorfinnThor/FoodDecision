@@ -57,12 +57,13 @@ export type Product = {
   category: CategorySlug;
   categoryLabel: string;
   imageTone: string;
+  imageUrl?: string | null;
   description: string;
   labels: string[];
   ingredients: string[];
   allergens: string[];
   nutrition: NutritionFacts;
-  source: "Open Food Facts Fixture" | "Editorial Fixture";
+  source: "Open Food Facts" | "Open Food Facts Fixture" | "Editorial Fixture";
   importedAt: string;
   sourceUpdatedAt: string;
   affiliateAvailable: boolean;
