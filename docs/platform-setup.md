@@ -93,7 +93,7 @@ Run the first ingestion safely:
 2. Click **Actions**.
 3. Click **Ingest Open Food Facts**.
 4. Click **Run workflow**.
-5. Set `dry_run` to `true`.
+5. Set **Import mode** to `dry-run`.
 6. Click **Run workflow**.
 
 After the dry run passes:
@@ -101,7 +101,7 @@ After the dry run passes:
 1. Open **Actions**.
 2. Click **Ingest Open Food Facts**.
 3. Click **Run workflow**.
-4. Set `dry_run` to `false`.
+4. Set **Import mode** to `write-to-supabase`.
 5. Keep `max_pages` at `1` for the first real import.
 6. Click **Run workflow**.
 

@@ -3,10 +3,14 @@ name: Ingest Open Food Facts
 on:
   workflow_dispatch:
     inputs:
-      dry_run:
-        description: "Fetch data without writing to Supabase"
-        type: boolean
-        default: true
+      import_mode:
+        description: "Import mode"
+        type: choice
+        required: true
+        default: "dry-run"
+        options:
+          - "dry-run"
+          - "write-to-supabase"
       max_pages:
         description: "Pages per category"
         type: string
@@ -48,18 +52,18 @@ jobs:
           OFF_PAGE_SIZE: ${{ inputs.page_size || '50' }}
           OFF_REQUEST_DELAY_MS: "7000"
         run: |
-          if [ "${{ inputs.dry_run || 'false' }}" = "true" ]; then
+          if [ "${{ inputs.import_mode || 'write-to-supabase' }}" = "dry-run" ]; then
             npm run ingest:off -- --dry-run
           else
             npm run ingest:off
           fi
 
       - name: Export static JSON from fixtures
-        if: ${{ inputs.dry_run == true }}
+        if: ${{ inputs.import_mode == 'dry-run' }}
         run: npm run export:static-data
 
       - name: Export static JSON from Supabase
-        if: ${{ inputs.dry_run != true }}
+        if: ${{ inputs.import_mode != 'dry-run' }}
         env:
           STATIC_EXPORT_SOURCE: supabase
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

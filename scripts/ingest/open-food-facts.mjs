@@ -221,8 +221,19 @@ async function supabaseRequest(path, options = {}) {
     throw new Error(`Supabase request failed ${response.status}: ${await response.text()}`);
   }
 
-  if (response.status === 204) return null;
-  return response.json();
+  const body = await response.text();
+  if (!body.trim()) return null;
+
+  try {
+    return JSON.parse(body);
+  } catch (error) {
+    throw new Error(
+      `Supabase returned invalid JSON for ${path}: ${clippedMessage(
+        error instanceof Error ? error.message : error,
+        240,
+      )}`,
+    );
+  }
 }
 
 async function upsertRows(table, rows, onConflict) {
