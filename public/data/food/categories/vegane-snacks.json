@@ -1,0 +1,30 @@
+{
+  "slug": "vegane-snacks",
+  "label": "Vegane Snacks",
+  "intent": "Vegane Snacks mit klaren Zutaten und besserer Naehrwert-Balance.",
+  "description": "Vegane Snacks werden nicht automatisch als bessere Wahl behandelt; entscheidend sind Zucker, Salz, Fett und Zutaten.",
+  "rankingAttributes": [
+    "vegan",
+    "wenig-zucker",
+    "beste-wahl"
+  ],
+  "products": [
+    {
+      "id": "p-snack-01",
+      "slug": "gruenbiss-linsen-cracker",
+      "name": "Gruenbiss Linsen Cracker",
+      "brand": "Gruenbiss",
+      "category": "vegane-snacks",
+      "categoryLabel": "Vegane Snacks",
+      "overallScore": 91,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vegan",
+        "proteinquelle"
+      ],
+      "allergens": []
+    }
+  ]
+}

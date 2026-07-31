@@ -1,5 +1,5 @@
-import { calculateScores, scoreByType } from "./scoring";
-import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types";
+import { calculateScores, scoreByType } from "./scoring.ts";
+import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types.ts";
 
 const categories: Category[] = [
   {

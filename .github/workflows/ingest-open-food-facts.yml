@@ -53,3 +53,15 @@ jobs:
           else
             npm run ingest:off
           fi
+
+      - name: Export static JSON from fixtures
+        if: ${{ inputs.dry_run == true }}
+        run: npm run export:static-data
+
+      - name: Export static JSON from Supabase
+        if: ${{ inputs.dry_run != true }}
+        env:
+          STATIC_EXPORT_SOURCE: supabase
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run export:static-data

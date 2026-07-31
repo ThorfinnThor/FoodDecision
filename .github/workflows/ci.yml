@@ -25,6 +25,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Export static data
+        run: npm run export:static-data
+
       - name: Build Next app
         run: npm run next:build
 

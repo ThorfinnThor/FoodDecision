@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getCategories, products, rankingPages } from "@/lib/data";
+import { getCategories, products, rankingPages, staticManifest } from "@/lib/static-data";
 import { scoreByType } from "@/lib/scoring";
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export default function Home() {
             <strong>{categories.length}</strong>
           </div>
           <div>
-            <span>Fixture-Produkte</span>
+            <span>Static JSON Produkte</span>
             <strong>{products.length}</strong>
           </div>
           <div>
@@ -87,8 +87,8 @@ export default function Home() {
           <h2>Fixtures durch Open-Food-Facts-Import ersetzen</h2>
         </div>
         <p>
-          Die UI und Score-Vertraege sind absichtlich schon so aufgebaut, dass eine
-          Supabase/Open-Food-Facts-Pipeline spaeter dieselben Product- und Score-Objekte liefern kann.
+          Diese Version liest oeffentliche Seiten aus `public/data`. Quelle des letzten Exports:
+          {" "}{staticManifest.source}, erzeugt am {new Date(staticManifest.generatedAt).toLocaleDateString("de-DE")}.
         </p>
       </section>
     </main>

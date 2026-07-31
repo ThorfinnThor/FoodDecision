@@ -1,0 +1,31 @@
+{
+  "attribute": "proteinreich",
+  "category": "proteinriegel",
+  "title": "Proteinreichste Proteinriegel",
+  "intro": "Der MVP zeigt bereits die Ranking-Logik, bleibt aber noindex, bis genug echte Produkte importiert sind.",
+  "sortScore": "protein",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": [
+    {
+      "id": "p-riegel-01",
+      "slug": "kraftkern-proteinriegel-kakao",
+      "name": "Kraftkern Proteinriegel Kakao",
+      "brand": "Kraftkern",
+      "category": "proteinriegel",
+      "categoryLabel": "Proteinriegel",
+      "overallScore": 86,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "proteinreich",
+        "vegetarisch"
+      ],
+      "allergens": [
+        "Milch",
+        "Mandeln"
+      ]
+    }
+  ]
+}

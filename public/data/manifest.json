@@ -1,0 +1,139 @@
+{
+  "generatedAt": "2026-07-31T15:27:21.823Z",
+  "source": "fixtures",
+  "version": "food-static-data-v1",
+  "counts": {
+    "products": 6,
+    "categories": 5,
+    "rankings": 3,
+    "comparisons": 2
+  },
+  "productSlugs": [
+    "nordhafer-barista-ohne-zucker",
+    "oatly-style-haferdrink-classic",
+    "kraftkern-proteinriegel-kakao",
+    "morgenfeld-basis-muesli",
+    "fjordgut-skyr-natur",
+    "gruenbiss-linsen-cracker"
+  ],
+  "categorySlugs": [
+    "hafermilch",
+    "proteinriegel",
+    "muesli",
+    "joghurt-skyr",
+    "vegane-snacks"
+  ],
+  "rankingPages": [
+    {
+      "attribute": "wenig-zucker",
+      "category": "hafermilch",
+      "file": "rankings/wenig-zucker-hafermilch.json"
+    },
+    {
+      "attribute": "proteinreich",
+      "category": "proteinriegel",
+      "file": "rankings/proteinreich-proteinriegel.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "muesli",
+      "file": "rankings/beste-wahl-muesli.json"
+    }
+  ],
+  "comparisonPairs": [
+    "nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic",
+    "kraftkern-proteinriegel-kakao-vs-morgenfeld-basis-muesli"
+  ],
+  "files": [
+    {
+      "path": "public/data/food/products/index.json",
+      "bytes": 2597,
+      "sha256": "79d1e090f7c0aceb65df036fd8a9583ef52a6a04fb9b8ac98edad19cbd9d3f3c"
+    },
+    {
+      "path": "public/data/search-index.json",
+      "bytes": 2425,
+      "sha256": "ae28f491f09e0728afeb9f243e1f65dc2ecd20b89dee24b1b74a2214b259b164"
+    },
+    {
+      "path": "public/data/food/products/nordhafer-barista-ohne-zucker.json",
+      "bytes": 3406,
+      "sha256": "361ec6faef0b9fcd1dc2cde28c47d5eb15bd29ccfe82a46fbdc3494f2657eb78"
+    },
+    {
+      "path": "public/data/food/products/oatly-style-haferdrink-classic.json",
+      "bytes": 3275,
+      "sha256": "1ae25c0f7b69febad1bb74be7a5c1b052406b1bad1f766f26ddcf7de0418e108"
+    },
+    {
+      "path": "public/data/food/products/kraftkern-proteinriegel-kakao.json",
+      "bytes": 3528,
+      "sha256": "475d1946c4530e89c1e771a905be5db1775c38335c68712f6f502645440ad10a"
+    },
+    {
+      "path": "public/data/food/products/morgenfeld-basis-muesli.json",
+      "bytes": 3432,
+      "sha256": "1dc3c35cc62e3d2d2748b298923144fc114040453a79e2acc2dd747ff9a0f45b"
+    },
+    {
+      "path": "public/data/food/products/fjordgut-skyr-natur.json",
+      "bytes": 3336,
+      "sha256": "bfbe128364509c60d0add6e1a697b798222a4f448f651cbfa84b07e6c5e43333"
+    },
+    {
+      "path": "public/data/food/products/gruenbiss-linsen-cracker.json",
+      "bytes": 3432,
+      "sha256": "9a7bdad119f09d894c030a8e73272a05265ed07660b6190a9dca6413cb9c149f"
+    },
+    {
+      "path": "public/data/food/categories/hafermilch.json",
+      "bytes": 1284,
+      "sha256": "8a91301185816daed21d46f2b694e0358e6b98948044010e7a17739001a5a149"
+    },
+    {
+      "path": "public/data/food/categories/proteinriegel.json",
+      "bytes": 889,
+      "sha256": "53187dc824184bf20611a0425a5b47e9d772952c3097b144bd610b43f6737611"
+    },
+    {
+      "path": "public/data/food/categories/muesli.json",
+      "bytes": 860,
+      "sha256": "b9d77574521d134f5222fedb9750e56ed71f4162a4de191d8433996adda6e517"
+    },
+    {
+      "path": "public/data/food/categories/joghurt-skyr.json",
+      "bytes": 821,
+      "sha256": "fc19971b0d96902a2c74d3f06a897932b1203bb19ed080a78c72c1bec5e8dc0f"
+    },
+    {
+      "path": "public/data/food/categories/vegane-snacks.json",
+      "bytes": 816,
+      "sha256": "185669c26298a2ca10c47dd450fe7a2a2ecc1b11d1b46a98a54bbd671bbb3f58"
+    },
+    {
+      "path": "public/data/rankings/wenig-zucker-hafermilch.json",
+      "bytes": 831,
+      "sha256": "cfdbe17fc7ab35128c8820b3a784ffdd4c7538eb793d9f0c0ab3926bbbfca513"
+    },
+    {
+      "path": "public/data/rankings/proteinreich-proteinriegel.json",
+      "bytes": 820,
+      "sha256": "858c6c9a3b41627c61de28c3b47c49ad0fc5abd0310ddb0c1e22a4c138aafad0"
+    },
+    {
+      "path": "public/data/rankings/beste-wahl-muesli.json",
+      "bytes": 835,
+      "sha256": "d9b848306e74fb2eb6339dafa5b1a006ea896b20ec13227de63d6cbb9ed879f2"
+    },
+    {
+      "path": "public/data/comparisons/nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic.json",
+      "bytes": 1028,
+      "sha256": "502ed3760e8913339d3e5f9e402e0a9d4abbbc6433394c470795566b25554b0d"
+    },
+    {
+      "path": "public/data/comparisons/kraftkern-proteinriegel-kakao-vs-morgenfeld-basis-muesli.json",
+      "bytes": 1089,
+      "sha256": "a5ab4b234e25eca80eeab41b8c614c18b3a5174661a2e944b3d12a659608a4a2"
+    }
+  ]
+}

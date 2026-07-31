@@ -1,0 +1,51 @@
+{
+  "slug": "hafermilch",
+  "label": "Hafermilch",
+  "intent": "Beste pflanzliche Milchalternative fuer Kaffee, Muesli und Alltag.",
+  "description": "Hafermilch wird vor allem nach Zucker, Zutatenliste, Anreicherung und Alltagstauglichkeit bewertet.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "beste-wahl",
+    "familie"
+  ],
+  "products": [
+    {
+      "id": "p-hafer-01",
+      "slug": "nordhafer-barista-ohne-zucker",
+      "name": "Nordhafer Barista ohne Zucker",
+      "brand": "Nordhafer",
+      "category": "hafermilch",
+      "categoryLabel": "Hafermilch",
+      "overallScore": 82,
+      "lowSugarScore": 100,
+      "proteinScore": 31,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vegan",
+        "ohne Zuckerzusatz",
+        "calcium"
+      ],
+      "allergens": [
+        "Hafer"
+      ]
+    },
+    {
+      "id": "p-hafer-02",
+      "slug": "oatly-style-haferdrink-classic",
+      "name": "Oatly Style Haferdrink Classic",
+      "brand": "Oatly Style",
+      "category": "hafermilch",
+      "categoryLabel": "Hafermilch",
+      "overallScore": 70,
+      "lowSugarScore": 71,
+      "proteinScore": 29,
+      "publishability": "published",
+      "labels": [
+        "vegan"
+      ],
+      "allergens": [
+        "Hafer"
+      ]
+    }
+  ]
+}

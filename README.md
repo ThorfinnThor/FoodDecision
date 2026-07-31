@@ -30,6 +30,8 @@ This starter does not use `wrangler.jsonc`.
   plan's Supabase target architecture.
 - `scripts/ingest/open-food-facts.mjs` fetches Open Food Facts data into a raw
   Supabase landing table.
+- `scripts/export/static-data.ts` exports split static JSON into `public/data/`
+  for static page generation and lightweight finder indexes.
 - `.github/workflows/` contains CI, Supabase migration, Open Food Facts
   ingestion, and Vercel deployment workflows.
 - `docs/platform-setup.md` explains the exact setup clicks and required secrets.
@@ -79,6 +81,18 @@ Dry run:
 
 ```bash
 npm run ingest:off:dry
+```
+
+Static JSON export:
+
+```bash
+npm run export:static-data
+```
+
+Supabase-backed static export:
+
+```bash
+STATIC_EXPORT_SOURCE=supabase SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run export:static-data
 ```
 
 Real Supabase write:

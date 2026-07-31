@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getRanking, rankedProducts, rankingPages } from "@/lib/data";
+import { getRanking, rankedProducts, rankingPages } from "@/lib/static-data";
 
 type Props = {
   params: Promise<{ attribute: string; category: string }>;

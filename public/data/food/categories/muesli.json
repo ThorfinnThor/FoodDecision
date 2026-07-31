@@ -1,0 +1,34 @@
+{
+  "slug": "muesli",
+  "label": "Muesli",
+  "intent": "Mueslis mit weniger Zucker, soliden Ballaststoffen und kurzer Zutatenliste.",
+  "description": "Bei Muesli zaehlen Zucker, Ballaststoffe, Zutatenlaenge und ob Suesse aus Zusetzung oder Fruechten kommt.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "familie",
+    "beste-wahl"
+  ],
+  "products": [
+    {
+      "id": "p-muesli-01",
+      "slug": "morgenfeld-basis-muesli",
+      "name": "Morgenfeld Basis Muesli",
+      "brand": "Morgenfeld",
+      "category": "muesli",
+      "categoryLabel": "Muesli",
+      "overallScore": 94,
+      "lowSugarScore": 100,
+      "proteinScore": 89,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vollkorn",
+        "ohne Zuckerzusatz",
+        "vegan"
+      ],
+      "allergens": [
+        "Gluten",
+        "Haselnuesse"
+      ]
+    }
+  ]
+}

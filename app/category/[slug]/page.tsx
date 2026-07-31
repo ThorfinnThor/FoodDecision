@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getCategories, getCategory, getProductsByCategory } from "@/lib/data";
+import { getCategories, getCategory, getProductsByCategory } from "@/lib/static-data";
 
 type Props = {
   params: Promise<{ slug: string }>;

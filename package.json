@@ -8,12 +8,14 @@
   "scripts": {
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
     "next:dev": "next dev",
-    "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
-    "next:build": "next build",
+    "build": "npm run export:static-data && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "next:build": "npm run export:static-data && next build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
+    "export:static-data": "node --experimental-strip-types scripts/export/static-data.ts",
+    "export:static-data:supabase": "STATIC_EXPORT_SOURCE=supabase node --experimental-strip-types scripts/export/static-data.ts",
     "ingest:off": "node scripts/ingest/open-food-facts.mjs",
     "ingest:off:dry": "node scripts/ingest/open-food-facts.mjs --dry-run"
   },

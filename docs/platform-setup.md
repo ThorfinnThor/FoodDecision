@@ -68,6 +68,10 @@ The project includes these workflows:
 - `.github/workflows/ingest-open-food-facts.yml`
 - `.github/workflows/vercel-production.yml`
 
+The Vercel workflow exports static JSON from Supabase before building. This
+keeps Supabase as the master database, while public pages are served from static
+HTML and JSON through Vercel.
+
 Run the first migration manually:
 
 1. Open the GitHub repository.
@@ -95,6 +99,11 @@ After the dry run passes:
 5. Keep `max_pages` at `1` for the first real import.
 6. Click **Run workflow**.
 
+The first real ingestion currently fills the raw Open Food Facts landing table.
+The static export step is wired into the workflow, but production data should be
+published only after normalization and score calculation are enabled for the
+imported rows.
+
 ## Vercel
 
 1. Open https://vercel.com/new.
@@ -105,6 +114,11 @@ After the dry run passes:
 6. Install command should be `npm ci --ignore-scripts --no-audit --no-fund`.
 7. Add environment variable `NEXT_PUBLIC_SITE_URL` with your production URL.
 8. Click **Deploy**.
+
+Recommended for this architecture: use GitHub Actions for production deploys so
+Supabase service credentials stay in GitHub secrets and are used only during the
+static export step. Do not expose Supabase service credentials as public Vercel
+variables.
 
 For GitHub Actions deployment through Vercel CLI:
 

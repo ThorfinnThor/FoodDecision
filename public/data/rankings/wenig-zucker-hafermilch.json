@@ -1,0 +1,31 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "hafermilch",
+  "title": "Beste Hafermilch mit wenig Zucker",
+  "intro": "Diese Ranking-Seite sortiert Hafermilch nach kategoriebezogenem Low Sugar Score und blendet Datenqualitaet sichtbar ein.",
+  "sortScore": "low_sugar",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": [
+    {
+      "id": "p-hafer-01",
+      "slug": "nordhafer-barista-ohne-zucker",
+      "name": "Nordhafer Barista ohne Zucker",
+      "brand": "Nordhafer",
+      "category": "hafermilch",
+      "categoryLabel": "Hafermilch",
+      "overallScore": 82,
+      "lowSugarScore": 100,
+      "proteinScore": 31,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vegan",
+        "ohne Zuckerzusatz",
+        "calcium"
+      ],
+      "allergens": [
+        "Hafer"
+      ]
+    }
+  ]
+}

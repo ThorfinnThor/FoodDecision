@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getCategories, products } from "@/lib/data";
+import { getCategories, products } from "@/lib/static-data";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://food-decision-engine.example";
 

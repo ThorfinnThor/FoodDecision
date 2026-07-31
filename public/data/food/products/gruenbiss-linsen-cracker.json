@@ -1,0 +1,139 @@
+{
+  "id": "p-snack-01",
+  "gtin": "4000000000051",
+  "slug": "gruenbiss-linsen-cracker",
+  "name": "Gruenbiss Linsen Cracker",
+  "brand": "Gruenbiss",
+  "category": "vegane-snacks",
+  "categoryLabel": "Vegane Snacks",
+  "imageTone": "green",
+  "description": "Vegane Linsencracker mit gutem Proteinwert, aber erhoehtem Salzgehalt.",
+  "labels": [
+    "vegan",
+    "proteinquelle"
+  ],
+  "ingredients": [
+    "Linsenmehl",
+    "Reismehl",
+    "Sonnenblumenoel",
+    "Meersalz",
+    "Rosmarin"
+  ],
+  "allergens": [],
+  "nutrition": {
+    "energyKcal": 418,
+    "fat": 13,
+    "saturatedFat": 1.3,
+    "carbohydrates": 55,
+    "sugar": 2.4,
+    "fiber": 7.8,
+    "protein": 14,
+    "salt": 1.6,
+    "basis": "100g"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-22",
+  "affiliateAvailable": true,
+  "priceHint": "ca. 2,99 EUR",
+  "publishability": "ranking_eligible",
+  "qualityFlags": [
+    "salt_high"
+  ],
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition Score",
+      "score": 82,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesaettigten Fettsaeuren."
+      ],
+      "negatives": [
+        "Salzgehalt ist fuer diese Kategorie auffaellig."
+      ],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient Quality Score",
+      "score": 92,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Kurze Zutatenliste.",
+        "Kein zugesetzter Zucker in der Fixture-Zutatenliste erkannt."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "protein",
+      "label": "Protein Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Sehr proteinreich fuer die Kategorie: 14 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Low Sugar Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Sehr niedriger Zuckerwert fuer diese Kategorie: 2.4 g pro 100 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "family",
+      "label": "Family Score",
+      "score": 88,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Als vegan oder pflanzlich gekennzeichnet."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall Match Score",
+      "score": 91,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Kombiniert die wichtigsten MVP-Scores fuer schnelle Entscheidungen."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    }
+  ]
+}

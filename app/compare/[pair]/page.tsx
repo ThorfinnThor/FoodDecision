@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductVisual } from "@/components/ProductVisual";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getProduct, products } from "@/lib/data";
+import { comparisonPairs, getProduct } from "@/lib/static-data";
 import { scoreByType } from "@/lib/scoring";
 import type { Product } from "@/lib/types";
 
@@ -18,14 +18,7 @@ function splitPair(pair: string): [string, string] | null {
 }
 
 export function generateStaticParams() {
-  return [
-    {
-      pair: `${products[0].slug}-vs-${products[1].slug}`,
-    },
-    {
-      pair: `${products[2].slug}-vs-${products[3].slug}`,
-    },
-  ];
+  return comparisonPairs.map((pair) => ({ pair }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

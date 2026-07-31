@@ -6,7 +6,7 @@ import type {
   ScoreConfidence,
   ScoreGrade,
   ScoreType,
-} from "./types";
+} from "./types.ts";
 
 const RULE_VERSION = "mvp-2026-07-30";
 

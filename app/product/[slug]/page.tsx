@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ProductVisual } from "@/components/ProductVisual";
 import { ScoreBreakdown } from "@/components/ScoreBreakdown";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getAlternative, getProduct, products } from "@/lib/data";
+import { getAlternative, getProduct, products } from "@/lib/static-data";
 import { scoreByType } from "@/lib/scoring";
 
 type Props = {

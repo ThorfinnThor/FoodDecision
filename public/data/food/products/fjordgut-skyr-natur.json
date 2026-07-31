@@ -1,0 +1,136 @@
+{
+  "id": "p-skyr-01",
+  "gtin": "4000000000041",
+  "slug": "fjordgut-skyr-natur",
+  "name": "Fjordgut Skyr Natur",
+  "brand": "Fjordgut",
+  "category": "joghurt-skyr",
+  "categoryLabel": "Joghurt und Skyr",
+  "imageTone": "white",
+  "description": "Natur-Skyr mit hohem Proteingehalt und kurzer Zutatenliste.",
+  "labels": [
+    "proteinreich",
+    "vegetarisch"
+  ],
+  "ingredients": [
+    "Magermilch",
+    "Milchsaeurekulturen"
+  ],
+  "allergens": [
+    "Milch"
+  ],
+  "nutrition": {
+    "energyKcal": 64,
+    "fat": 0.2,
+    "saturatedFat": 0.1,
+    "carbohydrates": 4,
+    "sugar": 4,
+    "fiber": 0,
+    "protein": 11,
+    "salt": 0.12,
+    "basis": "100g"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-25",
+  "affiliateAvailable": false,
+  "priceHint": null,
+  "publishability": "ranking_eligible",
+  "qualityFlags": [],
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesaettigten Fettsaeuren."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient Quality Score",
+      "score": 92,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Kurze Zutatenliste.",
+        "Kein zugesetzter Zucker in der Fixture-Zutatenliste erkannt."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "protein",
+      "label": "Protein Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Sehr proteinreich fuer die Kategorie: 11 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Low Sugar Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Sehr niedriger Zuckerwert fuer diese Kategorie: 4 g pro 100 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "family",
+      "label": "Family Score",
+      "score": 96,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
+      ],
+      "negatives": [
+        "Allergene pruefen: Milch."
+      ],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan Score",
+      "score": 0,
+      "grade": "weak",
+      "confidence": "high",
+      "positives": [],
+      "negatives": [
+        "Enthaelt Milch oder Laktose laut Fixture-Daten."
+      ],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall Match Score",
+      "score": 98,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Kombiniert die wichtigsten MVP-Scores fuer schnelle Entscheidungen."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    }
+  ]
+}

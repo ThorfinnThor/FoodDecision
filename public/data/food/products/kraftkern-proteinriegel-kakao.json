@@ -1,0 +1,144 @@
+{
+  "id": "p-riegel-01",
+  "gtin": "4000000000021",
+  "slug": "kraftkern-proteinriegel-kakao",
+  "name": "Kraftkern Proteinriegel Kakao",
+  "brand": "Kraftkern",
+  "category": "proteinriegel",
+  "categoryLabel": "Proteinriegel",
+  "imageTone": "cocoa",
+  "description": "Proteinriegel mit hohem Eiweissanteil und moderatem Zuckerwert.",
+  "labels": [
+    "proteinreich",
+    "vegetarisch"
+  ],
+  "ingredients": [
+    "Milchprotein",
+    "Kakaomasse",
+    "Mandeln",
+    "Ballaststoffe",
+    "Erythrit",
+    "Aroma"
+  ],
+  "allergens": [
+    "Milch",
+    "Mandeln"
+  ],
+  "nutrition": {
+    "energyKcal": 365,
+    "fat": 13,
+    "saturatedFat": 5.1,
+    "carbohydrates": 28,
+    "sugar": 3.8,
+    "fiber": 14,
+    "protein": 32,
+    "salt": 0.58,
+    "basis": "100g"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-29",
+  "affiliateAvailable": true,
+  "priceHint": "ca. 2,29 EUR",
+  "publishability": "ranking_eligible",
+  "qualityFlags": [],
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition Score",
+      "score": 78,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesaettigten Fettsaeuren."
+      ],
+      "negatives": [
+        "Gesaettigte Fettsaeuren belasten den Score."
+      ],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient Quality Score",
+      "score": 78,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Kein zugesetzter Zucker in der Fixture-Zutatenliste erkannt."
+      ],
+      "negatives": [
+        "Zusatzstoffe oder Aromen erkannt."
+      ],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "protein",
+      "label": "Protein Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Sehr proteinreich fuer die Kategorie: 32 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Low Sugar Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Sehr niedriger Zuckerwert fuer diese Kategorie: 3.8 g pro 100 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "family",
+      "label": "Family Score",
+      "score": 88,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
+      ],
+      "negatives": [
+        "Allergene pruefen: Milch, Mandeln."
+      ],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan Score",
+      "score": 0,
+      "grade": "weak",
+      "confidence": "high",
+      "positives": [],
+      "negatives": [
+        "Enthaelt Milch oder Laktose laut Fixture-Daten."
+      ],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall Match Score",
+      "score": 86,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Kombiniert die wichtigsten MVP-Scores fuer schnelle Entscheidungen."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "mvp-2026-07-30"
+    }
+  ]
+}

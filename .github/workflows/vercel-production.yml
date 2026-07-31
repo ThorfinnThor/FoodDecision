@@ -29,6 +29,13 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
 
+      - name: Export static JSON from Supabase
+        env:
+          STATIC_EXPORT_SOURCE: supabase
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run export:static-data
+
       - name: Build Vercel output
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
