@@ -25,6 +25,12 @@ After the project is ready:
 5. Open **Project Settings** > **General**.
 6. Copy the project reference from the project URL or reference field into `SUPABASE_PROJECT_REF`.
 
+For this project, the Supabase project ref is:
+
+```text
+xrubpyameqoyxjerruoc
+```
+
 For migrations:
 
 1. Open https://supabase.com/dashboard/account/tokens.
