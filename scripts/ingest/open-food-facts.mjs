@@ -62,6 +62,12 @@ const dryRun = args.has("--dry-run");
 const pageSize = Number(process.env.OFF_PAGE_SIZE ?? "50");
 const maxPages = Number(process.env.OFF_MAX_PAGES ?? "1");
 const requestDelayMs = Number(process.env.OFF_REQUEST_DELAY_MS ?? "7000");
+const fetchRetries = Number(process.env.OFF_FETCH_RETRIES ?? "4");
+const fetchRetryBaseMs = Number(process.env.OFF_FETCH_RETRY_BASE_MS ?? "10000");
+const allowEmptyDryRun = process.env.OFF_ALLOW_EMPTY_DRY_RUN !== "false";
+const continueOnCategoryError =
+  process.env.OFF_CONTINUE_ON_CATEGORY_ERROR === "true" ||
+  (dryRun && process.env.OFF_CONTINUE_ON_CATEGORY_ERROR !== "false");
 const country = process.env.OFF_COUNTRY ?? "Germany";
 const userAgent =
   process.env.OFF_USER_AGENT ??
@@ -81,6 +87,30 @@ function sleep(ms) {
 
 function hashPayload(value) {
   return crypto.createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
+function isRetriableStatus(status) {
+  return status === 408 || status === 409 || status === 425 || status === 429 || status >= 500;
+}
+
+function retryDelayMs(response, attempt) {
+  const retryAfter = response.headers.get("retry-after");
+  if (retryAfter) {
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds)) return seconds * 1000;
+
+    const retryAt = Date.parse(retryAfter);
+    if (Number.isFinite(retryAt)) {
+      return Math.max(0, retryAt - Date.now());
+    }
+  }
+
+  return fetchRetryBaseMs * 2 ** (attempt - 1);
+}
+
+function clippedMessage(value, maxLength = 1000) {
+  const text = String(value);
+  return text.length > maxLength ? `${text.slice(0, maxLength)}... [truncated]` : text;
 }
 
 function modifiedAt(product) {
@@ -123,18 +153,49 @@ async function fetchOffPage(job, page) {
     url.searchParams.set(key, value);
   }
 
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": userAgent,
-      Accept: "application/json",
-    },
-  });
+  for (let attempt = 1; attempt <= fetchRetries; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": userAgent,
+          Accept: "application/json",
+        },
+      });
 
-  if (!response.ok) {
-    throw new Error(`Open Food Facts request failed ${response.status}: ${await response.text()}`);
+      if (response.ok) return response.json();
+
+      const body = clippedMessage(await response.text());
+      const error = new Error(`Open Food Facts request failed ${response.status}: ${body}`);
+      if (!isRetriableStatus(response.status)) {
+        error.retriable = false;
+        throw error;
+      }
+
+      if (attempt === fetchRetries) {
+        throw error;
+      }
+
+      const delayMs = retryDelayMs(response, attempt);
+      console.warn(
+        `Open Food Facts returned ${response.status} for ${job.slug} page ${page}; retrying in ${Math.round(
+          delayMs / 1000,
+        )}s (${attempt}/${fetchRetries})`,
+      );
+      await sleep(delayMs);
+    } catch (error) {
+      if (error && error.retriable === false) throw error;
+      if (attempt === fetchRetries) throw error;
+
+      const delayMs = fetchRetryBaseMs * 2 ** (attempt - 1);
+      console.warn(
+        `Open Food Facts fetch failed for ${job.slug} page ${page}: ${clippedMessage(
+          error instanceof Error ? error.message : error,
+          240,
+        )}; retrying in ${Math.round(delayMs / 1000)}s (${attempt}/${fetchRetries})`,
+      );
+      await sleep(delayMs);
+    }
   }
-
-  return response.json();
 }
 
 function supabaseHeaders(extra = {}) {
@@ -225,23 +286,36 @@ async function finishImportRun(id, status, counts, errorMessage = null) {
 
 async function collectProducts(importRunId) {
   const rows = [];
+  const failures = [];
 
   for (const job of categoryJobs) {
-    for (let page = 1; page <= maxPages; page += 1) {
-      const data = await fetchOffPage(job, page);
-      const products = Array.isArray(data.products) ? data.products : [];
-      for (const product of products) {
-        const row = mapProduct(product, job.slug, importRunId);
-        if (row) rows.push(row);
-      }
-      console.log(`${job.slug}: page ${page}, ${products.length} products`);
+    try {
+      for (let page = 1; page <= maxPages; page += 1) {
+        const data = await fetchOffPage(job, page);
+        const products = Array.isArray(data.products) ? data.products : [];
+        for (const product of products) {
+          const row = mapProduct(product, job.slug, importRunId);
+          if (row) rows.push(row);
+        }
+        console.log(`${job.slug}: page ${page}, ${products.length} products`);
 
-      if (products.length < pageSize) break;
-      if (requestDelayMs > 0) await sleep(requestDelayMs);
+        if (products.length < pageSize) break;
+        if (requestDelayMs > 0) await sleep(requestDelayMs);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      failures.push({ category: job.slug, message });
+      console.warn(`Skipping ${job.slug} after repeated Open Food Facts errors: ${message}`);
+
+      if (!continueOnCategoryError) throw error;
     }
   }
 
-  return rows;
+  if (failures.length && rows.length === 0 && !(dryRun && allowEmptyDryRun)) {
+    throw new Error(`Open Food Facts returned no usable products. Failures: ${JSON.stringify(failures)}`);
+  }
+
+  return { rows, failures };
 }
 
 async function main() {
@@ -249,11 +323,13 @@ async function main() {
   const counts = { imported: 0, updated: 0, blocked: 0 };
 
   try {
-    const rows = await collectProducts(importRunId);
+    const { rows, failures } = await collectProducts(importRunId);
     counts.imported = rows.length;
 
     if (dryRun) {
-      console.log(JSON.stringify({ dryRun: true, collected: rows.length, sample: rows.slice(0, 3) }, null, 2));
+      console.log(
+        JSON.stringify({ dryRun: true, collected: rows.length, failures, sample: rows.slice(0, 3) }, null, 2),
+      );
       return;
     }
 
