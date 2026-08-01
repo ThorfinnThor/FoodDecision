@@ -79,3 +79,9 @@ jobs:
 
       - name: Validate SEO publication gates
         run: npm run seo:validate
+
+  deploy:
+    needs: ingest
+    if: ${{ github.event_name == 'schedule' || inputs.import_mode == 'write-to-supabase' }}
+    uses: ./.github/workflows/vercel-production.yml
+    secrets: inherit

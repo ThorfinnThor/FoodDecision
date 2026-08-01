@@ -119,7 +119,10 @@ SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run normalize:off
 ```
 
 The GitHub ingestion workflow runs ingestion, normalization, scoring, ranking
-updates, and the Supabase-backed static export in that order.
+updates, and the Supabase-backed static export in that order. Successful
+scheduled or write-mode runs then call the reusable Vercel production workflow,
+which rebuilds the site from the updated Supabase snapshot. Dry runs never
+deploy.
 
 ## Optional Dispatch-Owned ChatGPT Sign-In
 
