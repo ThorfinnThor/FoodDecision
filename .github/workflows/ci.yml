@@ -28,11 +28,14 @@ jobs:
       - name: Export static data
         run: npm run export:static-data
 
+      - name: Validate SEO publication gates
+        run: npm run seo:validate
+
       - name: Build Next app
         run: npm run next:build
 
       - name: Build Sites app
         run: npm run build
 
-      - name: Test rendered HTML
-        run: node --test tests/rendered-html.test.mjs
+      - name: Run test suite
+        run: node --experimental-strip-types --test tests/*.test.mjs

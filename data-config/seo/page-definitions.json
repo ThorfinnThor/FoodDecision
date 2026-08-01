@@ -1,0 +1,62 @@
+[
+  {
+    "id": "de-food-oat-milk-low-sugar-page",
+    "slug": "wenig-zucker/hafermilch",
+    "path": "/best/wenig-zucker/hafermilch",
+    "keywordId": "de-food-oat-milk-low-sugar",
+    "template": "product-ranking",
+    "intent": "ranking",
+    "cluster": "hafermilch",
+    "filters": { "category": "hafermilch", "scoreType": "low_sugar" },
+    "minimumResults": 20,
+    "minimumDataCompleteness": 0.85,
+    "minimumUniqueInsights": 3,
+    "canonical": "/best/wenig-zucker/hafermilch",
+    "indexable": false,
+    "status": "draft",
+    "internalLinks": [
+      { "relationship": "parent", "href": "/category/hafermilch", "label": "Hafermilch im Überblick" },
+      { "relationship": "next_step", "href": "/finder?goal=low_sugar", "label": "Produkte mit wenig Zucker finden" }
+    ]
+  },
+  {
+    "id": "de-food-high-protein-bars-page",
+    "slug": "proteinreich/proteinriegel",
+    "path": "/best/proteinreich/proteinriegel",
+    "keywordId": "de-food-high-protein-bars",
+    "template": "product-ranking",
+    "intent": "ranking",
+    "cluster": "proteinriegel",
+    "filters": { "category": "proteinriegel", "scoreType": "protein" },
+    "minimumResults": 20,
+    "minimumDataCompleteness": 0.85,
+    "minimumUniqueInsights": 3,
+    "canonical": "/best/proteinreich/proteinriegel",
+    "indexable": false,
+    "status": "draft",
+    "internalLinks": [
+      { "relationship": "parent", "href": "/category/proteinriegel", "label": "Proteinriegel im Überblick" },
+      { "relationship": "next_step", "href": "/finder?goal=protein", "label": "Proteinreiche Produkte finden" }
+    ]
+  },
+  {
+    "id": "de-food-best-muesli-page",
+    "slug": "beste-wahl/muesli",
+    "path": "/best/beste-wahl/muesli",
+    "keywordId": "de-food-best-muesli",
+    "template": "product-ranking",
+    "intent": "ranking",
+    "cluster": "muesli",
+    "filters": { "category": "muesli", "scoreType": "overall_match" },
+    "minimumResults": 20,
+    "minimumDataCompleteness": 0.85,
+    "minimumUniqueInsights": 3,
+    "canonical": "/best/beste-wahl/muesli",
+    "indexable": false,
+    "status": "draft",
+    "internalLinks": [
+      { "relationship": "parent", "href": "/category/muesli", "label": "Müsli im Überblick" },
+      { "relationship": "next_step", "href": "/finder?goal=overall_match", "label": "Passende Produkte finden" }
+    ]
+  }
+]

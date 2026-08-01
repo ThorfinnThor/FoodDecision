@@ -1,8 +1,8 @@
 # Food Decision Engine
 
-First implementation slice for an explainable food decision engine. The app
-currently uses typed fixture data, category-specific scoring, publishability
-states, SEO gates, and static Next.js routes. The implementation plan lives in
+An explainable food decision engine with category-specific scoring, transparent
+data quality, guided product discovery, comparisons, and governed static SEO
+routes. The implementation plan lives in
 `outputs/food-decision-engine-implementation-plan.md`.
 
 ## Prerequisites
@@ -17,11 +17,11 @@ npm run dev
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+The local preview is available at `http://localhost:3000`.
 
 ## Included Shape
 
-- `app/` contains the MVP routes for home, product, category, ranking,
+- `app/` contains the routes for home, product, category, ranking,
   comparison, finder, sitemap, and robots.
 - `lib/` contains fixture products, scoring rules, and typed product contracts.
 - `components/` contains reusable product, score, quality, and navigation UI.
@@ -34,6 +34,10 @@ This starter does not use `wrangler.jsonc`.
   publishability checks, calculates versioned scores, and rebuilds rankings.
 - `scripts/export/static-data.ts` exports split static JSON into `public/data/`
   for static page generation and lightweight finder indexes.
+- `data-config/seo/` contains the keyword registry, page definitions and the
+  project SEO policy. These files are the source of truth for indexability.
+- `scripts/seo/validate-seo.ts` applies publication thresholds and writes the
+  local report at `generated/seo/build-report.json`.
 - `.github/workflows/` contains CI, Supabase migration, Open Food Facts
   ingestion, and Vercel deployment workflows.
 - `docs/platform-setup.md` explains the exact setup clicks and required secrets.
@@ -69,13 +73,18 @@ export default async function Home() {
 }
 ```
 
-## Current Validation Notes
+## SEO Publication Gate
 
-- `npm run lint` passes.
-- `npm run next:build` passes when run outside the sandbox, because Turbopack
-  needs to bind a local helper port during CSS processing.
-- `npm run dev` with the Sites runtime cannot run on this machine because the
-  bundled Cloudflare runtime requires macOS 13.5+ and the host reports 13.1.
+Run the registry and quality checks directly:
+
+```bash
+npm run seo:validate
+```
+
+Unknown generated pages default to `noindex,follow`. A registered page enters
+the sitemap only after its keyword and page definition are approved and its
+result count, data completeness, original insight, canonical and internal-link
+checks pass. See `data-config/seo/README.md` for the review workflow.
 
 ## Ingestion
 
@@ -143,7 +152,8 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 - `npm run dev`: start local development
 - `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
+- `npm run seo:validate`: produce the SEO publication report
+- `npm test`: build the app and run normalization, rendering, export and SEO tests
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 
 ## Learn More

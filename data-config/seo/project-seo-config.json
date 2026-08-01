@@ -1,0 +1,35 @@
+{
+  "project": "food-decision-engine",
+  "locale": "de-DE",
+  "market": "DE",
+  "minimumResults": 20,
+  "minimumDataCompleteness": 0.85,
+  "minimumUniqueInsights": 3,
+  "supportedPageTypes": [
+    "category",
+    "product",
+    "ranking",
+    "comparison",
+    "finder",
+    "guide"
+  ],
+  "prohibitedClaims": [
+    "medical diagnosis",
+    "disease prevention",
+    "guaranteed health outcome",
+    "unsupported health superiority"
+  ],
+  "allowedSchemaTypes": [
+    "WebSite",
+    "BreadcrumbList",
+    "Product",
+    "ItemList"
+  ],
+  "defaultNoindexPatterns": [
+    "/finder",
+    "/finder?*",
+    "/search?*"
+  ],
+  "sourceDataFreshnessDays": 90,
+  "reviewRequiredForIndexing": true
+}

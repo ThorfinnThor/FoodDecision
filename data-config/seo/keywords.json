@@ -1,0 +1,44 @@
+[
+  {
+    "id": "de-food-oat-milk-low-sugar",
+    "keyword": "Hafermilch wenig Zucker",
+    "locale": "de",
+    "market": "DE",
+    "intent": "ranking",
+    "cluster": "hafermilch",
+    "priority": 80,
+    "evidence": [],
+    "validated": false,
+    "status": "candidate",
+    "targetPageType": "ranking",
+    "notes": "Requires demand validation and SERP review before indexation."
+  },
+  {
+    "id": "de-food-high-protein-bars",
+    "keyword": "proteinreiche Proteinriegel",
+    "locale": "de",
+    "market": "DE",
+    "intent": "ranking",
+    "cluster": "proteinriegel",
+    "priority": 75,
+    "evidence": [],
+    "validated": false,
+    "status": "candidate",
+    "targetPageType": "ranking",
+    "notes": "Requires demand validation and SERP review before indexation."
+  },
+  {
+    "id": "de-food-best-muesli",
+    "keyword": "bestes Müsli",
+    "locale": "de",
+    "market": "DE",
+    "intent": "ranking",
+    "cluster": "muesli",
+    "priority": 65,
+    "evidence": [],
+    "validated": false,
+    "status": "candidate",
+    "targetPageType": "ranking",
+    "notes": "Requires demand validation and SERP review before indexation."
+  }
+]

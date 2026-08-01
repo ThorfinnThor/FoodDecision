@@ -7,6 +7,8 @@ import type { ScoreType } from "@/lib/types";
 export const metadata: Metadata = {
   title: "Produkt-Finder - Food Decision Engine",
   description: "Finde Lebensmittel nach Kategorie, Ziel und Ausschlusskriterien - ohne Registrierung.",
+  alternates: { canonical: "/finder" },
+  robots: { index: false, follow: true },
 };
 
 const validGoals = new Set<ScoreType>(["overall_match", "protein", "low_sugar", "vegan", "family", "ingredient_quality"]);

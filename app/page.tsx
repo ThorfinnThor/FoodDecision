@@ -5,12 +5,15 @@ import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductVisual } from "@/components/ProductVisual";
 import { SiteHeader } from "@/components/SiteHeader";
+import { StructuredData } from "@/components/StructuredData";
+import { absoluteUrl } from "@/lib/seo";
 import { comparisonPairs, getCategories, products, staticManifest } from "@/lib/static-data";
 import { scoreByType } from "@/lib/scoring";
 
 export const metadata: Metadata = {
   title: "Food Decision Engine - Lebensmittel besser auswählen",
   description: "Finde Lebensmittel, die zu deinen Prioritäten passen - mit verständlichen Scores, Vergleichen und transparenter Datengrundlage.",
+  alternates: { canonical: "/" },
 };
 
 const priorities = [
@@ -34,6 +37,17 @@ export default function Home() {
 
   return (
     <main>
+      <StructuredData data={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Food Decision Engine",
+        url: absoluteUrl("/"),
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${absoluteUrl("/finder")}?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      }} />
       <SiteHeader />
 
       <section className="home-hero">

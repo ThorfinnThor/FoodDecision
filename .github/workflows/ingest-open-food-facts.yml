@@ -76,3 +76,6 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run export:static-data
+
+      - name: Validate SEO publication gates
+        run: npm run seo:validate

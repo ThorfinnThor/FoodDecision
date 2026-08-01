@@ -8,6 +8,8 @@ import { ProductVisual } from "@/components/ProductVisual";
 import { ScoreBreakdown } from "@/components/ScoreBreakdown";
 import { ScorePill } from "@/components/ScorePill";
 import { SiteHeader } from "@/components/SiteHeader";
+import { StructuredData } from "@/components/StructuredData";
+import { absoluteUrl } from "@/lib/seo";
 import { getAlternative, getProduct, products } from "@/lib/static-data";
 import { gradeLabel, scoreByType } from "@/lib/scoring";
 
@@ -21,7 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
   if (!product) return {};
-  return { title: `${product.name} - Bewertung & Nährwerte`, description: product.description };
+  return {
+    title: `${product.name} - Bewertung & Nährwerte`,
+    description: product.description,
+    alternates: { canonical: `/product/${product.slug}` },
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function ProductPage({ params }: Props) {
@@ -39,6 +46,29 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <main className="product-page">
+      <StructuredData data={{
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Product",
+            name: product.name,
+            description: product.description,
+            brand: { "@type": "Brand", name: product.brand },
+            gtin13: product.gtin,
+            category: product.categoryLabel,
+            image: product.imageUrl || undefined,
+            url: absoluteUrl(`/product/${product.slug}`),
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Start", item: absoluteUrl("/") },
+              { "@type": "ListItem", position: 2, name: product.categoryLabel, item: absoluteUrl(`/category/${product.category}`) },
+              { "@type": "ListItem", position: 3, name: product.name, item: absoluteUrl(`/product/${product.slug}`) },
+            ],
+          },
+        ],
+      }} />
       <SiteHeader />
       <nav className="breadcrumb" aria-label="Breadcrumb">
         <Link href="/">Start</Link><span aria-hidden="true">/</span>

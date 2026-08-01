@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T15:51:26.594Z",
+  "generatedAt": "2026-08-01T16:45:35.291Z",
   "source": "fixtures",
   "version": "food-static-data-v1",
   "counts": {
@@ -112,8 +112,8 @@
     },
     {
       "path": "public/data/rankings/wenig-zucker-hafermilch.json",
-      "bytes": 831,
-      "sha256": "cfdbe17fc7ab35128c8820b3a784ffdd4c7538eb793d9f0c0ab3926bbbfca513"
+      "bytes": 823,
+      "sha256": "0f04bdfe7c01fedad299cc791577f42720d92e89ec161ee210a98a2e14898155"
     },
     {
       "path": "public/data/rankings/proteinreich-proteinriegel.json",

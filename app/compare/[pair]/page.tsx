@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ProductVisual } from "@/components/ProductVisual";
 import { ScorePill } from "@/components/ScorePill";
 import { SiteHeader } from "@/components/SiteHeader";
+import { StructuredData } from "@/components/StructuredData";
+import { absoluteUrl } from "@/lib/seo";
 import { comparisonPairs, getProduct } from "@/lib/static-data";
 import { scoreByType } from "@/lib/scoring";
 import type { Product, ScoreType } from "@/lib/types";
@@ -25,7 +27,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const a = getProduct(slugs[0]);
   const b = getProduct(slugs[1]);
   if (!a || !b) return {};
-  return { title: `${a.name} vs. ${b.name} - Vergleich`, description: `Vergleich von ${a.name} und ${b.name}: Scores, Zucker, Protein, Zutaten und Datenqualität.` };
+  const path = `/compare/${a.slug}-vs-${b.slug}`;
+  return {
+    title: `${a.name} vs. ${b.name} - Vergleich`,
+    description: `Vergleich von ${a.name} und ${b.name}: Scores, Zucker, Protein, Zutaten und Datenqualität.`,
+    alternates: { canonical: path },
+    robots: { index: false, follow: true },
+  };
 }
 
 function score(product: Product, type: ScoreType) {
@@ -63,6 +71,19 @@ export default async function ComparePage({ params }: Props) {
 
   return (
     <main>
+      <StructuredData data={{
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: `${a.name} und ${b.name} im Vergleich`,
+        url: absoluteUrl(`/compare/${a.slug}-vs-${b.slug}`),
+        numberOfItems: 2,
+        itemListElement: [a, b].map((product, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: product.name,
+          url: absoluteUrl(`/product/${product.slug}`),
+        })),
+      }} />
       <SiteHeader />
       <nav className="breadcrumb" aria-label="Breadcrumb"><Link href="/">Start</Link><span aria-hidden="true">/</span><span aria-current="page">Vergleich</span></nav>
       <section className="compare-intro"><p className="eyebrow">Produktvergleich</p><h1>{a.name} oder {b.name}?</h1><p>Die wichtigsten Unterschiede zuerst - mit klarer Einordnung für deinen Bedarf.</p></section>

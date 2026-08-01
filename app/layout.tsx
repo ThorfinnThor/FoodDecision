@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/SiteFooter";
+import { siteUrl } from "@/lib/seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Food Decision Engine",
   description:
     "Erklärbare Produktvergleiche, Rankings und Scores für bessere Einkaufsentscheidungen.",
@@ -15,6 +17,8 @@ export const metadata: Metadata = {
     description:
       "Entscheidungshilfe für Lebensmittel mit nachvollziehbaren Scores und Datenqualität.",
     type: "website",
+    locale: "de_DE",
+    siteName: "Food Decision Engine",
   },
 };
 

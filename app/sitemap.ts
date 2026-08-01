@@ -1,37 +1,32 @@
 import type { MetadataRoute } from "next";
-import { getCategories, products } from "@/lib/static-data";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://food-decision-engine.example";
+import { averageDataCompleteness, countUniqueInsights, evaluateSeoPage, seoPageDefinitions, siteUrl } from "@/lib/seo";
+import { getRanking, rankedProducts, staticManifest } from "@/lib/static-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const sourceUpdatedAt = new Date(staticManifest.generatedAt);
 
   return [
     {
       url: siteUrl,
-      lastModified: now,
+      lastModified: sourceUpdatedAt,
       changeFrequency: "weekly",
       priority: 1,
     },
-    {
-      url: `${siteUrl}/finder`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    ...getCategories().map((category) => ({
-      url: `${siteUrl}/category/${category.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    })),
-    ...products
-      .filter((product) => product.publishability === "published" || product.publishability === "ranking_eligible")
-      .map((product) => ({
-        url: `${siteUrl}/product/${product.slug}`,
-        lastModified: new Date(product.importedAt),
-        changeFrequency: "monthly" as const,
-        priority: 0.65,
-      })),
+    ...seoPageDefinitions.flatMap((definition) => {
+      const category = String(definition.filters.category ?? "");
+      const attribute = definition.path.split("/")[2] ?? "";
+      const ranking = getRanking(attribute, category);
+      const items = ranking ? rankedProducts(ranking.category, ranking.sortScore) : [];
+      const decision = evaluateSeoPage(definition, {
+        resultCount: items.length,
+        dataCompleteness: averageDataCompleteness(items),
+        uniqueInsightCount: countUniqueInsights(items),
+        title: ranking?.title ?? "",
+        h1: ranking?.title ?? "",
+      });
+      return decision.indexable
+        ? [{ url: `${siteUrl}${definition.canonical}`, lastModified: sourceUpdatedAt, changeFrequency: "weekly" as const, priority: 0.8 }]
+        : [];
+    }),
   ];
 }

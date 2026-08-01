@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { scoreByType } from "./scoring";
-import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types";
+import { scoreByType } from "./scoring.ts";
+import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types.ts";
 
 type StaticManifest = {
   generatedAt: string;

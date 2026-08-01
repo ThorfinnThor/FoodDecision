@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
+import { StructuredData } from "@/components/StructuredData";
+import { absoluteUrl } from "@/lib/seo";
 import { getCategories, getCategory, getProductsByCategory, rankingPages } from "@/lib/static-data";
 
 type Props = {
@@ -21,6 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${category.label} - Food Decision Engine`,
     description: category.description,
+    alternates: { canonical: `/category/${category.slug}` },
+    robots: { index: false, follow: true },
   };
 }
 
@@ -34,6 +38,14 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <main>
+      <StructuredData data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Start", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 2, name: category.label, item: absoluteUrl(`/category/${category.slug}`) },
+        ],
+      }} />
       <SiteHeader />
       <nav className="breadcrumb" aria-label="Breadcrumb"><Link href="/">Start</Link><span aria-hidden="true">/</span><span aria-current="page">{category.label}</span></nav>
       <section className="subpage-hero">

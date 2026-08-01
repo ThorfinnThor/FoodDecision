@@ -250,7 +250,7 @@ export const rankingPages: RankingPage[] = [
     category: "hafermilch",
     title: "Beste Hafermilch mit wenig Zucker",
     intro:
-      "Diese Ranking-Seite sortiert Hafermilch nach kategoriebezogenem Low Sugar Score und blendet Datenqualitaet sichtbar ein.",
+      "Vergleiche Hafermilch nach ihrem Zucker-Score. Datenlücken und die Sicherheit jeder Bewertung bleiben sichtbar.",
     sortScore: "low_sugar",
     indexable: false,
     minProductsRequired: 20,
