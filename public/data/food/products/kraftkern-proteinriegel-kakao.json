@@ -7,7 +7,7 @@
   "category": "proteinriegel",
   "categoryLabel": "Proteinriegel",
   "imageTone": "cocoa",
-  "description": "Proteinriegel mit hohem Eiweissanteil und moderatem Zuckerwert.",
+  "description": "Proteinriegel mit hohem Eiweißanteil und moderatem Zuckerwert.",
   "labels": [
     "proteinreich",
     "vegetarisch"
@@ -45,63 +45,63 @@
   "scores": [
     {
       "type": "nutrition",
-      "label": "Nutrition Score",
+      "label": "Nährwert-Score",
       "score": 78,
       "grade": "good",
       "confidence": "high",
       "positives": [
-        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesaettigten Fettsaeuren."
+        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren."
       ],
       "negatives": [
-        "Gesaettigte Fettsaeuren belasten den Score."
+        "Gesättigte Fettsäuren belasten den Score."
       ],
       "missingData": [],
-      "ruleVersion": "mvp-2026-07-30"
+      "ruleVersion": "2026.07"
     },
     {
       "type": "ingredient_quality",
-      "label": "Ingredient Quality Score",
+      "label": "Zutaten-Score",
       "score": 78,
       "grade": "good",
       "confidence": "high",
       "positives": [
-        "Kein zugesetzter Zucker in der Fixture-Zutatenliste erkannt."
+        "Kein zugesetzter Zucker in der Zutatenliste erkannt."
       ],
       "negatives": [
         "Zusatzstoffe oder Aromen erkannt."
       ],
       "missingData": [],
-      "ruleVersion": "mvp-2026-07-30"
+      "ruleVersion": "2026.07"
     },
     {
       "type": "protein",
-      "label": "Protein Score",
+      "label": "Protein-Score",
       "score": 100,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Sehr proteinreich fuer die Kategorie: 32 g."
+        "Sehr proteinreich für die Kategorie: 32 g."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "mvp-2026-07-30"
+      "ruleVersion": "2026.07"
     },
     {
       "type": "low_sugar",
-      "label": "Low Sugar Score",
+      "label": "Zucker-Score",
       "score": 100,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Sehr niedriger Zuckerwert fuer diese Kategorie: 3.8 g pro 100 g."
+        "Sehr niedriger Zuckerwert für diese Kategorie: 3.8 g pro 100 g."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "mvp-2026-07-30"
+      "ruleVersion": "2026.07"
     },
     {
       "type": "family",
-      "label": "Family Score",
+      "label": "Familien-Score",
       "score": 88,
       "grade": "excellent",
       "confidence": "high",
@@ -109,36 +109,36 @@
         "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
       ],
       "negatives": [
-        "Allergene pruefen: Milch, Mandeln."
+        "Allergene prüfen: Milch, Mandeln."
       ],
       "missingData": [],
-      "ruleVersion": "mvp-2026-07-30"
+      "ruleVersion": "2026.07"
     },
     {
       "type": "vegan",
-      "label": "Vegan Score",
+      "label": "Vegan-Score",
       "score": 0,
       "grade": "weak",
       "confidence": "high",
       "positives": [],
       "negatives": [
-        "Enthaelt Milch oder Laktose laut Fixture-Daten."
+        "Enthält Milch oder Laktose laut Produktdaten."
       ],
       "missingData": [],
-      "ruleVersion": "mvp-2026-07-30"
+      "ruleVersion": "2026.07"
     },
     {
       "type": "overall_match",
-      "label": "Overall Match Score",
+      "label": "Gesamt-Score",
       "score": 86,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Kombiniert die wichtigsten MVP-Scores fuer schnelle Entscheidungen."
+        "Kombiniert die wichtigsten Teilbewertungen für eine schnelle Entscheidung."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "mvp-2026-07-30"
+      "ruleVersion": "2026.07"
     }
   ]
 }

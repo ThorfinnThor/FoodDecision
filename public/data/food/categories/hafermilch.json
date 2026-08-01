@@ -1,7 +1,7 @@
 {
   "slug": "hafermilch",
   "label": "Hafermilch",
-  "intent": "Beste pflanzliche Milchalternative fuer Kaffee, Muesli und Alltag.",
+  "intent": "Beste pflanzliche Milchalternative für Kaffee, Müsli und Alltag.",
   "description": "Hafermilch wird vor allem nach Zucker, Zutatenliste, Anreicherung und Alltagstauglichkeit bewertet.",
   "rankingAttributes": [
     "wenig-zucker",

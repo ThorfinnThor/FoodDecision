@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -40,20 +41,20 @@ export default async function RankingPage({ params }: Props) {
   return (
     <main>
       <SiteHeader />
+      <nav className="breadcrumb" aria-label="Breadcrumb"><Link href="/">Start</Link><span aria-hidden="true">/</span><Link href={`/category/${ranking.category}`}>{ranking.category.replaceAll("-", " ")}</Link><span aria-hidden="true">/</span><span aria-current="page">Ranking</span></nav>
       <section className="subpage-hero">
-        <p className="eyebrow">{ranking.indexable ? "Indexierbares Ranking" : "Noindex MVP Ranking"}</p>
+        <p className="eyebrow">Datenbasiertes Ranking</p>
         <h1>{ranking.title}</h1>
         <p>{ranking.intro}</p>
       </section>
 
-      <section className="notice wide-notice">
+      <section className="ranking-context">
         <div>
-          <p className="eyebrow">SEO Gate</p>
-          <h2>{ranking.indexable ? "Indexierung erlaubt" : "Noch nicht indexierbar"}</h2>
+          <p className="eyebrow">So wird sortiert</p>
+          <h2>Vergleichbar und transparent</h2>
         </div>
         <p>
-          Aktuell {items.length} ranking-faehige Produkte. Mindestziel fuer oeffentliche Indexierung:
-          {" "}{ranking.minProductsRequired} Produkte mit ausreichender Score-Confidence.
+          Aktuell werden {items.length} geeignete Produkte anhand desselben Kriteriums verglichen. Datenlücken und Unsicherheit bleiben auf jeder Produktseite sichtbar.
         </p>
       </section>
 

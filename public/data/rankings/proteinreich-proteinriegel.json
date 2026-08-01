@@ -2,7 +2,7 @@
   "attribute": "proteinreich",
   "category": "proteinriegel",
   "title": "Proteinreichste Proteinriegel",
-  "intro": "Der MVP zeigt bereits die Ranking-Logik, bleibt aber noindex, bis genug echte Produkte importiert sind.",
+  "intro": "Verglichen wird der Proteingehalt im Kontext ähnlicher Produkte; Datenlücken bleiben sichtbar.",
   "sortScore": "protein",
   "indexable": false,
   "minProductsRequired": 20,

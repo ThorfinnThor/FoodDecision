@@ -1,7 +1,7 @@
 {
   "slug": "vegane-snacks",
   "label": "Vegane Snacks",
-  "intent": "Vegane Snacks mit klaren Zutaten und besserer Naehrwert-Balance.",
+  "intent": "Vegane Snacks mit klaren Zutaten und besserer Nährwert-Balance.",
   "description": "Vegane Snacks werden nicht automatisch als bessere Wahl behandelt; entscheidend sind Zucker, Salz, Fett und Zutaten.",
   "rankingAttributes": [
     "vegan",

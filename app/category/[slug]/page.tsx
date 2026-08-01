@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getCategories, getCategory, getProductsByCategory } from "@/lib/static-data";
+import { getCategories, getCategory, getProductsByCategory, rankingPages } from "@/lib/static-data";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -30,18 +30,20 @@ export default async function CategoryPage({ params }: Props) {
   if (!category) notFound();
 
   const items = getProductsByCategory(category.slug);
+  const categoryRankings = rankingPages.filter((ranking) => ranking.category === category.slug);
 
   return (
     <main>
       <SiteHeader />
+      <nav className="breadcrumb" aria-label="Breadcrumb"><Link href="/">Start</Link><span aria-hidden="true">/</span><span aria-current="page">{category.label}</span></nav>
       <section className="subpage-hero">
-        <p className="eyebrow">Kategorie</p>
+        <p className="eyebrow">Kategorie entdecken</p>
         <h1>{category.label}</h1>
         <p>{category.description}</p>
         <div className="hero-actions">
-          {category.rankingAttributes.slice(0, 2).map((attribute) => (
-            <Link href={`/best/${attribute}/${category.slug}`} key={attribute}>
-              {attribute}
+          {categoryRankings.map((ranking) => (
+            <Link href={`/best/${ranking.attribute}/${category.slug}`} key={ranking.attribute}>
+              {ranking.title}
             </Link>
           ))}
         </div>
@@ -49,8 +51,9 @@ export default async function CategoryPage({ params }: Props) {
 
       <section className="section">
         <div className="section-heading">
-          <p className="eyebrow">Produktabdeckung</p>
-          <h2>{items.length} Fixture-Produkte in dieser Kategorie</h2>
+          <p className="eyebrow">Produkte vergleichen</p>
+          <h2>{items.length} Produkte mit nachvollziehbarer Bewertung</h2>
+          <p>Sortiere über ein passendes Ranking oder öffne eine Produktseite für alle Details.</p>
         </div>
         <div className="product-grid">
           {items.map((product) => (

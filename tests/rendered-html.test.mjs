@@ -23,15 +23,16 @@ async function render() {
   );
 }
 
-test("server-renders the Food Decision Engine MVP", async () => {
+test("server-renders the Food Decision Engine experience", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Food Decision Engine - MVP<\/title>/i);
+  assert.match(html, /<title>Food Decision Engine - Lebensmittel besser auswählen<\/title>/i);
   assert.match(html, /Food Decision Engine/);
-  assert.match(html, /Startkategorien/);
+  assert.match(html, /Finde Lebensmittel/);
+  assert.match(html, /Entscheide smarter/);
   assert.match(html, /Hafermilch/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
 });

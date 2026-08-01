@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Food Decision Engine",
   description:
-    "Erklaerbare Produktvergleiche, Rankings und Scores fuer bessere Einkaufsentscheidungen.",
+    "Erklärbare Produktvergleiche, Rankings und Scores für bessere Einkaufsentscheidungen.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Food Decision Engine",
     description:
-      "Entscheidungshilfe fuer Lebensmittel mit nachvollziehbaren Scores und Datenqualitaet.",
+      "Entscheidungshilfe für Lebensmittel mit nachvollziehbaren Scores und Datenqualität.",
     type: "website",
   },
 };
@@ -24,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body>{children}</body>
+      <body>{children}<SiteFooter /></body>
     </html>
   );
 }

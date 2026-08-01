@@ -5,7 +5,7 @@ const categories: Category[] = [
   {
     slug: "hafermilch",
     label: "Hafermilch",
-    intent: "Beste pflanzliche Milchalternative fuer Kaffee, Muesli und Alltag.",
+    intent: "Beste pflanzliche Milchalternative für Kaffee, Müsli und Alltag.",
     description:
       "Hafermilch wird vor allem nach Zucker, Zutatenliste, Anreicherung und Alltagstauglichkeit bewertet.",
     rankingAttributes: ["wenig-zucker", "beste-wahl", "familie"],
@@ -15,15 +15,15 @@ const categories: Category[] = [
     label: "Proteinriegel",
     intent: "Proteinreiche Snacks mit guter Makro-Balance und nachvollziehbaren Zutaten.",
     description:
-      "Proteinriegel brauchen eigene Regeln, weil Zuckeralkohole, Suessstoffe und Protein pro Riegel wichtig sind.",
+      "Proteinriegel brauchen eigene Regeln, weil Zuckeralkohole, Süßstoffe und Protein pro Riegel wichtig sind.",
     rankingAttributes: ["proteinreich", "wenig-zucker", "ohne-suessstoffe"],
   },
   {
     slug: "muesli",
-    label: "Muesli",
-    intent: "Mueslis mit weniger Zucker, soliden Ballaststoffen und kurzer Zutatenliste.",
+    label: "Müsli",
+    intent: "Müslis mit weniger Zucker, soliden Ballaststoffen und kurzer Zutatenliste.",
     description:
-      "Bei Muesli zaehlen Zucker, Ballaststoffe, Zutatenlaenge und ob Suesse aus Zusetzung oder Fruechten kommt.",
+      "Bei Müsli zählen Zucker, Ballaststoffe, Zutatenlänge und ob Süße aus Zusetzung oder Früchten kommt.",
     rankingAttributes: ["wenig-zucker", "familie", "beste-wahl"],
   },
   {
@@ -37,7 +37,7 @@ const categories: Category[] = [
   {
     slug: "vegane-snacks",
     label: "Vegane Snacks",
-    intent: "Vegane Snacks mit klaren Zutaten und besserer Naehrwert-Balance.",
+    intent: "Vegane Snacks mit klaren Zutaten und besserer Nährwert-Balance.",
     description:
       "Vegane Snacks werden nicht automatisch als bessere Wahl behandelt; entscheidend sind Zucker, Salz, Fett und Zutaten.",
     rankingAttributes: ["vegan", "wenig-zucker", "beste-wahl"],
@@ -86,7 +86,7 @@ const baseProducts: Array<Omit<Product, "scores">> = [
     category: "hafermilch",
     categoryLabel: "Hafermilch",
     imageTone: "blue",
-    description: "Klassischer Haferdrink fuer Kaffee und Muesli mit mittlerem Zuckerwert.",
+    description: "Klassischer Haferdrink für Kaffee und Müsli mit mittlerem Zuckerwert.",
     labels: ["vegan"],
     ingredients: ["Wasser", "Hafer", "Rapsöl", "Mineralien", "Salz"],
     allergens: ["Hafer"],
@@ -118,7 +118,7 @@ const baseProducts: Array<Omit<Product, "scores">> = [
     category: "proteinriegel",
     categoryLabel: "Proteinriegel",
     imageTone: "cocoa",
-    description: "Proteinriegel mit hohem Eiweissanteil und moderatem Zuckerwert.",
+    description: "Proteinriegel mit hohem Eiweißanteil und moderatem Zuckerwert.",
     labels: ["proteinreich", "vegetarisch"],
     ingredients: ["Milchprotein", "Kakaomasse", "Mandeln", "Ballaststoffe", "Erythrit", "Aroma"],
     allergens: ["Milch", "Mandeln"],
@@ -145,12 +145,12 @@ const baseProducts: Array<Omit<Product, "scores">> = [
     id: "p-muesli-01",
     gtin: "4000000000031",
     slug: "morgenfeld-basis-muesli",
-    name: "Morgenfeld Basis Muesli",
+    name: "Morgenfeld Basis Müsli",
     brand: "Morgenfeld",
     category: "muesli",
-    categoryLabel: "Muesli",
+    categoryLabel: "Müsli",
     imageTone: "grain",
-    description: "Einfaches Vollkornmuesli ohne zugesetzten Zucker.",
+    description: "Einfaches Vollkornmüsli ohne zugesetzten Zucker.",
     labels: ["vollkorn", "ohne Zuckerzusatz", "vegan"],
     ingredients: ["Haferflocken", "Dinkelflocken", "Leinsamen", "Sonnenblumenkerne", "Haselnuesse"],
     allergens: ["Gluten", "Haselnuesse"],
@@ -260,7 +260,7 @@ export const rankingPages: RankingPage[] = [
     category: "proteinriegel",
     title: "Proteinreichste Proteinriegel",
     intro:
-      "Der MVP zeigt bereits die Ranking-Logik, bleibt aber noindex, bis genug echte Produkte importiert sind.",
+      "Verglichen wird der Proteingehalt im Kontext ähnlicher Produkte; Datenlücken bleiben sichtbar.",
     sortScore: "protein",
     indexable: false,
     minProductsRequired: 20,
@@ -268,9 +268,9 @@ export const rankingPages: RankingPage[] = [
   {
     attribute: "beste-wahl",
     category: "muesli",
-    title: "Beste Mueslis nach Overall Match",
+    title: "Beste Müslis nach Gesamturteil",
     intro:
-      "Overall Match kombiniert Naehrwerte, Zutatenqualitaet, Zucker und Protein zu einer nachvollziehbaren Entscheidungshilfe.",
+      "Das Gesamturteil kombiniert Nährwerte, Zutatenqualität, Zucker und Protein zu einer nachvollziehbaren Entscheidungshilfe.",
     sortScore: "overall_match",
     indexable: false,
     minProductsRequired: 20,

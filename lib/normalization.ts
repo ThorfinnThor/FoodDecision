@@ -53,7 +53,7 @@ export type NormalizedOpenFoodFactsProduct = {
 const categoryLabels: Record<CategorySlug, string> = {
   hafermilch: "Hafermilch",
   proteinriegel: "Proteinriegel",
-  muesli: "Muesli",
+  muesli: "Müsli",
   "joghurt-skyr": "Joghurt und Skyr",
   "vegane-snacks": "Vegane Snacks",
 };

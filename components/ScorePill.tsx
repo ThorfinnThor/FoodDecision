@@ -1,12 +1,12 @@
 import { gradeLabel, scoreLabel } from "@/lib/scoring";
 import type { ProductScore } from "@/lib/types";
 
-export function ScorePill({ score }: { score: ProductScore }) {
+export function ScorePill({ score, compact = false }: { score: ProductScore; compact?: boolean }) {
   return (
-    <div className={`score-pill grade-${score.grade}`}>
-      <span>{score.label}</span>
+    <div className={`score-pill grade-${score.grade} ${compact ? "score-pill-compact" : ""}`}>
+      <span>{compact ? "Score" : score.label}</span>
       <strong>{scoreLabel(score)}</strong>
-      <small>{gradeLabel(score.grade)} · {score.confidence} confidence</small>
+      {compact ? null : <small>{gradeLabel(score.grade)} · {score.confidence === "high" ? "hohe" : score.confidence === "medium" ? "mittlere" : "niedrige"} Sicherheit</small>}
     </div>
   );
 }
