@@ -25,7 +25,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const items = rankedProducts(ranking.category, ranking.sortScore);
   const path = `/best/${attribute}/${category}`;
   const definition = getSeoPageDefinition(path);
-  const categoryLabel = getCategory(ranking.category)?.label ?? ranking.category.replaceAll("-", " ");
   const decision = evaluateSeoPage(definition, {
     resultCount: items.length,
     dataCompleteness: averageDataCompleteness(items),
@@ -53,6 +52,7 @@ export default async function RankingPage({ params }: Props) {
   const items = rankedProducts(ranking.category, ranking.sortScore);
   const path = `/best/${attribute}/${category}`;
   const definition = getSeoPageDefinition(path);
+  const categoryLabel = getCategory(ranking.category)?.label ?? ranking.category.replaceAll("-", " ");
 
   return (
     <main>

@@ -10,7 +10,30 @@ import type { Category, CategorySlug, Product, RankingPage } from "../../lib/typ
 type ExportSource = "fixtures" | "supabase";
 
 const outRoot = join(process.cwd(), "public", "data");
-const source = (process.env.STATIC_EXPORT_SOURCE ?? "fixtures") as ExportSource;
+export function resolveExportSource(value = process.env.STATIC_EXPORT_SOURCE): ExportSource {
+  const resolved = value ?? "fixtures";
+  if (resolved !== "fixtures" && resolved !== "supabase") {
+    throw new Error(`Unsupported STATIC_EXPORT_SOURCE: ${resolved}`);
+  }
+  return resolved;
+}
+
+export function assertDeploymentExportPolicy({
+  isVercel = process.env.VERCEL === "1",
+  exportSource = resolveExportSource(),
+}: {
+  isVercel?: boolean;
+  exportSource?: ExportSource;
+} = {}) {
+  if (isVercel && exportSource !== "supabase") {
+    throw new Error(
+      "Vercel deployments require STATIC_EXPORT_SOURCE=supabase. Configure STATIC_EXPORT_SOURCE, SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel.",
+    );
+  }
+}
+
+const source = resolveExportSource();
+assertDeploymentExportPolicy({ exportSource: source });
 const maxJsonBytes = Number(process.env.STATIC_EXPORT_MAX_BYTES ?? "1048576");
 
 function requireEnv(name: string) {

@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mapSupabaseProduct } from "../scripts/export/static-data.ts";
+import {
+  assertDeploymentExportPolicy,
+  mapSupabaseProduct,
+  resolveExportSource,
+} from "../scripts/export/static-data.ts";
 
 function productRow(nutritionFacts) {
   return {
@@ -48,4 +52,14 @@ test("also accepts the array relationship shape used by older responses", () => 
   const product = mapSupabaseProduct(productRow([nutrition]));
 
   assert.equal(product.nutrition.protein, 12);
+});
+
+test("rejects fixture exports in Vercel deployments", () => {
+  assert.throws(
+    () => assertDeploymentExportPolicy({ isVercel: true, exportSource: "fixtures" }),
+    /Vercel deployments require STATIC_EXPORT_SOURCE=supabase/,
+  );
+  assert.doesNotThrow(() => assertDeploymentExportPolicy({ isVercel: true, exportSource: "supabase" }));
+  assert.equal(resolveExportSource("supabase"), "supabase");
+  assert.throws(() => resolveExportSource("unknown"), /Unsupported STATIC_EXPORT_SOURCE/);
 });
