@@ -51,6 +51,8 @@ jobs:
           OFF_MAX_PAGES: ${{ inputs.max_pages || '1' }}
           OFF_PAGE_SIZE: ${{ inputs.page_size || '50' }}
           OFF_REQUEST_DELAY_MS: "7000"
+          OFF_CONTINUE_ON_CATEGORY_ERROR: "true"
+          OFF_UPSERT_BATCH_SIZE: "100"
         run: |
           if [ "${{ inputs.import_mode || 'write-to-supabase' }}" = "dry-run" ]; then
             npm run ingest:off -- --dry-run

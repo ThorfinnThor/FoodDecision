@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
+import { pathToFileURL } from "node:url";
 
 const OFF_SEARCH_URL = "https://world.openfoodfacts.org/api/v2/search";
 const SOURCE_ID = "open-food-facts";
@@ -66,9 +67,11 @@ const requestDelayMs = Number(process.env.OFF_REQUEST_DELAY_MS ?? "7000");
 const fetchRetries = Number(process.env.OFF_FETCH_RETRIES ?? "4");
 const fetchRetryBaseMs = Number(process.env.OFF_FETCH_RETRY_BASE_MS ?? "10000");
 const allowEmptyDryRun = process.env.OFF_ALLOW_EMPTY_DRY_RUN !== "false";
-const continueOnCategoryError =
-  process.env.OFF_CONTINUE_ON_CATEGORY_ERROR === "true" ||
-  (dryRun && process.env.OFF_CONTINUE_ON_CATEGORY_ERROR !== "false");
+export function shouldContinueOnCategoryError(value = process.env.OFF_CONTINUE_ON_CATEGORY_ERROR) {
+  return value !== "false";
+}
+const continueOnCategoryError = shouldContinueOnCategoryError();
+const upsertBatchSize = Number(process.env.OFF_UPSERT_BATCH_SIZE ?? "100");
 const country = process.env.OFF_COUNTRY ?? "Germany";
 const userAgent =
   process.env.OFF_USER_AGENT ??
@@ -239,13 +242,16 @@ async function supabaseRequest(path, options = {}) {
 
 async function upsertRows(table, rows, onConflict) {
   if (!rows.length) return;
-  await supabaseRequest(`${table}?on_conflict=${encodeURIComponent(onConflict)}`, {
-    method: "POST",
-    headers: {
-      Prefer: "resolution=merge-duplicates,return=minimal",
-    },
-    body: JSON.stringify(rows),
-  });
+  for (let offset = 0; offset < rows.length; offset += upsertBatchSize) {
+    const batch = rows.slice(offset, offset + upsertBatchSize);
+    await supabaseRequest(`${table}?on_conflict=${encodeURIComponent(onConflict)}`, {
+      method: "POST",
+      headers: {
+        Prefer: "resolution=merge-duplicates,return=minimal",
+      },
+      body: JSON.stringify(batch),
+    });
+  }
 }
 
 async function createImportRun() {
@@ -301,6 +307,7 @@ async function collectProducts(importRunId) {
   const failures = [];
 
   for (const job of categoryJobs) {
+    let completedPages = 0;
     try {
       for (let page = 1; page <= maxPages; page += 1) {
         const data = await fetchOffPage(job, page);
@@ -310,14 +317,17 @@ async function collectProducts(importRunId) {
           if (row) rows.push(row);
         }
         console.log(`${job.slug}: page ${page}, ${products.length} products`);
+        completedPages = page;
 
         if (products.length < pageSize) break;
         if (requestDelayMs > 0) await sleep(requestDelayMs);
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      failures.push({ category: job.slug, message });
-      console.warn(`Skipping ${job.slug} after repeated Open Food Facts errors: ${message}`);
+      failures.push({ category: job.slug, completedPages, message: clippedMessage(message) });
+      console.warn(
+        `Stopping ${job.slug} after ${completedPages} successful page(s) because Open Food Facts remained unavailable: ${clippedMessage(message)}`,
+      );
 
       if (!continueOnCategoryError) throw error;
     }
@@ -346,8 +356,14 @@ async function main() {
     }
 
     await upsertRows("raw_open_food_facts_products", rows, "external_id,category_slug");
-    await finishImportRun(importRunId, "success", counts);
+    const partialFailureMessage = failures.length
+      ? clippedMessage(`Partial Open Food Facts import: ${JSON.stringify(failures)}`, 4000)
+      : null;
+    await finishImportRun(importRunId, "success", counts, partialFailureMessage);
     console.log(`Imported ${rows.length} raw Open Food Facts products.`);
+    if (failures.length) {
+      console.warn(`Import completed with ${failures.length} partial category failure(s).`);
+    }
   } catch (error) {
     if (!dryRun) {
       await finishImportRun(importRunId, "failed", counts, error instanceof Error ? error.message : String(error));
@@ -356,7 +372,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
