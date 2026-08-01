@@ -1,6 +1,7 @@
 #!/usr/bin/env node --experimental-strip-types
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { createHash } from "node:crypto";
 import { getCategories, products as fixtureProducts, rankingPages, rankedProducts } from "../../lib/data.ts";
 import { scoreByType } from "../../lib/scoring.ts";
@@ -55,6 +56,18 @@ async function supabaseRequest<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+type SupabaseNutritionRow = {
+  basis: Product["nutrition"]["basis"];
+  energy_kcal: number | null;
+  fat: number | null;
+  saturated_fat: number | null;
+  carbohydrates: number | null;
+  sugar: number | null;
+  fiber: number | null;
+  protein: number | null;
+  salt: number | null;
+};
+
 type SupabaseProductRow = {
   id: string;
   gtin: string;
@@ -65,17 +78,7 @@ type SupabaseProductRow = {
   source_updated_at: string | null;
   publishability: Product["publishability"];
   brands?: { name: string } | null;
-  nutrition_facts?: Array<{
-    basis: Product["nutrition"]["basis"];
-    energy_kcal: number | null;
-    fat: number | null;
-    saturated_fat: number | null;
-    carbohydrates: number | null;
-    sugar: number | null;
-    fiber: number | null;
-    protein: number | null;
-    salt: number | null;
-  }>;
+  nutrition_facts?: SupabaseNutritionRow | SupabaseNutritionRow[] | null;
   product_scores?: Array<{
     score_type: Product["scores"][number]["type"];
     label: string;
@@ -112,13 +115,18 @@ type SupabaseProductRow = {
   }>;
 };
 
-function mapSupabaseProduct(row: SupabaseProductRow): Product {
+function firstRelated<T>(value: T | T[] | null | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export function mapSupabaseProduct(row: SupabaseProductRow): Product {
   const category = row.product_categories?.[0]?.categories;
-  const nutrition = row.nutrition_facts?.[0];
+  const nutrition = firstRelated(row.nutrition_facts);
   const activeOffer = row.affiliate_offers?.find((offer) => offer.active);
 
   if (!category || !nutrition) {
-    throw new Error(`Product ${row.slug} is missing category or nutrition data and cannot be exported.`);
+    const missing = [!category ? "category" : null, !nutrition ? "nutrition" : null].filter(Boolean).join(" and ");
+    throw new Error(`Product ${row.slug} is missing ${missing} data and cannot be exported.`);
   }
 
   return {
@@ -339,7 +347,9 @@ async function exportStaticData() {
   console.log(`Exported ${files.length} static JSON files from ${source}.`);
 }
 
-exportStaticData().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  exportStaticData().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
