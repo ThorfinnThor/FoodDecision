@@ -10,6 +10,9 @@
     "product",
     "ranking",
     "comparison",
+    "brand",
+    "ingredient",
+    "nutrition",
     "finder",
     "guide"
   ],
@@ -28,6 +31,11 @@
   "defaultNoindexPatterns": [
     "/finder",
     "/finder?*",
+    "/compare?*",
+    "/favorites",
+    "/shopping-list",
+    "/preferences",
+    "/scan",
     "/search?*"
   ],
   "sourceDataFreshnessDays": 90,

@@ -133,7 +133,11 @@ type SupabaseProductRow = {
     flag: string;
   }>;
   affiliate_offers?: Array<{
+    id: string;
+    merchant: string;
+    url: string;
     price_hint: string | null;
+    sponsored: boolean;
     active: boolean;
   }>;
 };
@@ -186,6 +190,16 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
     sourceUpdatedAt: row.source_updated_at ?? row.imported_at,
     affiliateAvailable: Boolean(activeOffer),
     priceHint: activeOffer?.price_hint ?? null,
+    affiliateOffers:
+      row.affiliate_offers
+        ?.filter((offer) => offer.active)
+        .map((offer) => ({
+          id: offer.id,
+          merchant: offer.merchant,
+          url: offer.url,
+          priceHint: offer.price_hint,
+          sponsored: offer.sponsored,
+        })) ?? [],
     publishability: row.publishability,
     qualityFlags: row.data_quality_flags?.map((flag) => flag.flag) ?? [],
     scores:
@@ -206,7 +220,7 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
 async function loadSupabaseData() {
   const [productRows, categoryRows, rankingRows] = await Promise.all([
     supabaseRequest<SupabaseProductRow[]>(
-      "products?select=id,gtin,slug,name,image_url,imported_at,source_updated_at,publishability,brands(name),nutrition_facts(*),product_scores(*),product_categories(categories(slug,label)),product_labels(labels(name)),product_ingredients(position,ingredients(name)),product_allergens(allergens(name)),data_quality_flags(flag),affiliate_offers(price_hint,active)&publishability=in.(published,ranking_eligible)&order=slug",
+      "products?select=id,gtin,slug,name,image_url,imported_at,source_updated_at,publishability,brands(name),nutrition_facts(*),product_scores(*),product_categories(categories(slug,label)),product_labels(labels(name)),product_ingredients(position,ingredients(name)),product_allergens(allergens(name)),data_quality_flags(flag),affiliate_offers(id,merchant,url,price_hint,sponsored,active)&publishability=in.(published,ranking_eligible)&order=slug",
     ),
     supabaseRequest<Category[]>(
       "categories?select=slug,label,intent,description,rankingAttributes:ranking_attributes&order=slug",
@@ -219,7 +233,7 @@ async function loadSupabaseData() {
   const categories = categoryRows.map((category) => ({
     ...category,
     intent: category.intent ?? `Beste Produkte in ${category.label}.`,
-    description: category.description ?? `Statische Kategorieauswertung fuer ${category.label}.`,
+    description: category.description ?? `Statische Kategorieauswertung für ${category.label}.`,
     rankingAttributes: category.rankingAttributes ?? [],
   }));
 

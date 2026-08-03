@@ -7,6 +7,7 @@ import type {
   ScoreGrade,
   ScoreType,
 } from "./types.ts";
+import { categoryScoringProfiles } from "./catalog.ts";
 
 const RULE_VERSION = "2026.07";
 
@@ -70,25 +71,11 @@ function createScore(
 }
 
 function sugarTarget(category: CategorySlug) {
-  const targets: Record<CategorySlug, { excellent: number; weak: number; unit: string }> = {
-    hafermilch: { excellent: 2.5, weak: 6, unit: "100 ml" },
-    proteinriegel: { excellent: 5, weak: 18, unit: "100 g" },
-    muesli: { excellent: 8, weak: 22, unit: "100 g" },
-    "joghurt-skyr": { excellent: 5, weak: 13, unit: "100 g" },
-    "vegane-snacks": { excellent: 5, weak: 20, unit: "100 g" },
-  };
-  return targets[category];
+  return categoryScoringProfiles[category].sugar;
 }
 
 function proteinTarget(category: CategorySlug) {
-  const targets: Record<CategorySlug, { excellent: number; okay: number }> = {
-    hafermilch: { excellent: 3.5, okay: 1 },
-    proteinriegel: { excellent: 25, okay: 15 },
-    muesli: { excellent: 14, okay: 8 },
-    "joghurt-skyr": { excellent: 11, okay: 7 },
-    "vegane-snacks": { excellent: 12, okay: 5 },
-  };
-  return targets[category];
+  return categoryScoringProfiles[category].protein;
 }
 
 function lowSugarScore(product: Omit<Product, "scores">) {

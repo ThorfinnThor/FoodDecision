@@ -1,0 +1,11 @@
+{
+  "slug": "pflanzliche-joghurts",
+  "label": "Pflanzliche Joghurts",
+  "intent": "Vegane Joghurtalternativen mit ausgewogenen Nährwerten.",
+  "description": "Pflanzliche Joghurtalternativen werden nach Zucker, Protein, Zutaten und veganer Kennzeichnung verglichen.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "beste-wahl"
+  ],
+  "products": []
+}

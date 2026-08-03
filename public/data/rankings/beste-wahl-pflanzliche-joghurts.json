@@ -1,0 +1,10 @@
+{
+  "attribute": "beste-wahl",
+  "category": "pflanzliche-joghurts",
+  "title": "Beste pflanzliche Joghurts",
+  "sortScore": "overall_match",
+  "intro": "Beste pflanzliche Joghurts: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

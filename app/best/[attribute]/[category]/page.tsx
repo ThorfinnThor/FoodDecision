@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductCard } from "@/components/ProductCard";
+import { RankingList } from "@/components/RankingList";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StructuredData } from "@/components/StructuredData";
 import { absoluteUrl, averageDataCompleteness, countUniqueInsights, evaluateSeoPage, getSeoPageDefinition } from "@/lib/seo";
@@ -88,14 +88,7 @@ export default async function RankingPage({ params }: Props) {
       </section>
 
       <section className="section">
-        <div className="ranking-list">
-          {items.map((product, index) => (
-            <div className="ranking-row" key={product.id}>
-              <span className="rank-number">{index + 1}</span>
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
+        <RankingList products={items} />
       </section>
 
       {definition?.internalLinks.length ? (

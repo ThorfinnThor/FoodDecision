@@ -1,12 +1,11 @@
 {
   "slug": "proteinriegel",
   "label": "Proteinriegel",
-  "intent": "Proteinreiche Snacks mit guter Makro-Balance und nachvollziehbaren Zutaten.",
-  "description": "Proteinriegel brauchen eigene Regeln, weil Zuckeralkohole, Süßstoffe und Protein pro Riegel wichtig sind.",
+  "intent": "Proteinreiche Snacks mit nachvollziehbarer Makro-Balance.",
+  "description": "Bei Proteinriegeln zählen Protein, Zucker, Zutatenlänge und erkennbare Süßungsmittel.",
   "rankingAttributes": [
     "proteinreich",
-    "wenig-zucker",
-    "ohne-suessstoffe"
+    "wenig-zucker"
   ],
   "products": [
     {

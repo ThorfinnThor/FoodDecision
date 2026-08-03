@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de">
+    <html data-scroll-behavior="smooth" lang="de">
       <body>{children}<SiteFooter /></body>
     </html>
   );

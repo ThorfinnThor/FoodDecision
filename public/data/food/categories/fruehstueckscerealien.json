@@ -1,0 +1,11 @@
+{
+  "slug": "fruehstueckscerealien",
+  "label": "Frühstückscerealien",
+  "intent": "Cerealien mit weniger Zucker und besserer Alltagstauglichkeit.",
+  "description": "Flakes, Crunch und Cerealien werden nach Zucker, Protein, Salz und Zutatenqualität eingeordnet.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "familie"
+  ],
+  "products": []
+}

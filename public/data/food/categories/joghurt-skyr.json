@@ -2,11 +2,10 @@
   "slug": "joghurt-skyr",
   "label": "Joghurt und Skyr",
   "intent": "Milchprodukte mit viel Protein und wenig zugesetztem Zucker.",
-  "description": "Joghurt, Skyr und Quark werden nach Protein, Zucker, Fett, Zutaten und Allergenhinweisen bewertet.",
+  "description": "Joghurt, Skyr und Quark werden nach Protein, Zucker, Fett, Zutaten und Allergenen bewertet.",
   "rankingAttributes": [
     "proteinreich",
-    "wenig-zucker",
-    "beste-wahl"
+    "wenig-zucker"
   ],
   "products": [
     {

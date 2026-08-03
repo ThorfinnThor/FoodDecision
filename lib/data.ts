@@ -1,48 +1,8 @@
 import { calculateScores, scoreByType } from "./scoring.ts";
 import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types.ts";
+import { categoryCatalog, defaultRankingPages } from "./catalog.ts";
 
-const categories: Category[] = [
-  {
-    slug: "hafermilch",
-    label: "Hafermilch",
-    intent: "Beste pflanzliche Milchalternative für Kaffee, Müsli und Alltag.",
-    description:
-      "Hafermilch wird vor allem nach Zucker, Zutatenliste, Anreicherung und Alltagstauglichkeit bewertet.",
-    rankingAttributes: ["wenig-zucker", "beste-wahl", "familie"],
-  },
-  {
-    slug: "proteinriegel",
-    label: "Proteinriegel",
-    intent: "Proteinreiche Snacks mit guter Makro-Balance und nachvollziehbaren Zutaten.",
-    description:
-      "Proteinriegel brauchen eigene Regeln, weil Zuckeralkohole, Süßstoffe und Protein pro Riegel wichtig sind.",
-    rankingAttributes: ["proteinreich", "wenig-zucker", "ohne-suessstoffe"],
-  },
-  {
-    slug: "muesli",
-    label: "Müsli",
-    intent: "Müslis mit weniger Zucker, soliden Ballaststoffen und kurzer Zutatenliste.",
-    description:
-      "Bei Müsli zählen Zucker, Ballaststoffe, Zutatenlänge und ob Süße aus Zusetzung oder Früchten kommt.",
-    rankingAttributes: ["wenig-zucker", "familie", "beste-wahl"],
-  },
-  {
-    slug: "joghurt-skyr",
-    label: "Joghurt und Skyr",
-    intent: "Milchprodukte mit viel Protein und wenig zugesetztem Zucker.",
-    description:
-      "Joghurt, Skyr und Quark werden nach Protein, Zucker, Fett, Zutaten und Allergenhinweisen bewertet.",
-    rankingAttributes: ["proteinreich", "wenig-zucker", "beste-wahl"],
-  },
-  {
-    slug: "vegane-snacks",
-    label: "Vegane Snacks",
-    intent: "Vegane Snacks mit klaren Zutaten und besserer Nährwert-Balance.",
-    description:
-      "Vegane Snacks werden nicht automatisch als bessere Wahl behandelt; entscheidend sind Zucker, Salz, Fett und Zutaten.",
-    rankingAttributes: ["vegan", "wenig-zucker", "beste-wahl"],
-  },
-];
+const categories: Category[] = categoryCatalog;
 
 const baseProducts: Array<Omit<Product, "scores">> = [
   {
@@ -152,8 +112,8 @@ const baseProducts: Array<Omit<Product, "scores">> = [
     imageTone: "grain",
     description: "Einfaches Vollkornmüsli ohne zugesetzten Zucker.",
     labels: ["vollkorn", "ohne Zuckerzusatz", "vegan"],
-    ingredients: ["Haferflocken", "Dinkelflocken", "Leinsamen", "Sonnenblumenkerne", "Haselnuesse"],
-    allergens: ["Gluten", "Haselnuesse"],
+    ingredients: ["Haferflocken", "Dinkelflocken", "Leinsamen", "Sonnenblumenkerne", "Haselnüsse"],
+    allergens: ["Gluten", "Haselnüsse"],
     nutrition: {
       energyKcal: 372,
       fat: 7.9,
@@ -184,7 +144,7 @@ const baseProducts: Array<Omit<Product, "scores">> = [
     imageTone: "white",
     description: "Natur-Skyr mit hohem Proteingehalt und kurzer Zutatenliste.",
     labels: ["proteinreich", "vegetarisch"],
-    ingredients: ["Magermilch", "Milchsaeurekulturen"],
+    ingredients: ["Magermilch", "Milchsäurekulturen"],
     allergens: ["Milch"],
     nutrition: {
       energyKcal: 64,
@@ -214,9 +174,9 @@ const baseProducts: Array<Omit<Product, "scores">> = [
     category: "vegane-snacks",
     categoryLabel: "Vegane Snacks",
     imageTone: "green",
-    description: "Vegane Linsencracker mit gutem Proteinwert, aber erhoehtem Salzgehalt.",
+    description: "Vegane Linsencracker mit gutem Proteinwert, aber erhöhtem Salzgehalt.",
     labels: ["vegan", "proteinquelle"],
-    ingredients: ["Linsenmehl", "Reismehl", "Sonnenblumenoel", "Meersalz", "Rosmarin"],
+    ingredients: ["Linsenmehl", "Reismehl", "Sonnenblumenöl", "Meersalz", "Rosmarin"],
     allergens: [],
     nutrition: {
       energyKcal: 418,
@@ -244,38 +204,7 @@ export const products: Product[] = baseProducts.map((product) => ({
   scores: calculateScores(product),
 }));
 
-export const rankingPages: RankingPage[] = [
-  {
-    attribute: "wenig-zucker",
-    category: "hafermilch",
-    title: "Beste Hafermilch mit wenig Zucker",
-    intro:
-      "Vergleiche Hafermilch nach ihrem Zucker-Score. Datenlücken und die Sicherheit jeder Bewertung bleiben sichtbar.",
-    sortScore: "low_sugar",
-    indexable: false,
-    minProductsRequired: 20,
-  },
-  {
-    attribute: "proteinreich",
-    category: "proteinriegel",
-    title: "Proteinreichste Proteinriegel",
-    intro:
-      "Verglichen wird der Proteingehalt im Kontext ähnlicher Produkte; Datenlücken bleiben sichtbar.",
-    sortScore: "protein",
-    indexable: false,
-    minProductsRequired: 20,
-  },
-  {
-    attribute: "beste-wahl",
-    category: "muesli",
-    title: "Beste Müslis nach Gesamturteil",
-    intro:
-      "Das Gesamturteil kombiniert Nährwerte, Zutatenqualität, Zucker und Protein zu einer nachvollziehbaren Entscheidungshilfe.",
-    sortScore: "overall_match",
-    indexable: false,
-    minProductsRequired: 20,
-  },
-];
+export const rankingPages: RankingPage[] = defaultRankingPages;
 
 export function getCategories() {
   return categories;

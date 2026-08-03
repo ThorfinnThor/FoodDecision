@@ -1,0 +1,11 @@
+{
+  "slug": "kinder-snacks",
+  "label": "Kinder-Snacks",
+  "intent": "Snacks für Familien mit konservativer Zucker-, Salz- und Zutatenbewertung.",
+  "description": "Kinder-Snacks werden bewusst streng nach Zucker, Salz, Zutaten und bekannten Allergenen eingeordnet.",
+  "rankingAttributes": [
+    "familie",
+    "wenig-zucker"
+  ],
+  "products": []
+}

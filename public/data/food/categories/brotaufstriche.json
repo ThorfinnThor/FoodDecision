@@ -1,0 +1,11 @@
+{
+  "slug": "brotaufstriche",
+  "label": "Brotaufstriche",
+  "intent": "Süß und herzhaft streichen, mit klarer Zutatenentscheidung.",
+  "description": "Aufstriche werden nach Zucker, Salz, gesättigten Fettsäuren und Zutatenqualität bewertet.",
+  "rankingAttributes": [
+    "gute-zutaten",
+    "beste-wahl"
+  ],
+  "products": []
+}

@@ -2,16 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DataQualityNotice } from "@/components/DataQualityNotice";
+import { AffiliateOffers } from "@/components/AffiliateOffers";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { NutritionTable } from "@/components/NutritionTable";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductVisual } from "@/components/ProductVisual";
 import { ScoreBreakdown } from "@/components/ScoreBreakdown";
 import { ScorePill } from "@/components/ScorePill";
+import { ShoppingListButton } from "@/components/ShoppingListButton";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StructuredData } from "@/components/StructuredData";
+import { ViewTracker } from "@/components/ViewTracker";
 import { absoluteUrl } from "@/lib/seo";
-import { getAlternative, getProduct, products } from "@/lib/static-data";
+import { getAlternatives, getIngredients, getProduct, products, rankingPages } from "@/lib/static-data";
 import { gradeLabel, scoreByType } from "@/lib/scoring";
+import { entitySlug } from "@/lib/product-insights";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -36,16 +41,19 @@ export default async function ProductPage({ params }: Props) {
   const product = getProduct(slug);
   if (!product) notFound();
 
-  const alternative = getAlternative(product);
-  const comparisonTarget = alternative ?? products.find((item) => item.slug !== product.slug) ?? null;
+  const alternatives = getAlternatives(product, "overall_match", 3);
+  const comparisonTarget = alternatives[0]?.product ?? products.find((item) => item.slug !== product.slug) ?? null;
   const overall = scoreByType(product, "overall_match");
   const positives = [...new Set(product.scores.flatMap((score) => score.positives))].slice(0, 4);
   const negatives = [...new Set(product.scores.flatMap((score) => score.negatives))].slice(0, 3);
   const suitability = product.scores.filter((score) => ["protein", "low_sugar", "vegan", "family"].includes(score.type));
   const suitabilityNames = { protein: "Proteinreich", low_sugar: "Wenig Zucker", vegan: "Vegan", family: "Für Familien" } as const;
+  const ingredientSlugs = new Set(getIngredients(2, 300).map((ingredient) => ingredient.slug));
+  const relatedRankings = rankingPages.filter((ranking) => ranking.category === product.category).slice(0, 3);
 
   return (
     <main className="product-page">
+      <ViewTracker entityId={product.slug} entityType="product" eventName="product_opened" />
       <StructuredData data={{
         "@context": "https://schema.org",
         "@graph": [
@@ -96,6 +104,7 @@ export default async function ProductPage({ params }: Props) {
             <Link className="button-link" href="#score-details">Bewertung verstehen</Link>
             {comparisonTarget ? <Link className="secondary-button-link" href={`/compare/${product.slug}-vs-${comparisonTarget.slug}`}>Vergleichen</Link> : null}
           </div>
+          <div className="save-actions"><FavoriteButton productName={product.name} productSlug={product.slug} /><ShoppingListButton productName={product.name} productSlug={product.slug} /></div>
         </div>
       </section>
 
@@ -124,12 +133,23 @@ export default async function ProductPage({ params }: Props) {
         <DataQualityNotice product={product} />
       </section>
 
-      {alternative ? (
+      {alternatives.length ? (
         <section className="section section-soft">
-          <div className="section-heading"><p className="eyebrow">Alternative</p><h2>Eine weitere starke Wahl</h2><p>Aus derselben Kategorie, nach Gesamturteil sortiert.</p></div>
-          <div className="single-card-wrap"><ProductCard product={alternative} /></div>
+          <div className="section-heading"><p className="eyebrow">Bessere Alternativen</p><h2>Weitere starke Optionen in {product.categoryLabel}</h2><p>Nach Gesamturteil und Datenvollständigkeit sortiert. Der Match-Score ist keine medizinische Bewertung.</p></div>
+          <div className="product-grid">{alternatives.map((alternative) => <ProductCard key={alternative.product.id} matchReasons={alternative.match.reasons} matchScore={alternative.match.score} product={alternative.product} />)}</div>
         </section>
       ) : null}
+
+      <AffiliateOffers offers={product.affiliateOffers ?? []} productSlug={product.slug} />
+
+      <section className="detail-section related-section">
+        <div className="section-heading"><p className="eyebrow">Weiter entdecken</p><h2>Passende Einordnungen</h2></div>
+        <div className="related-link-grid">
+          <Link href={`/brand/${entitySlug(product.brand)}`}><strong>{product.brand}</strong><span>Alle Produkte der Marke</span></Link>
+          {product.ingredients.filter((ingredient) => ingredientSlugs.has(entitySlug(ingredient))).slice(0, 2).map((ingredient) => <Link href={`/ingredient/${entitySlug(ingredient)}`} key={ingredient}><strong>{ingredient}</strong><span>Produkte mit dieser Zutat</span></Link>)}
+          {relatedRankings.map((ranking) => <Link href={`/best/${ranking.attribute}/${ranking.category}`} key={ranking.attribute}><strong>{ranking.title}</strong><span>Zum Ranking</span></Link>)}
+        </div>
+      </section>
 
       <section className="detail-section faq-section">
         <div className="section-heading"><p className="eyebrow">Häufige Fragen</p><h2>Gut zu wissen</h2></div>

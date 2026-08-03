@@ -18,11 +18,11 @@
     "Dinkelflocken",
     "Leinsamen",
     "Sonnenblumenkerne",
-    "Haselnuesse"
+    "Haselnüsse"
   ],
   "allergens": [
     "Gluten",
-    "Haselnuesse"
+    "Haselnüsse"
   ],
   "nutrition": {
     "energyKcal": 372,
@@ -106,7 +106,7 @@
         "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
       ],
       "negatives": [
-        "Allergene prüfen: Gluten, Haselnuesse."
+        "Allergene prüfen: Gluten, Haselnüsse."
       ],
       "missingData": [],
       "ruleVersion": "2026.07"

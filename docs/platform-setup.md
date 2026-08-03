@@ -55,9 +55,7 @@ In your GitHub repository:
 - `SUPABASE_PROJECT_REF`
 - `SUPABASE_DB_PASSWORD`
 - `OFF_USER_AGENT`
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
+- `VERCEL_DEPLOY_HOOK_URL`
 
 Use a real contact in `OFF_USER_AGENT`, for example:
 
@@ -74,10 +72,10 @@ The project includes these workflows:
 - `.github/workflows/ingest-open-food-facts.yml`
 - `.github/workflows/vercel-production.yml`
 
-The Vercel workflow exports static JSON from Supabase before building. This
+The ingestion workflow updates Supabase and then calls the protected Vercel
+deploy hook. Vercel exports the current Supabase snapshot while building. This
 keeps Supabase as the master database, while public pages are served from static
-HTML and JSON through Vercel. Production deployment is manual until the Vercel
-project and all three Vercel secrets have been configured.
+HTML and JSON through Vercel.
 
 Run the first migration manually:
 
@@ -104,7 +102,15 @@ After the dry run passes:
 3. Click **Run workflow**.
 4. Set **Import mode** to `write-to-supabase`.
 5. Keep `max_pages` at `1` for the first real import.
-6. Click **Run workflow**.
+6. Keep `page_size` at `50`.
+7. Click **Run workflow**.
+
+The catalog contains 12 categories. A first run with one page and 50 products
+per category validates the complete route, normalization, scoring and export
+pipeline while limiting load on Open Food Facts. After that succeeds, use
+`max_pages` `3` and `page_size` `50` for the first catalog expansion. The daily
+scheduled workflow continues from the same upsert-based process; repeated runs
+update existing products instead of creating duplicates.
 
 The real ingestion workflow fills the raw Open Food Facts landing table, then
 normalizes products, applies publishability checks, calculates scores, rebuilds
@@ -121,22 +127,41 @@ the ingestion workflow.
 5. Build command should be `npm run next:build`.
 6. Install command should be `npm ci --ignore-scripts --no-audit --no-fund`.
 7. Add environment variable `NEXT_PUBLIC_SITE_URL` with your production URL.
-8. Click **Deploy**.
+8. Add `STATIC_EXPORT_SOURCE` with value `supabase`.
+9. Add `SUPABASE_URL` with the project URL.
+10. Add `SUPABASE_SERVICE_ROLE_KEY` with the private service-role key. Apply it
+    to Production only and never prefix this variable with `NEXT_PUBLIC_`.
+11. Click **Deploy**.
 
-Recommended for this architecture: use GitHub Actions for production deploys so
-Supabase service credentials stay in GitHub secrets and are used only during the
-static export step. Do not expose Supabase service credentials as public Vercel
-variables.
+The service-role key is required at build time for the static export and at
+runtime for consented newsletter subscriptions and anonymous aggregate product
+events. It remains server-only and is never sent to the browser.
 
-For GitHub Actions deployment through Vercel CLI:
+Create the deploy hook used by GitHub Actions:
 
 1. Open Vercel project settings.
-2. Click **General**.
-3. Copy **Project ID** into GitHub secret `VERCEL_PROJECT_ID`.
-4. Copy **Team ID** or account ID into `VERCEL_ORG_ID`.
-5. Open https://vercel.com/account/tokens.
-6. Click **Create Token**.
-7. Copy it into GitHub secret `VERCEL_TOKEN`.
+2. Click **Git**.
+3. Find **Deploy Hooks**.
+4. Create a hook named `GitHub Actions ingestion` for branch `main`.
+5. Copy the hook URL.
+6. Open the GitHub repository, then **Settings** > **Secrets and variables** >
+   **Actions**.
+7. Create repository secret `VERCEL_DEPLOY_HOOK_URL` and paste the hook URL.
 
-If you connect Vercel directly to GitHub, you can disable or delete
-`.github/workflows/vercel-production.yml` and let Vercel deploy on push.
+Do not also enable automatic production deployments for every `main` push if
+you want production to update only after a successful Supabase-backed export.
+The deploy hook is the authoritative production path.
+
+## Catalog Growth Order
+
+After a code push that adds a migration:
+
+1. Run **Supabase Migrations** and wait for a green check.
+2. Run **Ingest Open Food Facts** in `dry-run` mode with one page and 50 products.
+3. Run it again in `write-to-supabase` mode with one page and 50 products.
+4. Verify the resulting Vercel production deployment.
+5. Expand to three pages and 50 products only after all 12 categories complete.
+
+Open Food Facts can temporarily return `503`. The importer retries with backoff
+and preserves completed categories. A single unavailable category is reported
+without discarding products already imported during that run.

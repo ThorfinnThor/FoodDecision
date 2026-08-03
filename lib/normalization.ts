@@ -1,4 +1,5 @@
 import { calculateScores } from "./scoring.ts";
+import { categoryLabels, categoryScoringProfiles } from "./catalog.ts";
 import type {
   CategorySlug,
   NutritionFacts,
@@ -50,14 +51,6 @@ export type NormalizedOpenFoodFactsProduct = {
   payload: Record<string, unknown>;
 };
 
-const categoryLabels: Record<CategorySlug, string> = {
-  hafermilch: "Hafermilch",
-  proteinriegel: "Proteinriegel",
-  muesli: "Müsli",
-  "joghurt-skyr": "Joghurt und Skyr",
-  "vegane-snacks": "Vegane Snacks",
-};
-
 const categorySlugs = new Set<CategorySlug>(Object.keys(categoryLabels) as CategorySlug[]);
 
 const tagNames: Record<string, string> = {
@@ -68,8 +61,8 @@ const tagNames: Record<string, string> = {
   gluten: "Gluten",
   oats: "Hafer",
   almonds: "Mandeln",
-  hazelnuts: "Haselnuesse",
-  peanuts: "Erdnuesse",
+  hazelnuts: "Haselnüsse",
+  peanuts: "Erdnüsse",
   soybeans: "Soja",
   eggs: "Eier",
   nuts: "Schalenfruechte",
@@ -195,7 +188,7 @@ function normalizeNutrition(payload: Record<string, unknown>, category: Category
   return {
     nutrition: {
       ...values,
-      basis: category === "hafermilch" ? "100ml" : "100g",
+      basis: categoryScoringProfiles[category].basis,
     } satisfies NutritionFacts,
     completeness: present / Object.keys(values).length,
     implausible,
@@ -283,7 +276,12 @@ export function normalizeOpenFoodFactsRow(raw: RawOpenFoodFactsRow): NormalizedO
     brand: brandName ?? "Unbekannte Marke",
     category,
     categoryLabel: categoryLabels[category],
-    imageTone: category === "proteinriegel" ? "cocoa" : category === "vegane-snacks" ? "green" : "oat",
+    imageTone:
+      category === "proteinriegel" || category === "brotaufstriche"
+        ? "cocoa"
+        : category === "vegane-snacks" || category === "pflanzliche-joghurts"
+          ? "green"
+          : "oat",
     imageUrl: raw.image_url,
     description: `${displayName} aus der Kategorie ${categoryLabels[category]}.`,
     labels,

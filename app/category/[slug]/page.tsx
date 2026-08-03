@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductCard } from "@/components/ProductCard";
+import { CatalogGrid } from "@/components/CatalogGrid";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StructuredData } from "@/components/StructuredData";
 import { absoluteUrl } from "@/lib/seo";
@@ -67,11 +67,7 @@ export default async function CategoryPage({ params }: Props) {
           <h2>{items.length} Produkte mit nachvollziehbarer Bewertung</h2>
           <p>Sortiere über ein passendes Ranking oder öffne eine Produktseite für alle Details.</p>
         </div>
-        <div className="product-grid">
-          {items.map((product) => (
-            <ProductCard product={product} key={product.id} />
-          ))}
-        </div>
+        <CatalogGrid products={items} />
       </section>
     </main>
   );

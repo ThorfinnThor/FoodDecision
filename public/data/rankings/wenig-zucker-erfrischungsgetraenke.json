@@ -1,0 +1,10 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "erfrischungsgetraenke",
+  "title": "Erfrischungsgetränke mit wenig Zucker",
+  "sortScore": "low_sugar",
+  "intro": "Erfrischungsgetränke mit wenig Zucker: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

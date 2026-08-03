@@ -1,0 +1,11 @@
+{
+  "slug": "nussmuse",
+  "label": "Nussmuse",
+  "intent": "Nussmuse mit kurzer Zutatenliste und guter Nährwertbasis.",
+  "description": "Nussmuse werden nach Protein, Zucker, Salz und der Kürze ihrer Zutatenliste verglichen.",
+  "rankingAttributes": [
+    "proteinreich",
+    "gute-zutaten"
+  ],
+  "products": []
+}

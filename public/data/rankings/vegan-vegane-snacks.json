@@ -1,0 +1,28 @@
+{
+  "attribute": "vegan",
+  "category": "vegane-snacks",
+  "title": "Beste vegane Snacks",
+  "sortScore": "vegan",
+  "intro": "Beste vegane Snacks: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": [
+    {
+      "id": "p-snack-01",
+      "slug": "gruenbiss-linsen-cracker",
+      "name": "Gruenbiss Linsen Cracker",
+      "brand": "Gruenbiss",
+      "category": "vegane-snacks",
+      "categoryLabel": "Vegane Snacks",
+      "overallScore": 91,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vegan",
+        "proteinquelle"
+      ],
+      "allergens": []
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "slug": "erfrischungsgetraenke",
+  "label": "Erfrischungsgetränke",
+  "intent": "Getränke mit weniger Zucker und nachvollziehbaren Zutaten.",
+  "description": "Erfrischungsgetränke werden primär nach Zucker und Zutaten bewertet; Süßstoffe bleiben sichtbar.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "gute-zutaten"
+  ],
+  "products": []
+}

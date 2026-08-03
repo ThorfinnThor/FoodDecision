@@ -21,10 +21,12 @@ The local preview is available at `http://localhost:3000`.
 
 ## Included Shape
 
-- `app/` contains the routes for home, product, category, ranking,
-  comparison, finder, sitemap, and robots.
+- `app/` contains the routes for home, products, product detail, category,
+  ranking, comparison, Finder, brands, ingredients, nutrition, methodology,
+  barcode lookup, preferences, favorites, shopping lists, sitemap, and robots.
 - `lib/` contains fixture products, scoring rules, and typed product contracts.
-- `components/` contains reusable product, score, quality, and navigation UI.
+- `components/` contains reusable product, score, quality, comparison, Finder,
+  saved-product, affiliate, newsletter, and navigation UI.
 - `db/schema.ts` and `drizzle/` contain a local Drizzle schema scaffold.
 - `supabase/migrations/` contains the Postgres migration aligned to the product
   plan's Supabase target architecture.
@@ -41,6 +43,16 @@ The local preview is available at `http://localhost:3000`.
 - `.github/workflows/` contains CI, Supabase migration, Open Food Facts
   ingestion, and Vercel deployment workflows.
 - `docs/platform-setup.md` explains the exact setup clicks and required secrets.
+
+The initial catalog palette defines 12 product categories and 24 governed
+ranking concepts. Category profiles keep scores explainable and prevent unlike
+products from being presented as universal winners. Fixture data makes every
+route testable locally; production breadth comes from the Open Food Facts import.
+
+Favorites, shopping lists and Finder preferences are stored in the browser for
+the anonymous MVP. Newsletter consent and aggregate product events are written
+through server-only Supabase endpoints. Affiliate offers render only when an
+active offer exists in the exported dataset and are always labeled as ads.
 
 ## Workspace Auth Headers
 

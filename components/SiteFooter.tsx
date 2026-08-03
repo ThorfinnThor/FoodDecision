@@ -13,8 +13,9 @@ export function SiteFooter() {
         </div>
         <nav aria-label="Footer Navigation">
           <Link href="/finder">Finder</Link>
-          <Link href="/#kategorien">Kategorien</Link>
-          <Link href="/#methodik">Methodik</Link>
+          <Link href="/products">Produkte</Link>
+          <Link href="/compare">Vergleiche</Link>
+          <Link href="/methodology">Methodik</Link>
           <a href="https://world.openfoodfacts.org" rel="noreferrer" target="_blank">Datenquelle</a>
         </nav>
       </div>

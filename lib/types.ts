@@ -3,7 +3,22 @@ export type CategorySlug =
   | "proteinriegel"
   | "muesli"
   | "joghurt-skyr"
-  | "vegane-snacks";
+  | "vegane-snacks"
+  | "fruehstueckscerealien"
+  | "pflanzliche-joghurts"
+  | "brotaufstriche"
+  | "nussmuse"
+  | "fertiggerichte"
+  | "erfrischungsgetraenke"
+  | "kinder-snacks";
+
+export type AffiliateOffer = {
+  id: string;
+  merchant: string;
+  url: string;
+  priceHint: string | null;
+  sponsored: boolean;
+};
 
 export type ScoreGrade = "excellent" | "good" | "okay" | "weak" | "unknown";
 export type ScoreConfidence = "high" | "medium" | "low";
@@ -68,6 +83,7 @@ export type Product = {
   sourceUpdatedAt: string;
   affiliateAvailable: boolean;
   priceHint: string | null;
+  affiliateOffers?: AffiliateOffer[];
   publishability: PublishabilityStatus;
   qualityFlags: string[];
   scores: ProductScore[];

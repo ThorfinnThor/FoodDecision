@@ -36,6 +36,43 @@ const categoryJobs = [
       labels_tags: "en:vegan",
     },
   },
+  {
+    slug: "fruehstueckscerealien",
+    offCategory: "breakfast-cereals",
+    extraParams: {},
+  },
+  {
+    slug: "pflanzliche-joghurts",
+    offCategory: "plant-based-yogurts",
+    extraParams: {},
+  },
+  {
+    slug: "brotaufstriche",
+    offCategory: "spreads",
+    extraParams: {},
+  },
+  {
+    slug: "nussmuse",
+    offCategory: "nut-butters",
+    extraParams: {},
+  },
+  {
+    slug: "fertiggerichte",
+    offCategory: "prepared-meals",
+    extraParams: {},
+  },
+  {
+    slug: "erfrischungsgetraenke",
+    offCategory: "soft-drinks",
+    extraParams: {},
+  },
+  {
+    slug: "kinder-snacks",
+    offCategory: "snacks",
+    extraParams: {
+      labels_tags: "en:for-children",
+    },
+  },
 ];
 
 const fields = [

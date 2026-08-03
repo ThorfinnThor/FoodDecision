@@ -103,7 +103,7 @@ export default function Home() {
         <div className="category-grid">
           {categories.map((category) => (
             <Link href={`/category/${category.slug}`} className={`category-card category-${category.slug}`} key={category.slug}>
-              <Image alt="" aria-hidden="true" fill sizes="(max-width: 720px) 80vw, 25vw" src="/images/food-decision-hero.png" />
+              <Image alt="" aria-hidden="true" fill loading="eager" sizes="(max-width: 720px) 80vw, 25vw" src="/images/food-decision-hero.png" />
               <span className="category-card-overlay">
                 <strong>{category.label}</strong>
                 <small>{category.intent}</small>

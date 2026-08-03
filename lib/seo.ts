@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Product } from "./types";
+import { defaultRankingPages, getCategoryDefinition } from "./catalog.ts";
 
 export type SeoKeyword = {
   id: string;
@@ -58,8 +59,54 @@ function readSeoJson<T>(file: string): T {
   return JSON.parse(readFileSync(join(seoRoot, file), "utf8")) as T;
 }
 
-export const seoKeywords = readSeoJson<SeoKeyword[]>("keywords.json");
-export const seoPageDefinitions = readSeoJson<SeoPageDefinition[]>("page-definitions.json");
+const configuredSeoKeywords = readSeoJson<SeoKeyword[]>("keywords.json");
+const configuredSeoPageDefinitions = readSeoJson<SeoPageDefinition[]>("page-definitions.json");
+
+const generatedRankingDefinitions = defaultRankingPages
+  .filter((ranking) => !configuredSeoPageDefinitions.some((definition) => definition.path === `/best/${ranking.attribute}/${ranking.category}`))
+  .map((ranking): SeoPageDefinition => {
+    const path = `/best/${ranking.attribute}/${ranking.category}`;
+    const category = getCategoryDefinition(ranking.category);
+    return {
+      id: `de-food-${ranking.attribute}-${ranking.category}-page`,
+      slug: `${ranking.attribute}/${ranking.category}`,
+      path,
+      keywordId: `de-food-${ranking.attribute}-${ranking.category}`,
+      template: "product-ranking",
+      intent: "ranking",
+      cluster: ranking.category,
+      filters: { category: ranking.category, scoreType: ranking.sortScore },
+      minimumResults: ranking.minProductsRequired,
+      minimumDataCompleteness: 0.85,
+      minimumUniqueInsights: 3,
+      canonical: path,
+      indexable: false,
+      status: "draft",
+      internalLinks: [
+        { relationship: "parent", href: `/category/${ranking.category}`, label: `${category?.label ?? ranking.category} im Überblick` },
+        { relationship: "next_step", href: `/finder?goal=${ranking.sortScore}`, label: "Passende Produkte im Finder" },
+      ],
+    };
+  });
+
+const generatedRankingKeywords = generatedRankingDefinitions.map((definition): SeoKeyword => {
+  const ranking = defaultRankingPages.find((item) => definition.path === `/best/${item.attribute}/${item.category}`);
+  return {
+    id: definition.keywordId,
+    keyword: ranking?.title ?? definition.slug,
+    locale: "de",
+    market: "DE",
+    intent: "ranking",
+    cluster: definition.cluster,
+    priority: 50,
+    evidence: [],
+    validated: false,
+    status: "candidate",
+  };
+});
+
+export const seoKeywords = [...configuredSeoKeywords, ...generatedRankingKeywords];
+export const seoPageDefinitions = [...configuredSeoPageDefinitions, ...generatedRankingDefinitions];
 
 const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
 export const siteUrl = (

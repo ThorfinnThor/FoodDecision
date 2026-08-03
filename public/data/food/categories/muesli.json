@@ -1,11 +1,10 @@
 {
   "slug": "muesli",
   "label": "Müsli",
-  "intent": "Müslis mit weniger Zucker, soliden Ballaststoffen und kurzer Zutatenliste.",
-  "description": "Bei Müsli zählen Zucker, Ballaststoffe, Zutatenlänge und ob Süße aus Zusetzung oder Früchten kommt.",
+  "intent": "Müslis mit weniger Zucker, Ballaststoffen und klaren Zutaten.",
+  "description": "Müslis werden im Kontext von Zucker, Protein, Ballaststoffen und Zutatenqualität verglichen.",
   "rankingAttributes": [
     "wenig-zucker",
-    "familie",
     "beste-wahl"
   ],
   "products": [
@@ -27,7 +26,7 @@
       ],
       "allergens": [
         "Gluten",
-        "Haselnuesse"
+        "Haselnüsse"
       ]
     }
   ]

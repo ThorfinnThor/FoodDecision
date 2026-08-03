@@ -2,8 +2,8 @@
   "attribute": "beste-wahl",
   "category": "muesli",
   "title": "Beste Müslis nach Gesamturteil",
-  "intro": "Das Gesamturteil kombiniert Nährwerte, Zutatenqualität, Zucker und Protein zu einer nachvollziehbaren Entscheidungshilfe.",
   "sortScore": "overall_match",
+  "intro": "Beste Müslis nach Gesamturteil: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "items": [
@@ -25,7 +25,7 @@
       ],
       "allergens": [
         "Gluten",
-        "Haselnuesse"
+        "Haselnüsse"
       ]
     }
   ]

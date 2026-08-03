@@ -9,22 +9,27 @@ export function SiteHeader() {
           <span>Food Decision Engine</span>
         </Link>
         <nav className="desktop-nav" aria-label="Hauptnavigation">
-          <Link href="/#empfehlungen">Produkte</Link>
+          <Link href="/products">Produkte</Link>
           <Link href="/#kategorien">Kategorien</Link>
-          <Link href="/#vergleich">Vergleiche</Link>
-          <Link href="/#methodik">So funktioniert&apos;s</Link>
+          <Link href="/compare">Vergleiche</Link>
+          <Link href="/methodology">So funktioniert&apos;s</Link>
         </nav>
         <div className="header-actions">
-          <Link className="search-link" href="/finder">Suchen</Link>
+          <Link className="saved-link" href="/favorites" title="Favoriten">♡</Link>
+          <Link className="search-link" href="/scan">Scannen</Link>
           <Link className="primary-link" href="/finder">Finder starten</Link>
         </div>
         <details className="mobile-menu">
           <summary>Menü</summary>
           <nav aria-label="Mobile Navigation">
-            <Link href="/#empfehlungen">Produkte</Link>
+            <Link href="/products">Produkte</Link>
             <Link href="/#kategorien">Kategorien</Link>
-            <Link href="/#vergleich">Vergleiche</Link>
-            <Link href="/#methodik">So funktioniert&apos;s</Link>
+            <Link href="/compare">Vergleiche</Link>
+            <Link href="/favorites">Favoriten</Link>
+            <Link href="/shopping-list">Einkaufsliste</Link>
+            <Link href="/scan">Barcode scannen</Link>
+            <Link href="/preferences">Präferenzen</Link>
+            <Link href="/methodology">So funktioniert&apos;s</Link>
             <Link href="/finder">Finder starten</Link>
           </nav>
         </details>
