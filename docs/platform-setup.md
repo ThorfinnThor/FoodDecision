@@ -137,6 +137,12 @@ The service-role key is required at build time for the static export and at
 runtime for consented newsletter subscriptions and anonymous aggregate product
 events. It remains server-only and is never sent to the browser.
 
+All tables in the public schema have Row Level Security enabled. The `anon` and
+`authenticated` database roles have no direct table privileges. Imports,
+static exports, newsletter writes and analytics writes use the server-only
+service-role key, which must never be exposed through a `NEXT_PUBLIC_` variable
+or client-side code.
+
 Create the deploy hook used by GitHub Actions:
 
 1. Open Vercel project settings.
