@@ -1,32 +1,25 @@
 import type { MetadataRoute } from "next";
-import { averageDataCompleteness, countUniqueInsights, evaluateSeoPage, seoPageDefinitions, siteUrl } from "@/lib/seo";
-import { getRanking, rankedProducts, staticManifest } from "@/lib/static-data";
+import { categoryRouteSlug, localizedPath, rankingRouteSlug, supportedLocales } from "@/lib/i18n";
+import { averageDataCompleteness, countUniqueInsights, evaluateSeoPage, getSeoPageDefinition, siteUrl } from "@/lib/seo";
+import { getCatalog } from "@/lib/static-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const sourceUpdatedAt = new Date(staticManifest.generatedAt);
-
-  return [
-    {
-      url: siteUrl,
-      lastModified: sourceUpdatedAt,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    ...seoPageDefinitions.flatMap((definition) => {
-      const category = String(definition.filters.category ?? "");
-      const attribute = definition.path.split("/")[2] ?? "";
-      const ranking = getRanking(attribute, category);
-      const items = ranking ? rankedProducts(ranking.category, ranking.sortScore) : [];
-      const decision = evaluateSeoPage(definition, {
-        resultCount: items.length,
-        dataCompleteness: averageDataCompleteness(items),
-        uniqueInsightCount: countUniqueInsights(items),
-        title: ranking?.title ?? "",
-        h1: ranking?.title ?? "",
-      });
-      return decision.indexable
-        ? [{ url: `${siteUrl}${definition.canonical}`, lastModified: sourceUpdatedAt, changeFrequency: "weekly" as const, priority: 0.8 }]
-        : [];
-    }),
-  ];
+  const homes: MetadataRoute.Sitemap = supportedLocales.map((locale) => ({
+    url: `${siteUrl}${localizedPath(locale)}`,
+    lastModified: new Date(getCatalog(locale).manifest.generatedAt),
+    changeFrequency: "weekly",
+    priority: 1,
+    alternates: { languages: { de: `${siteUrl}/de`, "en-US": `${siteUrl}/en-us`, "x-default": `${siteUrl}/de` } },
+  }));
+  const rankings = supportedLocales.flatMap((locale) => {
+    const catalog = getCatalog(locale);
+    return catalog.rankingPages.flatMap((ranking) => {
+      const items = catalog.rankedProducts(ranking.category, ranking.sortScore);
+      const route = localizedPath(locale, `/best/${rankingRouteSlug(ranking.attribute, locale)}/${categoryRouteSlug(ranking.category, locale)}`);
+      const decision = evaluateSeoPage(getSeoPageDefinition(route), { resultCount: items.length, dataCompleteness: averageDataCompleteness(items), uniqueInsightCount: countUniqueInsights(items), title: ranking.title, h1: ranking.title });
+      if (!decision.indexable) return [];
+      return [{ url: `${siteUrl}${route}`, lastModified: new Date(catalog.manifest.generatedAt), changeFrequency: "weekly" as const, priority: 0.8 }];
+    });
+  });
+  return [...homes, ...rankings];
 }

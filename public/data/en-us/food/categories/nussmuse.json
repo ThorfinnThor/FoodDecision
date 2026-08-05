@@ -1,0 +1,11 @@
+{
+  "slug": "nussmuse",
+  "label": "Nut butters",
+  "intent": "Nut butters with short ingredient lists and a useful nutrition profile.",
+  "description": "Nut butters are compared by protein, sugar, sodium, and ingredient-list simplicity.",
+  "rankingAttributes": [
+    "proteinreich",
+    "gute-zutaten"
+  ],
+  "products": []
+}

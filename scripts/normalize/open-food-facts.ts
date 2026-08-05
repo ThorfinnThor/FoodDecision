@@ -1,11 +1,13 @@
 #!/usr/bin/env node --experimental-strip-types
-import { getCategories, rankingPages } from "../../lib/data.ts";
+import { localizedRankingPages } from "../../lib/catalog.ts";
+import { getCategories } from "../../lib/data.ts";
 import {
   normalizeOpenFoodFactsRow,
   slugify,
   type NormalizedOpenFoodFactsProduct,
   type RawOpenFoodFactsRow,
 } from "../../lib/normalization.ts";
+import type { MarketCode, SiteLocale } from "../../lib/types.ts";
 
 const SOURCE_ID = "open-food-facts";
 const BATCH_SIZE = 100;
@@ -14,13 +16,18 @@ type DbRow = Record<string, unknown>;
 type IdRow = { id: string };
 type BrandRow = IdRow & { slug: string };
 type CategoryRow = IdRow & { slug: string };
-type ProductRow = IdRow & { gtin: string; slug: string };
+type ProductRow = IdRow & { gtin: string; slug: string; market: MarketCode };
 type RankingPageRow = IdRow & {
   attribute: string;
   category_slug: string;
   sort_score: string;
   min_products_required: number;
+  market: MarketCode;
 };
+
+const market = String(process.env.CATALOG_MARKET ?? process.env.OFF_MARKET ?? "DE").toUpperCase() as MarketCode;
+if (market !== "DE" && market !== "US") throw new Error(`Unsupported CATALOG_MARKET: ${market}`);
+const locale: SiteLocale = market === "US" ? "en-US" : "de-DE";
 
 function requireEnv(name: string) {
   const value = process.env[name];
@@ -41,12 +48,13 @@ function clipped(value: unknown, maxLength = 1000) {
 
 async function supabaseRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = requireEnv("SUPABASE_URL").replace(/\/$/, "");
-  const serviceRoleKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+  const adminKey = process.env.SUPABASE_SECRET_KEY?.trim() || process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!adminKey) throw new Error("Missing SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY");
   const response = await fetch(`${url}/rest/v1/${path}`, {
     ...options,
     headers: {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
+      apikey: adminKey,
+      ...(adminKey.startsWith("sb_secret_") ? {} : { Authorization: `Bearer ${adminKey}` }),
       "Content-Type": "application/json",
       ...options.headers,
     },
@@ -99,7 +107,7 @@ async function deleteForProducts(table: string, productIds: string[]) {
 
 async function latestSuccessfulImportRun() {
   const rows = await supabaseRequest<Array<{ id: string }>>(
-    "import_runs?select=id&status=eq.success&order=finished_at.desc&limit=1",
+    `import_runs?select=id&status=eq.success&market=eq.${market}&order=finished_at.desc&limit=1`,
   );
   if (!rows.length) throw new Error("No successful import run is available to normalize.");
   return rows[0].id;
@@ -111,7 +119,7 @@ async function loadRawRows(importRunId: string) {
 
   while (true) {
     const page = await supabaseRequest<RawOpenFoodFactsRow[]>(
-      `raw_open_food_facts_products?select=id,external_id,gtin,category_slug,product_name,brand_names,labels_tags,image_url,last_modified_at,first_seen_at,import_run_id,payload&import_run_id=eq.${importRunId}&order=category_slug,external_id&limit=1000&offset=${offset}`,
+      `raw_open_food_facts_products?select=id,external_id,gtin,category_slug,product_name,brand_names,labels_tags,image_url,last_modified_at,first_seen_at,import_run_id,market,locale,payload&import_run_id=eq.${importRunId}&market=eq.${market}&order=category_slug,external_id&limit=1000&offset=${offset}`,
     );
     rows.push(...page);
     if (page.length < 1000) break;
@@ -157,7 +165,7 @@ async function existingProducts(gtins: string[]) {
   const rows: ProductRow[] = [];
   for (const group of chunks(gtins)) {
     const filter = encodeURIComponent(`in.(${group.map((gtin) => JSON.stringify(gtin)).join(",")})`);
-    rows.push(...(await supabaseRequest<ProductRow[]>(`products?select=id,gtin,slug&gtin=${filter}`)));
+    rows.push(...(await supabaseRequest<ProductRow[]>(`products?select=id,gtin,slug,market&market=eq.${market}&gtin=${filter}`)));
   }
   return new Map(rows.map((row) => [row.gtin, row]));
 }
@@ -183,7 +191,7 @@ type RankedProductRow = {
 
 async function rebuildRankings(rankingRows: RankingPageRow[]) {
   const products = await supabaseRequest<RankedProductRow[]>(
-    "products?select=id,product_categories(categories(slug)),product_scores(score_type,score,confidence)&publishability=eq.ranking_eligible",
+    `products?select=id,product_categories(categories(slug)),product_scores(score_type,score,confidence)&market=eq.${market}&publishability=eq.ranking_eligible`,
   );
 
   for (const ranking of rankingRows) {
@@ -265,8 +273,10 @@ async function main() {
       imported_at: product.importedAt,
       source_updated_at: product.sourceUpdatedAt,
       publishability: product.publishability,
+      market,
+      locale,
     })),
-    "gtin",
+    "gtin,market",
   );
   const productsByGtin = new Map(productRows.map((row) => [row.gtin, row]));
   const productIds = productRows.map((row) => row.id);
@@ -404,7 +414,7 @@ async function main() {
 
   const savedRankingPages = await upsertRows<RankingPageRow>(
     "ranking_pages",
-    rankingPages.map((ranking) => ({
+    localizedRankingPages(locale).map((ranking) => ({
       attribute: ranking.attribute,
       category_slug: ranking.category,
       title: ranking.title,
@@ -412,8 +422,10 @@ async function main() {
       sort_score: ranking.sortScore,
       indexable: false,
       min_products_required: ranking.minProductsRequired,
+      market,
+      locale,
     })),
-    "attribute,category_slug",
+    "attribute,category_slug,market",
   );
   await rebuildRankings(savedRankingPages);
 
@@ -428,6 +440,8 @@ async function main() {
     JSON.stringify(
       {
         importRunId,
+        market,
+        locale,
         rawRows: rawRows.length,
         normalizedProducts: normalizedProducts.length,
         rankingEligible: normalizedProducts.filter((product) => product.publishability === "ranking_eligible").length,

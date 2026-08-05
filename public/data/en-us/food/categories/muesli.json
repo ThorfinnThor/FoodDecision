@@ -1,0 +1,11 @@
+{
+  "slug": "muesli",
+  "label": "Muesli",
+  "intent": "Muesli with less sugar, useful fiber, and understandable ingredients.",
+  "description": "Muesli is compared by sugar, protein, fiber, and ingredient quality.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "beste-wahl"
+  ],
+  "products": []
+}

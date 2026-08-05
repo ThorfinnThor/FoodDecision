@@ -1,0 +1,10 @@
+{
+  "attribute": "beste-wahl",
+  "category": "muesli",
+  "title": "Best muesli overall",
+  "sortScore": "overall_match",
+  "intro": "Best muesli overall: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

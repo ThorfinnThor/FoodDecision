@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
+import { appendFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
 const OFF_SEARCH_URL = "https://world.openfoodfacts.org/api/v2/search";
@@ -79,12 +80,14 @@ const fields = [
   "code",
   "product_name",
   "product_name_de",
+  "product_name_en",
   "brands",
   "categories_tags",
   "labels_tags",
   "countries_tags",
   "ingredients_text",
   "ingredients_text_de",
+  "ingredients_text_en",
   "ingredients",
   "allergens_tags",
   "nutriments",
@@ -109,7 +112,30 @@ export function shouldContinueOnCategoryError(value = process.env.OFF_CONTINUE_O
 }
 const continueOnCategoryError = shouldContinueOnCategoryError();
 const upsertBatchSize = Number(process.env.OFF_UPSERT_BATCH_SIZE ?? "100");
-const country = process.env.OFF_COUNTRY ?? "Germany";
+const marketConfigs = {
+  DE: { locale: "de-DE", country: "Germany" },
+  US: { locale: "en-US", country: "United States" },
+};
+const market = String(process.env.OFF_MARKET ?? "DE").toUpperCase();
+if (!(market in marketConfigs)) throw new Error(`Unsupported OFF_MARKET: ${market}`);
+const marketConfig = marketConfigs[market];
+const locale = process.env.OFF_LOCALE ?? marketConfig.locale;
+if (locale !== marketConfig.locale) {
+  throw new Error(`OFF_LOCALE ${locale} does not match market ${market}. Expected ${marketConfig.locale}.`);
+}
+const country = process.env.OFF_COUNTRY ?? marketConfig.country;
+const categorySelection = String(process.env.OFF_CATEGORY_SLUGS ?? "all")
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+const selectedCategoryJobs = categorySelection.includes("all")
+  ? categoryJobs
+  : categoryJobs.filter((job) => categorySelection.includes(job.slug));
+const unknownCategories = categorySelection.filter(
+  (slug) => slug !== "all" && !categoryJobs.some((job) => job.slug === slug),
+);
+if (unknownCategories.length) throw new Error(`Unknown OFF_CATEGORY_SLUGS: ${unknownCategories.join(", ")}`);
+if (!selectedCategoryJobs.length) throw new Error("OFF_CATEGORY_SLUGS selected no categories.");
 const userAgent =
   process.env.OFF_USER_AGENT ??
   "food-decision-engine/0.1 (configure OFF_USER_AGENT with a contact URL or email)";
@@ -167,7 +193,10 @@ function mapProduct(product, categorySlug, importRunId) {
     external_id: externalId,
     gtin: externalId,
     category_slug: categorySlug,
-    product_name: product.product_name_de || product.product_name || null,
+    product_name:
+      locale === "de-DE"
+        ? product.product_name_de || product.product_name || null
+        : product.product_name_en || product.product_name || null,
     brand_names: product.brands || null,
     countries_tags: product.countries_tags ?? [],
     categories_tags: product.categories_tags ?? [],
@@ -178,6 +207,8 @@ function mapProduct(product, categorySlug, importRunId) {
     payload: product,
     last_seen_at: new Date().toISOString(),
     import_run_id: importRunId,
+    market,
+    locale,
   };
 }
 
@@ -240,10 +271,11 @@ async function fetchOffPage(job, page) {
 }
 
 function supabaseHeaders(extra = {}) {
-  const serviceRoleKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+  const adminKey = process.env.SUPABASE_SECRET_KEY?.trim() || process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!adminKey) throw new Error("Missing required environment variable: SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY");
   return {
-    apikey: serviceRoleKey,
-    Authorization: `Bearer ${serviceRoleKey}`,
+    apikey: adminKey,
+    ...(adminKey.startsWith("sb_secret_") ? {} : { Authorization: `Bearer ${adminKey}` }),
     "Content-Type": "application/json",
     ...extra,
   };
@@ -315,6 +347,8 @@ async function createImportRun() {
     body: JSON.stringify({
       id,
       source_id: SOURCE_ID,
+      market,
+      locale,
       started_at: new Date().toISOString(),
       status: "running",
     }),
@@ -343,7 +377,7 @@ async function collectProducts(importRunId) {
   const rows = [];
   const failures = [];
 
-  for (const job of categoryJobs) {
+  for (const job of selectedCategoryJobs) {
     let completedPages = 0;
     try {
       for (let page = 1; page <= maxPages; page += 1) {
@@ -377,6 +411,25 @@ async function collectProducts(importRunId) {
   return { rows, failures };
 }
 
+async function writeStepSummary({ counts, failures }) {
+  const path = process.env.GITHUB_STEP_SUMMARY;
+  if (!path) return;
+  const status = failures.length ? `Partial (${failures.length} category failures)` : "Complete";
+  const lines = [
+    "## Open Food Facts ingestion",
+    "",
+    `- Market: ${market} (${locale})`,
+    `- Country filter: ${country}`,
+    `- Categories: ${selectedCategoryJobs.map((job) => job.slug).join(", ")}`,
+    `- Pages per category: ${maxPages}`,
+    `- Products per page: ${pageSize}`,
+    `- Collected rows: ${counts.imported}`,
+    `- Result: ${status}`,
+    "",
+  ];
+  await appendFile(path, `${lines.join("\n")}\n`, "utf8");
+}
+
 async function main() {
   const importRunId = dryRun ? crypto.randomUUID() : await createImportRun();
   const counts = { imported: 0, updated: 0, blocked: 0 };
@@ -389,10 +442,11 @@ async function main() {
       console.log(
         JSON.stringify({ dryRun: true, collected: rows.length, failures, sample: rows.slice(0, 3) }, null, 2),
       );
+      await writeStepSummary({ counts, failures });
       return;
     }
 
-    await upsertRows("raw_open_food_facts_products", rows, "external_id,category_slug");
+    await upsertRows("raw_open_food_facts_products", rows, "external_id,category_slug,market");
     const partialFailureMessage = failures.length
       ? clippedMessage(`Partial Open Food Facts import: ${JSON.stringify(failures)}`, 4000)
       : null;
@@ -401,6 +455,7 @@ async function main() {
     if (failures.length) {
       console.warn(`Import completed with ${failures.length} partial category failure(s).`);
     }
+    await writeStepSummary({ counts, failures });
   } catch (error) {
     if (!dryRun) {
       await finishImportRun(importRunId, "failed", counts, error instanceof Error ? error.message : String(error));

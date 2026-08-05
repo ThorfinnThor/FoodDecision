@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { readStoredIds, SAVED_STATE_EVENT } from "@/lib/client-state";
-import type { Product } from "@/lib/types";
+import { pick } from "@/lib/i18n";
+import type { Product, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
 
-export function SavedProducts({ emptyCopy, products, storageKey }: { emptyCopy: string; products: Product[]; storageKey: string }) {
+export function SavedProducts({ emptyCopy, locale, products, storageKey }: { emptyCopy: string; locale: SiteLocale; products: Product[]; storageKey: string }) {
   const [ids, setIds] = useState<string[]>([]);
   useEffect(() => {
     const sync = () => setIds(readStoredIds(storageKey));
@@ -19,6 +20,6 @@ export function SavedProducts({ emptyCopy, products, storageKey }: { emptyCopy: 
   }, [storageKey]);
   const saved = useMemo(() => ids.flatMap((id) => products.find((product) => product.slug === id) ?? []), [ids, products]);
 
-  if (!saved.length) return <div className="empty-state"><h2>Noch nichts gespeichert</h2><p>{emptyCopy}</p></div>;
+  if (!saved.length) return <div className="empty-state"><h2>{pick(locale, "Noch nichts gespeichert", "Nothing saved yet")}</h2><p>{emptyCopy}</p></div>;
   return <div className="product-grid">{saved.map((product) => <ProductCard key={product.id} product={product} />)}</div>;
 }

@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { PREFERENCES_KEY, trackEvent } from "@/lib/client-state";
 import { productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
-import type { Category, Product, ScoreType } from "@/lib/types";
+import { pick } from "@/lib/i18n";
+import type { Category, Product, ScoreType, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
 
 const goals: Array<{ value: ScoreType; label: string; description: string }> = [
@@ -15,7 +16,10 @@ const goals: Array<{ value: ScoreType; label: string; description: string }> = [
   { value: "vegan", label: "Vegan", description: "Vegane Kennzeichnung und bekannte Allergene berücksichtigen." },
 ];
 
-const allergenChoices = ["Milch", "Gluten", "Soja", "Eier", "Erdnüsse", "Mandeln", "Haselnüsse"];
+const allergenChoices = {
+  "de-DE": ["Milch", "Gluten", "Soja", "Eier", "Erdnüsse", "Mandeln", "Haselnüsse"],
+  "en-US": ["milk", "gluten", "soy", "eggs", "peanuts", "almonds", "hazelnuts"],
+} as const;
 
 function defaultCriteria(initialGoal: ScoreType, initialQuery: string): FinderCriteria {
   return {
@@ -41,20 +45,23 @@ export function FinderExperience({
   initialGoal,
   initialQuery,
   products,
+  locale,
 }: {
   categories: Category[];
   initialGoal: ScoreType;
   initialQuery: string;
   products: Product[];
+  locale: SiteLocale;
 }) {
   const [step, setStep] = useState(0);
   const [criteria, setCriteria] = useState<FinderCriteria>(() => defaultCriteria(initialGoal, initialQuery));
   const [visibleCount, setVisibleCount] = useState(24);
+  const preferencesKey = `${PREFERENCES_KEY}:${locale}`;
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
-        const stored = JSON.parse(window.localStorage.getItem(PREFERENCES_KEY) ?? "{}") as Partial<FinderCriteria>;
+        const stored = JSON.parse(window.localStorage.getItem(preferencesKey) ?? "{}") as Partial<FinderCriteria>;
         setCriteria((current) => ({
           ...current,
           ...stored,
@@ -66,17 +73,25 @@ export function FinderExperience({
       }
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [initialGoal, initialQuery]);
+  }, [initialGoal, initialQuery, preferencesKey]);
 
   const results = useMemo(
     () => products
       .filter((product) => productMatchesCriteria(product, criteria))
       .map((product) => ({ product, match: productMatch(product, criteria) }))
-      .sort((a, b) => b.match.score - a.match.score || a.product.name.localeCompare(b.product.name, "de")),
-    [criteria, products],
+      .sort((a, b) => b.match.score - a.match.score || a.product.name.localeCompare(b.product.name, locale)),
+    [criteria, locale, products],
   );
 
-  const steps = ["Produktgruppe", "Priorität", "Feinfilter", "Ergebnisse"];
+  const steps = locale === "de-DE" ? ["Produktgruppe", "Priorität", "Feinfilter", "Ergebnisse"] : ["Category", "Priority", "Filters", "Results"];
+  const localizedGoals = locale === "de-DE" ? goals : [
+    { value: "overall_match" as const, label: "Best overall", description: "Balanced assessment across all available criteria." },
+    { value: "protein" as const, label: "Higher protein", description: "More protein within the relevant category." },
+    { value: "low_sugar" as const, label: "Lower sugar", description: "Less sugar compared with similar products." },
+    { value: "ingredient_quality" as const, label: "Simpler ingredients", description: "Prefer shorter, understandable ingredient lists." },
+    { value: "family" as const, label: "Family-friendly", description: "Conservative assessment of sugar, ingredients, and salt." },
+    { value: "vegan" as const, label: "Vegan", description: "Consider vegan labels and known allergens." },
+  ];
   const update = <K extends keyof FinderCriteria>(key: K, value: FinderCriteria[K]) => {
     setCriteria((current) => ({ ...current, [key]: value }));
     setVisibleCount(24);
@@ -93,7 +108,7 @@ export function FinderExperience({
 
   function showResults() {
     setStep(3);
-    window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify(criteria));
+    window.localStorage.setItem(preferencesKey, JSON.stringify(criteria));
     const url = new URL(window.location.href);
     url.searchParams.set("goal", criteria.goal);
     if (criteria.category === "all") url.searchParams.delete("category");
@@ -107,7 +122,7 @@ export function FinderExperience({
 
   return (
     <section className="finder-experience">
-      <ol className="finder-progress" aria-label="Finder Fortschritt">
+      <ol className="finder-progress" aria-label={pick(locale, "Finder Fortschritt", "Finder progress")}>
         {steps.map((label, index) => (
           <li aria-current={step === index ? "step" : undefined} className={step >= index ? "is-active" : ""} key={label}>
             <span>{index + 1}</span>{label}
@@ -118,12 +133,12 @@ export function FinderExperience({
       <div className="finder-stage">
         {step === 0 ? (
           <div className="finder-step">
-            <div className="finder-step-heading"><span>Schritt 1 von 3</span><h2>Was suchst du?</h2><p>Wähle eine Produktgruppe oder vergleiche den gesamten Katalog.</p></div>
+            <div className="finder-step-heading"><span>{pick(locale, "Schritt 1 von 3", "Step 1 of 3")}</span><h2>{pick(locale, "Was suchst du?", "What are you looking for?")}</h2><p>{pick(locale, "Wähle eine Produktgruppe oder vergleiche den gesamten Katalog.", "Choose a category or compare the full catalog.")}</p></div>
             <div className="choice-grid category-choice-grid" role="radiogroup" aria-label="Produktkategorie">
-              <button aria-pressed={criteria.category === "all"} onClick={() => update("category", "all")} type="button"><strong>Alle Produkte</strong><span>{products.length} bewertete Produkte</span></button>
+              <button aria-pressed={criteria.category === "all"} onClick={() => update("category", "all")} type="button"><strong>{pick(locale, "Alle Produkte", "All products")}</strong><span>{products.length} {pick(locale, "bewertete Produkte", "assessed products")}</span></button>
               {categories.map((item) => {
                 const count = products.filter((product) => product.category === item.slug).length;
-                return <button aria-pressed={criteria.category === item.slug} key={item.slug} onClick={() => update("category", item.slug)} type="button"><strong>{item.label}</strong><span>{count ? `${count} ${count === 1 ? "Produkt" : "Produkte"}` : "Nach nächstem Import verfügbar"}</span></button>;
+                return <button aria-pressed={criteria.category === item.slug} key={item.slug} onClick={() => update("category", item.slug)} type="button"><strong>{item.label}</strong><span>{count ? `${count} ${count === 1 ? pick(locale, "Produkt", "product") : pick(locale, "Produkte", "products")}` : pick(locale, "Nach nächstem Import verfügbar", "Available after the next import")}</span></button>;
               })}
             </div>
           </div>
@@ -131,9 +146,9 @@ export function FinderExperience({
 
         {step === 1 ? (
           <div className="finder-step">
-            <div className="finder-step-heading"><span>Schritt 2 von 3</span><h2>Was ist dir am wichtigsten?</h2><p>Diese Priorität hat den größten Einfluss auf deinen Match-Score.</p></div>
+            <div className="finder-step-heading"><span>{pick(locale, "Schritt 2 von 3", "Step 2 of 3")}</span><h2>{pick(locale, "Was ist dir am wichtigsten?", "What matters most?")}</h2><p>{pick(locale, "Diese Priorität hat den größten Einfluss auf deinen Match-Score.", "This priority has the greatest effect on your match score.")}</p></div>
             <div className="choice-grid" role="radiogroup" aria-label="Priorität">
-              {goals.map((item) => (
+              {localizedGoals.map((item) => (
                 <button aria-pressed={criteria.goal === item.value} key={item.value} onClick={() => {
                   update("goal", item.value);
                   if (item.value === "vegan") update("veganOnly", true);
@@ -145,34 +160,34 @@ export function FinderExperience({
 
         {step === 2 ? (
           <div className="finder-step">
-            <div className="finder-step-heading"><span>Schritt 3 von 3</span><h2>Grenzen und Ausschlüsse</h2><p>Alle Filter sind optional. Fehlende Produktwerte gelten bei aktiven Grenzwerten nicht als passend.</p></div>
+            <div className="finder-step-heading"><span>{pick(locale, "Schritt 3 von 3", "Step 3 of 3")}</span><h2>{pick(locale, "Grenzen und Ausschlüsse", "Limits and exclusions")}</h2><p>{pick(locale, "Alle Filter sind optional. Fehlende Produktwerte gelten bei aktiven Grenzwerten nicht als passend.", "All filters are optional. Missing values do not pass active numeric limits.")}</p></div>
 
             <div className="advanced-filter-grid">
-              <fieldset className="filter-panel"><legend>Ernährung und Zutaten</legend>
-                <label className="toggle-row"><input checked={criteria.veganOnly} onChange={(event) => update("veganOnly", event.target.checked)} type="checkbox" /><span><strong>Nur vegan</strong><small>Labels und bekannte Allergene</small></span></label>
-                <label className="toggle-row"><input checked={criteria.additiveFree} onChange={(event) => update("additiveFree", event.target.checked)} type="checkbox" /><span><strong>Ohne typische Zusatzstoffe</strong><small>Aromen, Emulgatoren, Farb- und Konservierungsstoffe</small></span></label>
-                <label className="toggle-row"><input checked={criteria.sweetenerFree} onChange={(event) => update("sweetenerFree", event.target.checked)} type="checkbox" /><span><strong>Ohne Süßungsmittel</strong><small>Zum Beispiel Erythrit, Stevia oder Sucralose</small></span></label>
-                <label className="toggle-row"><input checked={criteria.palmOilFree} onChange={(event) => update("palmOilFree", event.target.checked)} type="checkbox" /><span><strong>Ohne Palmöl</strong><small>Auf Basis der vorhandenen Zutatenliste</small></span></label>
+              <fieldset className="filter-panel"><legend>{pick(locale, "Ernährung und Zutaten", "Diet and ingredients")}</legend>
+                <label className="toggle-row"><input checked={criteria.veganOnly} onChange={(event) => update("veganOnly", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Nur vegan", "Vegan only")}</strong><small>{pick(locale, "Labels und bekannte Allergene", "Labels and known allergens")}</small></span></label>
+                <label className="toggle-row"><input checked={criteria.additiveFree} onChange={(event) => update("additiveFree", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Ohne typische Zusatzstoffe", "No common additives")}</strong><small>{pick(locale, "Aromen, Emulgatoren, Farb- und Konservierungsstoffe", "Flavorings, emulsifiers, colors, and preservatives")}</small></span></label>
+                <label className="toggle-row"><input checked={criteria.sweetenerFree} onChange={(event) => update("sweetenerFree", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Ohne Süßungsmittel", "No sweeteners")}</strong><small>{pick(locale, "Zum Beispiel Erythrit, Stevia oder Sucralose", "For example erythritol, stevia, or sucralose")}</small></span></label>
+                <label className="toggle-row"><input checked={criteria.palmOilFree} onChange={(event) => update("palmOilFree", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Ohne Palmöl", "No palm oil")}</strong><small>{pick(locale, "Auf Basis der vorhandenen Zutatenliste", "Based on the available ingredient list")}</small></span></label>
               </fieldset>
 
-              <fieldset className="filter-panel"><legend>Allergene ausschließen</legend>
+              <fieldset className="filter-panel"><legend>{pick(locale, "Allergene ausschließen", "Exclude allergens")}</legend>
                 <div className="check-chip-grid">
-                  {allergenChoices.map((allergen) => <label key={allergen}><input checked={criteria.excludedAllergens.includes(allergen)} onChange={() => toggleAllergen(allergen)} type="checkbox" /><span>{allergen}</span></label>)}
+                  {allergenChoices[locale].map((allergen) => <label key={allergen}><input checked={criteria.excludedAllergens.includes(allergen)} onChange={() => toggleAllergen(allergen)} type="checkbox" /><span>{allergen}</span></label>)}
                 </div>
-                <p className="filter-disclaimer">Bei Allergien gilt immer die aktuelle Verpackungsangabe.</p>
+                <p className="filter-disclaimer">{pick(locale, "Bei Allergien gilt immer die aktuelle Verpackungsangabe.", "For allergies, always rely on the current package label.")}</p>
               </fieldset>
 
-              <fieldset className="filter-panel"><legend>Nährwertgrenzen pro 100 g/ml</legend>
-                <label className="number-filter"><span>Maximaler Zucker</span><input min="0" onChange={(event) => update("maxSugar", event.target.value === "" ? null : Number(event.target.value))} placeholder="keine Grenze" step="0.5" type="number" value={criteria.maxSugar ?? ""} /><small>Gramm</small></label>
-                <label className="number-filter"><span>Mindestprotein</span><input min="0" onChange={(event) => update("minProtein", event.target.value === "" ? null : Number(event.target.value))} placeholder="keine Grenze" step="0.5" type="number" value={criteria.minProtein ?? ""} /><small>Gramm</small></label>
-                <label className="number-filter"><span>Maximale Kalorien</span><input min="0" onChange={(event) => update("maxCalories", event.target.value === "" ? null : Number(event.target.value))} placeholder="keine Grenze" step="10" type="number" value={criteria.maxCalories ?? ""} /><small>kcal</small></label>
+              <fieldset className="filter-panel"><legend>{pick(locale, "Nährwertgrenzen pro 100 g/ml", "Nutrition limits per 100 g/ml")}</legend>
+                <label className="number-filter"><span>{pick(locale, "Maximaler Zucker", "Maximum sugar")}</span><input min="0" onChange={(event) => update("maxSugar", event.target.value === "" ? null : Number(event.target.value))} placeholder={pick(locale, "keine Grenze", "no limit")} step="0.5" type="number" value={criteria.maxSugar ?? ""} /><small>g</small></label>
+                <label className="number-filter"><span>{pick(locale, "Mindestprotein", "Minimum protein")}</span><input min="0" onChange={(event) => update("minProtein", event.target.value === "" ? null : Number(event.target.value))} placeholder={pick(locale, "keine Grenze", "no limit")} step="0.5" type="number" value={criteria.minProtein ?? ""} /><small>g</small></label>
+                <label className="number-filter"><span>{pick(locale, "Maximale Kalorien", "Maximum calories")}</span><input min="0" onChange={(event) => update("maxCalories", event.target.value === "" ? null : Number(event.target.value))} placeholder={pick(locale, "keine Grenze", "no limit")} step="10" type="number" value={criteria.maxCalories ?? ""} /><small>kcal</small></label>
               </fieldset>
 
-              <fieldset className="filter-panel"><legend>Suche und Datenqualität</legend>
-                <label className="stacked-field"><span>Produkt, Marke oder Zutat suchen</span><input onChange={(event) => update("query", event.target.value)} placeholder="z. B. Hafer oder Mandel" type="search" value={criteria.query} /></label>
-                <label className="stacked-field"><span>Zutat muss enthalten sein</span><input onChange={(event) => update("includeIngredient", event.target.value)} placeholder="z. B. Leinsamen" type="text" value={criteria.includeIngredient} /></label>
-                <label className="stacked-field"><span>Zutat ausschließen</span><input onChange={(event) => update("excludeIngredient", event.target.value)} placeholder="z. B. Kokos" type="text" value={criteria.excludeIngredient} /></label>
-                <label className="stacked-field"><span>Mindestsicherheit des Ziel-Scores</span><select onChange={(event) => update("minimumConfidence", event.target.value as FinderCriteria["minimumConfidence"])} value={criteria.minimumConfidence}><option value="any">Alle Datenlagen</option><option value="medium">Mindestens mittel</option><option value="high">Nur hoch</option></select></label>
+              <fieldset className="filter-panel"><legend>{pick(locale, "Suche und Datenqualität", "Search and data quality")}</legend>
+                <label className="stacked-field"><span>{pick(locale, "Produkt, Marke oder Zutat suchen", "Search product, brand, or ingredient")}</span><input onChange={(event) => update("query", event.target.value)} placeholder={pick(locale, "z. B. Hafer oder Mandel", "e.g. oats or almonds")} type="search" value={criteria.query} /></label>
+                <label className="stacked-field"><span>{pick(locale, "Zutat muss enthalten sein", "Must include ingredient")}</span><input onChange={(event) => update("includeIngredient", event.target.value)} placeholder={pick(locale, "z. B. Leinsamen", "e.g. flaxseed")} type="text" value={criteria.includeIngredient} /></label>
+                <label className="stacked-field"><span>{pick(locale, "Zutat ausschließen", "Exclude ingredient")}</span><input onChange={(event) => update("excludeIngredient", event.target.value)} placeholder={pick(locale, "z. B. Kokos", "e.g. coconut")} type="text" value={criteria.excludeIngredient} /></label>
+                <label className="stacked-field"><span>{pick(locale, "Mindestsicherheit des Ziel-Scores", "Minimum score confidence")}</span><select onChange={(event) => update("minimumConfidence", event.target.value as FinderCriteria["minimumConfidence"])} value={criteria.minimumConfidence}><option value="any">{pick(locale, "Alle Datenlagen", "Any confidence")}</option><option value="medium">{pick(locale, "Mindestens mittel", "At least medium")}</option><option value="high">{pick(locale, "Nur hoch", "High only")}</option></select></label>
               </fieldset>
             </div>
           </div>
@@ -181,21 +196,21 @@ export function FinderExperience({
         {step === 3 ? (
           <div className="finder-step finder-results-step">
             <div className="finder-results-toolbar">
-              <div className="finder-step-heading"><span>{results.length} {results.length === 1 ? "passendes Produkt" : "passende Produkte"}</span><h2>Deine Auswahl</h2><p>Der Match-Score kombiniert deine Priorität, aktive Filter, Gesamturteil und Datenvollständigkeit.</p></div>
-              <button className="secondary-command" onClick={() => setStep(2)} type="button">Filter anpassen</button>
+              <div className="finder-step-heading"><span>{results.length} {pick(locale, results.length === 1 ? "passendes Produkt" : "passende Produkte", results.length === 1 ? "matching product" : "matching products")}</span><h2>{pick(locale, "Deine Auswahl", "Your shortlist")}</h2><p>{pick(locale, "Der Match-Score kombiniert deine Priorität, aktive Filter, Gesamturteil und Datenvollständigkeit.", "The match score combines your priority, active filters, overall score, and data completeness.")}</p></div>
+              <button className="secondary-command" onClick={() => setStep(2)} type="button">{pick(locale, "Filter anpassen", "Adjust filters")}</button>
             </div>
             {results.length ? (
               <>
                 <div className="product-grid">{results.slice(0, visibleCount).map(({ product, match }) => <ProductCard key={product.id} matchReasons={match.reasons} matchScore={match.score} product={product} />)}</div>
-                {visibleCount < results.length ? <button className="load-more-button" onClick={() => setVisibleCount((count) => count + 24)} type="button">Weitere Produkte laden</button> : null}
+                {visibleCount < results.length ? <button className="load-more-button" onClick={() => setVisibleCount((count) => count + 24)} type="button">{pick(locale, "Weitere Produkte laden", "Load more products")}</button> : null}
               </>
-            ) : <div className="empty-state"><h3>Keine passende Kombination gefunden</h3><p>Lockere einen Grenzwert oder entferne einen Ausschluss. Unbekannte Werte werden bei aktiven Grenzen bewusst nicht als passend behandelt.</p><button onClick={() => setCriteria(defaultCriteria(criteria.goal, ""))} type="button">Filter zurücksetzen</button></div>}
+            ) : <div className="empty-state"><h3>{pick(locale, "Keine passende Kombination gefunden", "No matching combination found")}</h3><p>{pick(locale, "Lockere einen Grenzwert oder entferne einen Ausschluss. Unbekannte Werte gelten bei aktiven Grenzen nicht als passend.", "Relax a limit or remove an exclusion. Unknown values do not pass active limits.")}</p><button onClick={() => setCriteria(defaultCriteria(criteria.goal, ""))} type="button">{pick(locale, "Filter zurücksetzen", "Reset filters")}</button></div>}
           </div>
         ) : null}
 
         {step < 3 ? <div className="finder-controls">
-          <button disabled={step === 0} onClick={() => setStep((value) => Math.max(0, value - 1))} type="button">Zurück</button>
-          <button className="primary-button" onClick={() => step === 2 ? showResults() : setStep((value) => Math.min(3, value + 1))} type="button">{step === 2 ? `Ergebnisse anzeigen (${results.length})` : "Weiter"}</button>
+          <button disabled={step === 0} onClick={() => setStep((value) => Math.max(0, value - 1))} type="button">{pick(locale, "Zurück", "Back")}</button>
+          <button className="primary-button" onClick={() => step === 2 ? showResults() : setStep((value) => Math.min(3, value + 1))} type="button">{step === 2 ? `${pick(locale, "Ergebnisse anzeigen", "Show results")} (${results.length})` : pick(locale, "Weiter", "Next")}</button>
         </div> : null}
       </div>
     </section>

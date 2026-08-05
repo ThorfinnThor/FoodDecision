@@ -11,6 +11,18 @@ on:
         options:
           - "dry-run"
           - "write-to-supabase"
+      market:
+        description: "Catalog market"
+        type: choice
+        required: true
+        default: "DE"
+        options:
+          - "DE"
+          - "US"
+      categories:
+        description: "Category slugs separated by commas, or all"
+        type: string
+        default: "all"
       max_pages:
         description: "Pages per category"
         type: string
@@ -45,9 +57,11 @@ jobs:
       - name: Ingest raw products
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           OFF_USER_AGENT: ${{ secrets.OFF_USER_AGENT }}
-          OFF_COUNTRY: Germany
+          OFF_MARKET: ${{ inputs.market || 'DE' }}
+          OFF_CATEGORY_SLUGS: ${{ inputs.categories || 'all' }}
           OFF_MAX_PAGES: ${{ inputs.max_pages || '1' }}
           OFF_PAGE_SIZE: ${{ inputs.page_size || '50' }}
           OFF_REQUEST_DELAY_MS: "7000"
@@ -68,7 +82,9 @@ jobs:
         if: ${{ inputs.import_mode != 'dry-run' }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CATALOG_MARKET: ${{ inputs.market || 'DE' }}
         run: npm run normalize:off
 
       - name: Export static JSON from Supabase
@@ -76,6 +92,7 @@ jobs:
         env:
           STATIC_EXPORT_SOURCE: supabase
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run export:static-data
 

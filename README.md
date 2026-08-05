@@ -5,6 +5,16 @@ data quality, guided product discovery, comparisons, and governed static SEO
 routes. The implementation plan lives in
 `outputs/food-decision-engine-implementation-plan.md`.
 
+The public app has two explicit market routes:
+
+- `/de` serves the German catalog for Germany (`de-DE`, market `DE`).
+- `/en-us` serves the US catalog in English (`en-US`, market `US`).
+
+The catalogs are imported, normalized, scored, exported, and stored separately.
+The site never redirects by IP or browser language; users choose the market with
+the language switcher. Category and ranking pages use localized URLs, canonical
+links, and reciprocal `hreflang` references.
+
 ## Prerequisites
 
 - Node.js `>=22.13.0`
@@ -35,7 +45,8 @@ The local preview is available at `http://localhost:3000`.
 - `scripts/normalize/open-food-facts.ts` normalizes the latest import, applies
   publishability checks, calculates versioned scores, and rebuilds rankings.
 - `scripts/export/static-data.ts` exports split static JSON into `public/data/`
-  for static page generation and lightweight finder indexes.
+  under `de/` and `en-us/`, paginates Supabase beyond 1,000 products, and
+  shards catalog/search indexes into bounded files.
 - `data-config/seo/` contains the keyword registry, page definitions and the
   project SEO policy. These files are the source of truth for indexability.
 - `scripts/seo/validate-seo.ts` applies publication thresholds and writes the
@@ -49,7 +60,7 @@ ranking concepts. Category profiles keep scores explainable and prevent unlike
 products from being presented as universal winners. Fixture data makes every
 route testable locally; production breadth comes from the Open Food Facts import.
 
-Favorites, shopping lists and Finder preferences are stored in the browser for
+Favorites, shopping lists and Finder preferences are stored per market in the browser for
 the anonymous MVP. Newsletter consent and aggregate product events are written
 through server-only Supabase endpoints. Affiliate offers render only when an
 active offer exists in the exported dataset and are always labeled as ads.
@@ -115,20 +126,34 @@ npm run export:static-data
 Supabase-backed static export:
 
 ```bash
-STATIC_EXPORT_SOURCE=supabase SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run export:static-data
+STATIC_EXPORT_SOURCE=supabase SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... npm run export:static-data
 ```
 
-Real Supabase write:
+Targeted German write:
 
 ```bash
-SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... OFF_USER_AGENT="food-decision-engine/0.1 (contact: you@example.com)" npm run ingest:off
+SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... OFF_MARKET=DE OFF_CATEGORY_SLUGS="pflanzliche-joghurts,kinder-snacks" OFF_USER_AGENT="food-decision-engine/0.1 (contact: you@example.com)" npm run ingest:off
 ```
 
 Normalize the latest successful import:
 
 ```bash
-SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run normalize:off
+SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... CATALOG_MARKET=DE npm run normalize:off
 ```
+
+Use `OFF_MARKET=US` and `CATALOG_MARKET=US` for the English US catalog.
+`OFF_CATEGORY_SLUGS` accepts `all` or a comma-separated list of internal
+category slugs. Product images are displayed only from the HTTPS Open Food
+Facts image hosts and are attributed as CC BY-SA; unknown or incompatible image
+sources are hidden and reported as quality flags.
+
+`SUPABASE_SECRET_KEY` is the preferred server-only credential. The scripts
+temporarily accept the legacy `SUPABASE_SERVICE_ROLE_KEY` during migration, but
+only one admin credential is required.
+
+Affiliate data remains structurally supported but is outside the current
+catalog-quality sprint. Scores never use affiliate availability, merchant, or
+price data.
 
 The GitHub ingestion workflow runs ingestion, normalization, scoring, ranking
 updates, and the Supabase-backed static export in that order. Successful

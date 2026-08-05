@@ -1,0 +1,10 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "muesli",
+  "title": "Lower-sugar muesli",
+  "sortScore": "low_sugar",
+  "intro": "Lower-sugar muesli: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

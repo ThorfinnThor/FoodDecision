@@ -2,6 +2,8 @@
   "project": "food-decision-engine",
   "locale": "de-DE",
   "market": "DE",
+  "locales": ["de-DE", "en-US"],
+  "markets": ["DE", "US"],
   "minimumResults": 20,
   "minimumDataCompleteness": 0.85,
   "minimumUniqueInsights": 3,

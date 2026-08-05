@@ -4,7 +4,7 @@ import { categoryCatalog, defaultRankingPages } from "./catalog.ts";
 
 const categories: Category[] = categoryCatalog;
 
-const baseProducts: Array<Omit<Product, "scores">> = [
+const baseProducts: Array<Omit<Product, "scores" | "market" | "locale" | "imageLicense" | "imageSourceUrl">> = [
   {
     id: "p-hafer-01",
     gtin: "4000000000011",
@@ -199,10 +199,16 @@ const baseProducts: Array<Omit<Product, "scores">> = [
   },
 ];
 
-export const products: Product[] = baseProducts.map((product) => ({
-  ...product,
-  scores: calculateScores(product),
-}));
+export const products: Product[] = baseProducts.map((product) => {
+  const completeProduct: Omit<Product, "scores"> = {
+    ...product,
+    market: "DE",
+    locale: "de-DE",
+    imageLicense: null,
+    imageSourceUrl: null,
+  };
+  return { ...completeProduct, scores: calculateScores(completeProduct) };
+});
 
 export const rankingPages: RankingPage[] = defaultRankingPages;
 

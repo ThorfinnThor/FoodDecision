@@ -1,0 +1,11 @@
+{
+  "slug": "joghurt-skyr",
+  "label": "Yogurt and skyr",
+  "intent": "Dairy products with useful protein and less added sugar.",
+  "description": "Yogurt, skyr, and quark are compared by protein, sugar, fat, ingredients, and allergens.",
+  "rankingAttributes": [
+    "proteinreich",
+    "wenig-zucker"
+  ],
+  "products": []
+}

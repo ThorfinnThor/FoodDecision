@@ -1,0 +1,11 @@
+{
+  "slug": "brotaufstriche",
+  "label": "Spreads",
+  "intent": "Sweet and savory spreads with clearer ingredient tradeoffs.",
+  "description": "Spreads are compared by sugar, sodium, saturated fat, and ingredient quality.",
+  "rankingAttributes": [
+    "gute-zutaten",
+    "beste-wahl"
+  ],
+  "products": []
+}

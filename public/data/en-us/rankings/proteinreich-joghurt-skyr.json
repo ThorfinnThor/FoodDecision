@@ -1,0 +1,10 @@
+{
+  "attribute": "proteinreich",
+  "category": "joghurt-skyr",
+  "title": "Highest-protein yogurt and skyr",
+  "sortScore": "protein",
+  "intro": "Highest-protein yogurt and skyr: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

@@ -1,0 +1,11 @@
+{
+  "slug": "hafermilch",
+  "label": "Oat milk",
+  "intent": "Plant-based drinks for coffee, cereal, and everyday use.",
+  "description": "Oat drinks are compared by sugar, ingredients, protein, sodium, and data quality.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "beste-wahl"
+  ],
+  "products": []
+}

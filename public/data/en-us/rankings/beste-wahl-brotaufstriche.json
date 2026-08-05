@@ -1,0 +1,10 @@
+{
+  "attribute": "beste-wahl",
+  "category": "brotaufstriche",
+  "title": "Best spreads overall",
+  "sortScore": "overall_match",
+  "intro": "Best spreads overall: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

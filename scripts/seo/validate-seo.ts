@@ -8,7 +8,8 @@ import {
   seoKeywords,
   seoPageDefinitions,
 } from "../../lib/seo.ts";
-import { getRanking, rankedProducts, staticManifest } from "../../lib/static-data.ts";
+import { getCatalog, staticManifest } from "../../lib/static-data.ts";
+import type { SiteLocale } from "../../lib/types.ts";
 
 type ReportEntry = {
   id: string;
@@ -43,9 +44,11 @@ export async function validateSeo() {
 
   const entries: ReportEntry[] = seoPageDefinitions.map((definition) => {
     const category = String(definition.filters.category ?? "");
-    const attribute = definition.path.split("/")[2] ?? "";
-    const ranking = getRanking(attribute, category);
-    const items = ranking ? rankedProducts(ranking.category, ranking.sortScore) : [];
+    const attribute = String(definition.filters.attribute ?? "");
+    const locale = String(definition.filters.locale ?? "de-DE") as SiteLocale;
+    const catalog = getCatalog(locale);
+    const ranking = catalog.getRanking(attribute, category);
+    const items = ranking ? catalog.rankedProducts(ranking.category, ranking.sortScore) : [];
     if (!ranking) structuralFailures.push(`missing_ranking:${definition.path}`);
 
     const context = {

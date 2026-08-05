@@ -1,0 +1,10 @@
+{
+  "attribute": "beste-wahl",
+  "category": "pflanzliche-joghurts",
+  "title": "Best plant-based yogurt overall",
+  "sortScore": "overall_match",
+  "intro": "Best plant-based yogurt overall: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

@@ -1,0 +1,142 @@
+{
+  "id": "p-hafer-02",
+  "gtin": "4000000000012",
+  "slug": "oatly-style-haferdrink-classic",
+  "name": "Oatly Style Haferdrink Classic",
+  "brand": "Oatly Style",
+  "category": "hafermilch",
+  "categoryLabel": "Hafermilch",
+  "imageTone": "blue",
+  "description": "Klassischer Haferdrink für Kaffee und Müsli mit mittlerem Zuckerwert.",
+  "labels": [
+    "vegan"
+  ],
+  "ingredients": [
+    "Wasser",
+    "Hafer",
+    "Rapsöl",
+    "Mineralien",
+    "Salz"
+  ],
+  "allergens": [
+    "Hafer"
+  ],
+  "nutrition": {
+    "energyKcal": 46,
+    "fat": 1.5,
+    "saturatedFat": 0.2,
+    "carbohydrates": 6.7,
+    "sugar": 4.2,
+    "fiber": 0.8,
+    "protein": 1,
+    "salt": 0.11,
+    "basis": "100ml"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-20",
+  "affiliateAvailable": false,
+  "priceHint": null,
+  "publishability": "published",
+  "qualityFlags": [
+    "ranking_confidence_medium"
+  ],
+  "market": "DE",
+  "locale": "de-DE",
+  "imageLicense": null,
+  "imageSourceUrl": null,
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nährwert-Score",
+      "score": 69,
+      "grade": "okay",
+      "confidence": "high",
+      "positives": [
+        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Zutaten-Score",
+      "score": 92,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Kurze Zutatenliste.",
+        "Kein zugesetzter Zucker in der Zutatenliste erkannt."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "protein",
+      "label": "Protein-Score",
+      "score": 29,
+      "grade": "weak",
+      "confidence": "high",
+      "positives": [
+        "Solider Proteinwert: 1 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Zucker-Score",
+      "score": 71,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "family",
+      "label": "Familien-Score",
+      "score": 84,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
+      ],
+      "negatives": [
+        "Allergene prüfen: Hafer."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan-Score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Als vegan oder pflanzlich gekennzeichnet."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "overall_match",
+      "label": "Gesamt-Score",
+      "score": 70,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Kombiniert die wichtigsten Teilbewertungen für eine schnelle Entscheidung."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    }
+  ]
+}

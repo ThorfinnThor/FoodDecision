@@ -1,0 +1,12 @@
+{
+  "attribute": "beste-wahl",
+  "category": "brotaufstriche",
+  "title": "Beste Brotaufstriche im Vergleich",
+  "sortScore": "overall_match",
+  "intro": "Beste Brotaufstriche im Vergleich: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

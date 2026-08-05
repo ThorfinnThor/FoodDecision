@@ -7,7 +7,7 @@ export function ProductVisual({ product, compact = false }: { product: Product; 
       {product.imageUrl ? (
         <div className="product-image">
           <Image
-            alt={`${product.name} von ${product.brand}`}
+            alt={`${product.name} ${product.locale === "de-DE" ? "von" : "by"} ${product.brand}`}
             fill
             sizes={compact ? "(max-width: 860px) 100vw, 160px" : "(max-width: 860px) 100vw, 42vw"}
             src={product.imageUrl}

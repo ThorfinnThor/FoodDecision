@@ -1,20 +1,18 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { localeSegment } from "./i18n.ts";
 import { scoreByType } from "./scoring.ts";
 import { entitySlug, productMatch } from "./product-insights.ts";
-import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types.ts";
+import type { Category, CategorySlug, Product, RankingPage, ScoreType, SiteLocale } from "./types.ts";
 
 type StaticManifest = {
   generatedAt: string;
   source: "fixtures" | "supabase";
   version: string;
+  locale: SiteLocale;
   productSlugs: string[];
   categorySlugs: CategorySlug[];
-  rankingPages: Array<{
-    attribute: string;
-    category: CategorySlug;
-    file: string;
-  }>;
+  rankingPages: Array<{ attribute: string; category: CategorySlug; file: string }>;
   comparisonPairs: string[];
 };
 
@@ -24,116 +22,129 @@ function readJson<T>(relativePath: string): T {
   return JSON.parse(readFileSync(join(dataRoot, relativePath), "utf8")) as T;
 }
 
-export const staticManifest = readJson<StaticManifest>("manifest.json");
-export const products: Product[] = staticManifest.productSlugs.map((slug) =>
-  readJson<Product>(`food/products/${slug}.json`),
-);
-export const rankingPages: RankingPage[] = staticManifest.rankingPages.map((page) =>
-  readJson<RankingPage>(page.file),
-);
-const categories = staticManifest.categorySlugs.map((slug) =>
-  readJson<Category>(`food/categories/${slug}.json`),
-);
+function createCatalog(locale: SiteLocale) {
+  const prefix = localeSegment(locale);
+  const manifest = readJson<StaticManifest>(`${prefix}/manifest.json`);
+  const products: Product[] = manifest.productSlugs.map((slug) =>
+    readJson<Product>(`${prefix}/food/products/${slug}.json`),
+  );
+  const rankingPages: RankingPage[] = manifest.rankingPages.map((page) => readJson<RankingPage>(page.file));
+  const categories = manifest.categorySlugs.map((slug) =>
+    readJson<Category>(`${prefix}/food/categories/${slug}.json`),
+  );
 
-export function getCategories() {
-  return categories;
-}
-
-export function getCategory(slug: string) {
-  return categories.find((category) => category.slug === slug);
-}
-
-export function getProduct(slug: string) {
-  return products.find((product) => product.slug === slug);
-}
-
-export function getProductByGtin(gtin: string) {
-  return products.find((product) => product.gtin === gtin);
-}
-
-export function getProductsByCategory(category: CategorySlug) {
-  return products.filter((product) => product.category === category);
-}
-
-export function getRanking(attribute: string, category: string) {
-  return rankingPages.find((page) => page.attribute === attribute && page.category === category);
-}
-
-export function rankedProducts(category: CategorySlug, scoreType: ScoreType) {
-  return getProductsByCategory(category)
-    .filter((product) => product.publishability === "ranking_eligible")
-    .sort((a, b) => {
-      const scoreA = scoreByType(a, scoreType)?.score ?? -1;
-      const scoreB = scoreByType(b, scoreType)?.score ?? -1;
-      return scoreB - scoreA;
-    });
-}
-
-export function getAlternative(product: Product) {
-  return rankedProducts(product.category, "overall_match").find((item) => item.slug !== product.slug) ?? null;
-}
-
-export function getAlternatives(product: Product, goal: ScoreType = "overall_match", limit = 3) {
-  return products
-    .filter((candidate) => candidate.slug !== product.slug && candidate.category === product.category)
-    .filter((candidate) => candidate.publishability === "ranking_eligible" || candidate.publishability === "published")
-    .map((candidate) => ({
-      product: candidate,
-      match: productMatch(candidate, {
-        goal,
-        maxSugar: null,
-        minProtein: null,
-        maxCalories: null,
-        veganOnly: false,
-        additiveFree: false,
-        sweetenerFree: false,
-        palmOilFree: false,
-      }),
-    }))
-    .sort((a, b) => b.match.score - a.match.score)
-    .slice(0, limit);
-}
-
-export function getBrands() {
-  const counts = new Map<string, { name: string; slug: string; products: Product[] }>();
-  for (const product of products) {
-    const slug = entitySlug(product.brand);
-    const current = counts.get(slug) ?? { name: product.brand, slug, products: [] };
-    current.products.push(product);
-    counts.set(slug, current);
-  }
-  return [...counts.values()].sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, "de"));
-}
-
-export function getBrand(slug: string) {
-  return getBrands().find((brand) => brand.slug === slug);
-}
-
-export function getIngredients(minProducts = 3, limit = 150) {
-  const counts = new Map<string, { name: string; slug: string; products: Product[] }>();
-  for (const product of products) {
-    for (const ingredient of new Set(product.ingredients)) {
-      const slug = entitySlug(ingredient);
-      if (!slug) continue;
-      const current = counts.get(slug) ?? { name: ingredient, slug, products: [] };
+  const getCategories = () => categories;
+  const getCategory = (slug: string) => categories.find((category) => category.slug === slug);
+  const getProduct = (slug: string) => products.find((product) => product.slug === slug);
+  const getProductByGtin = (gtin: string) => products.find((product) => product.gtin === gtin);
+  const getProductsByCategory = (category: CategorySlug) => products.filter((product) => product.category === category);
+  const getRanking = (attribute: string, category: string) =>
+    rankingPages.find((page) => page.attribute === attribute && page.category === category);
+  const rankedProducts = (category: CategorySlug, scoreType: ScoreType) =>
+    getProductsByCategory(category)
+      .filter((product) => product.publishability === "ranking_eligible")
+      .sort((a, b) => (scoreByType(b, scoreType)?.score ?? -1) - (scoreByType(a, scoreType)?.score ?? -1));
+  const getAlternative = (product: Product) =>
+    rankedProducts(product.category, "overall_match").find((item) => item.slug !== product.slug) ?? null;
+  const getAlternatives = (product: Product, goal: ScoreType = "overall_match", limit = 3) =>
+    products
+      .filter((candidate) => candidate.slug !== product.slug && candidate.category === product.category)
+      .filter((candidate) => candidate.publishability === "ranking_eligible" || candidate.publishability === "published")
+      .map((candidate) => ({
+        product: candidate,
+        match: productMatch(candidate, {
+          goal,
+          maxSugar: null,
+          minProtein: null,
+          maxCalories: null,
+          veganOnly: false,
+          additiveFree: false,
+          sweetenerFree: false,
+          palmOilFree: false,
+        }),
+      }))
+      .sort((a, b) => b.match.score - a.match.score)
+      .slice(0, limit);
+  const getBrands = () => {
+    const counts = new Map<string, { name: string; slug: string; products: Product[] }>();
+    for (const product of products) {
+      const slug = entitySlug(product.brand);
+      const current = counts.get(slug) ?? { name: product.brand, slug, products: [] };
       current.products.push(product);
       counts.set(slug, current);
     }
-  }
-  return [...counts.values()]
-    .filter((ingredient) => ingredient.products.length >= minProducts)
-    .sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, "de"))
-    .slice(0, limit);
-}
-
-export function getIngredient(slug: string) {
-  return getIngredients(2, 300).find((ingredient) => ingredient.slug === slug);
-}
-
-export function finderResults() {
-  return products
+    return [...counts.values()].sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, locale));
+  };
+  const getBrand = (slug: string) => getBrands().find((brand) => brand.slug === slug);
+  const getIngredients = (minProducts = 3, limit = 150) => {
+    const counts = new Map<string, { name: string; slug: string; products: Product[] }>();
+    for (const product of products) {
+      for (const ingredient of new Set(product.ingredients)) {
+        const slug = entitySlug(ingredient);
+        if (!slug) continue;
+        const current = counts.get(slug) ?? { name: ingredient, slug, products: [] };
+        current.products.push(product);
+        counts.set(slug, current);
+      }
+    }
+    return [...counts.values()]
+      .filter((ingredient) => ingredient.products.length >= minProducts)
+      .sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, locale))
+      .slice(0, limit);
+  };
+  const getIngredient = (slug: string) => getIngredients(2, 300).find((ingredient) => ingredient.slug === slug);
+  const finderResults = () => products
     .filter((product) => product.publishability === "ranking_eligible" || product.publishability === "published")
     .sort((a, b) => (scoreByType(b, "overall_match")?.score ?? 0) - (scoreByType(a, "overall_match")?.score ?? 0));
+
+  return {
+    locale,
+    manifest,
+    products,
+    rankingPages,
+    comparisonPairs: manifest.comparisonPairs,
+    getCategories,
+    getCategory,
+    getProduct,
+    getProductByGtin,
+    getProductsByCategory,
+    getRanking,
+    rankedProducts,
+    getAlternative,
+    getAlternatives,
+    getBrands,
+    getBrand,
+    getIngredients,
+    getIngredient,
+    finderResults,
+  };
 }
 
-export const comparisonPairs = staticManifest.comparisonPairs;
+const catalogs = new Map<SiteLocale, ReturnType<typeof createCatalog>>();
+export function getCatalog(locale: SiteLocale) {
+  const cached = catalogs.get(locale);
+  if (cached) return cached;
+  const catalog = createCatalog(locale);
+  catalogs.set(locale, catalog);
+  return catalog;
+}
+
+const defaultCatalog = getCatalog("de-DE");
+export const staticManifest = defaultCatalog.manifest;
+export const products = defaultCatalog.products;
+export const rankingPages = defaultCatalog.rankingPages;
+export const comparisonPairs = defaultCatalog.comparisonPairs;
+export const getCategories = defaultCatalog.getCategories;
+export const getCategory = defaultCatalog.getCategory;
+export const getProduct = defaultCatalog.getProduct;
+export const getProductByGtin = defaultCatalog.getProductByGtin;
+export const getProductsByCategory = defaultCatalog.getProductsByCategory;
+export const getRanking = defaultCatalog.getRanking;
+export const rankedProducts = defaultCatalog.rankedProducts;
+export const getAlternative = defaultCatalog.getAlternative;
+export const getAlternatives = defaultCatalog.getAlternatives;
+export const getBrands = defaultCatalog.getBrands;
+export const getBrand = defaultCatalog.getBrand;
+export const getIngredients = defaultCatalog.getIngredients;
+export const getIngredient = defaultCatalog.getIngredient;
+export const finderResults = defaultCatalog.finderResults;

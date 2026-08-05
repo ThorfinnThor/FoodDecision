@@ -1,0 +1,35 @@
+{
+  "attribute": "beste-wahl",
+  "category": "hafermilch",
+  "title": "Beste Hafermilch im Gesamtvergleich",
+  "sortScore": "overall_match",
+  "intro": "Beste Hafermilch im Gesamtvergleich: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": [
+    {
+      "id": "p-hafer-01",
+      "slug": "nordhafer-barista-ohne-zucker",
+      "name": "Nordhafer Barista ohne Zucker",
+      "brand": "Nordhafer",
+      "category": "hafermilch",
+      "categoryLabel": "Hafermilch",
+      "market": "DE",
+      "locale": "de-DE",
+      "overallScore": 82,
+      "lowSugarScore": 100,
+      "proteinScore": 31,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vegan",
+        "ohne Zuckerzusatz",
+        "calcium"
+      ],
+      "allergens": [
+        "Hafer"
+      ]
+    }
+  ]
+}

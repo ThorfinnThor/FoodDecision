@@ -1,0 +1,12 @@
+{
+  "attribute": "familie",
+  "category": "fruehstueckscerealien",
+  "title": "Familientaugliche Frühstückscerealien",
+  "sortScore": "family",
+  "intro": "Familientaugliche Frühstückscerealien: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

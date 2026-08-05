@@ -1,0 +1,36 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "muesli",
+  "title": "Müslis mit wenig Zucker",
+  "sortScore": "low_sugar",
+  "intro": "Müslis mit wenig Zucker: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": [
+    {
+      "id": "p-muesli-01",
+      "slug": "morgenfeld-basis-muesli",
+      "name": "Morgenfeld Basis Müsli",
+      "brand": "Morgenfeld",
+      "category": "muesli",
+      "categoryLabel": "Müsli",
+      "market": "DE",
+      "locale": "de-DE",
+      "overallScore": 94,
+      "lowSugarScore": 100,
+      "proteinScore": 89,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vollkorn",
+        "ohne Zuckerzusatz",
+        "vegan"
+      ],
+      "allergens": [
+        "Gluten",
+        "Haselnüsse"
+      ]
+    }
+  ]
+}

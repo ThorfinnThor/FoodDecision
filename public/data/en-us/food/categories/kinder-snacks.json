@@ -1,0 +1,11 @@
+{
+  "slug": "kinder-snacks",
+  "label": "Kids' snacks",
+  "intent": "Family snacks assessed conservatively for sugar, sodium, and ingredients.",
+  "description": "Kids' snacks use stricter sugar, sodium, ingredient, and allergen checks.",
+  "rankingAttributes": [
+    "familie",
+    "wenig-zucker"
+  ],
+  "products": []
+}

@@ -1,0 +1,10 @@
+{
+  "attribute": "familie",
+  "category": "fruehstueckscerealien",
+  "title": "Family-friendly breakfast cereal",
+  "sortScore": "family",
+  "intro": "Family-friendly breakfast cereal: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

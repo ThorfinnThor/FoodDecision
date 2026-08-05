@@ -1,0 +1,33 @@
+{
+  "slug": "joghurt-skyr",
+  "label": "Joghurt und Skyr",
+  "intent": "Milchprodukte mit viel Protein und wenig zugesetztem Zucker.",
+  "description": "Joghurt, Skyr und Quark werden nach Protein, Zucker, Fett, Zutaten und Allergenen bewertet.",
+  "rankingAttributes": [
+    "proteinreich",
+    "wenig-zucker"
+  ],
+  "products": [
+    {
+      "id": "p-skyr-01",
+      "slug": "fjordgut-skyr-natur",
+      "name": "Fjordgut Skyr Natur",
+      "brand": "Fjordgut",
+      "category": "joghurt-skyr",
+      "categoryLabel": "Joghurt und Skyr",
+      "market": "DE",
+      "locale": "de-DE",
+      "overallScore": 98,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "proteinreich",
+        "vegetarisch"
+      ],
+      "allergens": [
+        "Milch"
+      ]
+    }
+  ]
+}

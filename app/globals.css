@@ -519,6 +519,12 @@ main { min-height: 70vh; }
 .newsletter-form .honeypot { display: none; }
 .newsletter-consent { align-items: start; display: grid; font-size: 11px; gap: 7px; grid-column: 1 / -1; grid-template-columns: auto 1fr; line-height: 1.4; }
 .newsletter-form .form-error { grid-column: 1 / -1; margin: 0; }
+.locale-switcher { align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-sm); display: inline-flex; font-size: 12px; font-weight: 800; height: 36px; justify-content: center; min-width: 42px; }
+.image-credit { color: var(--color-text-500); display: block; font-size: 11px; margin-top: 8px; text-align: center; text-decoration: underline; }
+.insight-stats { display: grid; gap: 1px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; min-width: min(100%, 620px); }
+.insight-stats > div { border-left: 1px solid var(--color-border); display: grid; gap: 4px; padding: 6px 18px; }
+.insight-stats dt { color: var(--color-text-500); font-size: 12px; }
+.insight-stats dd { color: var(--color-text-900); font-size: 22px; font-weight: 800; margin: 0; }
 
 @media (max-width: 1080px) {
   .category-choice-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -533,6 +539,8 @@ main { min-height: 70vh; }
   .barcode-tool { grid-template-columns: 1fr; }
   .nutrition-ranking-item { grid-template-columns: 40px minmax(0, 1fr); }
   .nutrition-ranking-item .nutrition-value { grid-column: 2; justify-self: start; }
+  .category-facts { align-items: stretch; }
+  .insight-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 600px) {

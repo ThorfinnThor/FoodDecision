@@ -1,0 +1,11 @@
+{
+  "slug": "fruehstueckscerealien",
+  "label": "Breakfast cereal",
+  "intent": "Breakfast cereals with less sugar and a better everyday balance.",
+  "description": "Cereal is compared by sugar, protein, sodium, and ingredient quality.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "familie"
+  ],
+  "products": []
+}

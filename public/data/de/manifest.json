@@ -1,0 +1,404 @@
+{
+  "generatedAt": "2026-08-05T11:21:54.637Z",
+  "source": "fixtures",
+  "version": "food-static-data-v2",
+  "locale": "de-DE",
+  "market": "DE",
+  "counts": {
+    "products": 6,
+    "categories": 12,
+    "rankings": 24,
+    "comparisons": 2
+  },
+  "productSlugs": [
+    "nordhafer-barista-ohne-zucker",
+    "oatly-style-haferdrink-classic",
+    "kraftkern-proteinriegel-kakao",
+    "morgenfeld-basis-muesli",
+    "fjordgut-skyr-natur",
+    "gruenbiss-linsen-cracker"
+  ],
+  "categorySlugs": [
+    "hafermilch",
+    "proteinriegel",
+    "muesli",
+    "joghurt-skyr",
+    "vegane-snacks",
+    "fruehstueckscerealien",
+    "pflanzliche-joghurts",
+    "brotaufstriche",
+    "nussmuse",
+    "fertiggerichte",
+    "erfrischungsgetraenke",
+    "kinder-snacks"
+  ],
+  "rankingPages": [
+    {
+      "attribute": "wenig-zucker",
+      "category": "hafermilch",
+      "file": "de/rankings/wenig-zucker-hafermilch.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "hafermilch",
+      "file": "de/rankings/beste-wahl-hafermilch.json"
+    },
+    {
+      "attribute": "proteinreich",
+      "category": "proteinriegel",
+      "file": "de/rankings/proteinreich-proteinriegel.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "proteinriegel",
+      "file": "de/rankings/wenig-zucker-proteinriegel.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "muesli",
+      "file": "de/rankings/wenig-zucker-muesli.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "muesli",
+      "file": "de/rankings/beste-wahl-muesli.json"
+    },
+    {
+      "attribute": "proteinreich",
+      "category": "joghurt-skyr",
+      "file": "de/rankings/proteinreich-joghurt-skyr.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "joghurt-skyr",
+      "file": "de/rankings/wenig-zucker-joghurt-skyr.json"
+    },
+    {
+      "attribute": "vegan",
+      "category": "vegane-snacks",
+      "file": "de/rankings/vegan-vegane-snacks.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "vegane-snacks",
+      "file": "de/rankings/beste-wahl-vegane-snacks.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "fruehstueckscerealien",
+      "file": "de/rankings/wenig-zucker-fruehstueckscerealien.json"
+    },
+    {
+      "attribute": "familie",
+      "category": "fruehstueckscerealien",
+      "file": "de/rankings/familie-fruehstueckscerealien.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "pflanzliche-joghurts",
+      "file": "de/rankings/wenig-zucker-pflanzliche-joghurts.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "pflanzliche-joghurts",
+      "file": "de/rankings/beste-wahl-pflanzliche-joghurts.json"
+    },
+    {
+      "attribute": "gute-zutaten",
+      "category": "brotaufstriche",
+      "file": "de/rankings/gute-zutaten-brotaufstriche.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "brotaufstriche",
+      "file": "de/rankings/beste-wahl-brotaufstriche.json"
+    },
+    {
+      "attribute": "proteinreich",
+      "category": "nussmuse",
+      "file": "de/rankings/proteinreich-nussmuse.json"
+    },
+    {
+      "attribute": "gute-zutaten",
+      "category": "nussmuse",
+      "file": "de/rankings/gute-zutaten-nussmuse.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "fertiggerichte",
+      "file": "de/rankings/beste-wahl-fertiggerichte.json"
+    },
+    {
+      "attribute": "familie",
+      "category": "fertiggerichte",
+      "file": "de/rankings/familie-fertiggerichte.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "erfrischungsgetraenke",
+      "file": "de/rankings/wenig-zucker-erfrischungsgetraenke.json"
+    },
+    {
+      "attribute": "gute-zutaten",
+      "category": "erfrischungsgetraenke",
+      "file": "de/rankings/gute-zutaten-erfrischungsgetraenke.json"
+    },
+    {
+      "attribute": "familie",
+      "category": "kinder-snacks",
+      "file": "de/rankings/familie-kinder-snacks.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "kinder-snacks",
+      "file": "de/rankings/wenig-zucker-kinder-snacks.json"
+    }
+  ],
+  "comparisonPairs": [
+    "nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic",
+    "kraftkern-proteinriegel-kakao-vs-morgenfeld-basis-muesli"
+  ],
+  "productIndexFiles": [
+    "de/food/products/index-1.json"
+  ],
+  "searchIndexFiles": [
+    "de/search-index-1.json"
+  ],
+  "files": [
+    {
+      "path": "public/data/de/food/products/index-1.json",
+      "bytes": 2855,
+      "sha256": "fb13c8dac5910859e361e2213585282e95b086725c6e7e481ea1797f14c6dea5"
+    },
+    {
+      "path": "public/data/de/search-index-1.json",
+      "bytes": 2425,
+      "sha256": "bb81e1f08afa5af39f91a449c6f4dbdfa48d1291a70bbe8cdbf4c92893288d97"
+    },
+    {
+      "path": "public/data/de/food/products/nordhafer-barista-ohne-zucker.json",
+      "bytes": 3427,
+      "sha256": "e2a600867b32e5ebe83ea166e9e91a7fa16abc06734069e4b40fbdc18bf7f4fa"
+    },
+    {
+      "path": "public/data/de/food/products/oatly-style-haferdrink-classic.json",
+      "bytes": 3296,
+      "sha256": "b99b75c98eef4a7fe64df4ef1b7dec546d36ffc9874ba5f5e0914c3391dce0d5"
+    },
+    {
+      "path": "public/data/de/food/products/kraftkern-proteinriegel-kakao.json",
+      "bytes": 3548,
+      "sha256": "35808a4fb550514633655ef1f2574b7259e9e0b3419c31b307e13ae08a06faf2"
+    },
+    {
+      "path": "public/data/de/food/products/morgenfeld-basis-muesli.json",
+      "bytes": 3453,
+      "sha256": "3bed2039501418aa8394cd1729b15e956112b5eb670a2232fdf4b566d4a62c72"
+    },
+    {
+      "path": "public/data/de/food/products/fjordgut-skyr-natur.json",
+      "bytes": 3356,
+      "sha256": "c6e37a86d25f30bf64b4cbfe7985a5445fc4b32061277fcd9867ec3c1ce42514"
+    },
+    {
+      "path": "public/data/de/food/products/gruenbiss-linsen-cracker.json",
+      "bytes": 3453,
+      "sha256": "b90983f9901f73fd7bc3a3a847407bf58f308b634adbe7dabd4d5093bb103588"
+    },
+    {
+      "path": "public/data/de/food/categories/hafermilch.json",
+      "bytes": 1331,
+      "sha256": "0f3f50f26278a0789bee4d63f41ce9017e3bf5ac4dc0242d52bbdbc3ba7f9a81"
+    },
+    {
+      "path": "public/data/de/food/categories/proteinriegel.json",
+      "bytes": 876,
+      "sha256": "03823adf2a71b9cc56ccaf9fab62285efdad59c7918351985ef5513db93fda65"
+    },
+    {
+      "path": "public/data/de/food/categories/muesli.json",
+      "bytes": 868,
+      "sha256": "715c356eabf3ca8d9d8b69d7b7e77aea5d8f52186434ca0eab993fd229bf5da4"
+    },
+    {
+      "path": "public/data/de/food/categories/joghurt-skyr.json",
+      "bytes": 843,
+      "sha256": "1244b15482ce59bfcfc88b21b3ff55588207c112ef4249e9c14fe9e6e4b45c02"
+    },
+    {
+      "path": "public/data/de/food/categories/vegane-snacks.json",
+      "bytes": 816,
+      "sha256": "faae647459f77c0761e97eeb6879b5e25f22b9d1127b3ba7a3cad75238f20be8"
+    },
+    {
+      "path": "public/data/de/food/categories/fruehstueckscerealien.json",
+      "bytes": 351,
+      "sha256": "bb638a88cae945f8247533b50cb480d2074e89586a1c3eb633094c4774f43b1f"
+    },
+    {
+      "path": "public/data/de/food/categories/pflanzliche-joghurts.json",
+      "bytes": 356,
+      "sha256": "144e0417ab27c186c20a60b17c5f0d790b2580e66fb73f4afbabd0179adc4ca1"
+    },
+    {
+      "path": "public/data/de/food/categories/brotaufstriche.json",
+      "bytes": 335,
+      "sha256": "c94f2b214ae70d35310051bb10445ba94bab9520d2195b6f014435714fd3195c"
+    },
+    {
+      "path": "public/data/de/food/categories/nussmuse.json",
+      "bytes": 318,
+      "sha256": "e55b2e666301772acf84c83208facde95b990e97fd2b88e71323505d657703e9"
+    },
+    {
+      "path": "public/data/de/food/categories/fertiggerichte.json",
+      "bytes": 349,
+      "sha256": "26da85ef2e21496c175572f75b31db3a6c9587e2264892447cee59978204b458"
+    },
+    {
+      "path": "public/data/de/food/categories/erfrischungsgetraenke.json",
+      "bytes": 357,
+      "sha256": "a9f06dadb26d73a7489e34ec7ed7ea62cf6b00f8b7541bec297d1a5387974c1f"
+    },
+    {
+      "path": "public/data/de/food/categories/kinder-snacks.json",
+      "bytes": 352,
+      "sha256": "320809123f21c09561a375f70d652dce6f0bb5894b44a5df6d4515234b367509"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-hafermilch.json",
+      "bytes": 947,
+      "sha256": "776af03cc21f3eb569785d35f4072dcddfc03205e299567f4c10589d2487fbd2"
+    },
+    {
+      "path": "public/data/de/rankings/beste-wahl-hafermilch.json",
+      "bytes": 953,
+      "sha256": "852824bb0035a039664b65405f83fd4495478cff3891124521c552207fee1fd8"
+    },
+    {
+      "path": "public/data/de/rankings/proteinreich-proteinriegel.json",
+      "bytes": 949,
+      "sha256": "b59491a9837bb51d04255ff573d96dcc5c873301af6d08ce621abba4125b579e"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-proteinriegel.json",
+      "bytes": 953,
+      "sha256": "1891bb0304886a2430b908e69c2d3550cedda89a84436f557d0044affbde9dbb"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-muesli.json",
+      "bytes": 932,
+      "sha256": "8e003ad78c8ad285670b7a861459be6a34fd9c9f2499c00a11f6b3b0b76e300e"
+    },
+    {
+      "path": "public/data/de/rankings/beste-wahl-muesli.json",
+      "bytes": 948,
+      "sha256": "afba392bac4e209018bacbf87c48f469b44bef1d78220246b982c9d134937327"
+    },
+    {
+      "path": "public/data/de/rankings/proteinreich-joghurt-skyr.json",
+      "bytes": 916,
+      "sha256": "e0668e2d4a0137df4b5806b308efd918c472bb90cd46bf88cd1dcf55f7e724a5"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-joghurt-skyr.json",
+      "bytes": 918,
+      "sha256": "fe2f23ac4efae8b5cc6af3c533bca1336d5a50ac84b63caefc35f1122c9fccd0"
+    },
+    {
+      "path": "public/data/de/rankings/vegan-vegane-snacks.json",
+      "bytes": 862,
+      "sha256": "b350d1721cc363f21aed2a53bc6f0edbd8ae3150410c8a5d3e261cd986a7f8e8"
+    },
+    {
+      "path": "public/data/de/rankings/beste-wahl-vegane-snacks.json",
+      "bytes": 901,
+      "sha256": "651773bf47d1643892d3284779b55c1c1b0027bb0e71d1b0e2f3355a9f16ab88"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-fruehstueckscerealien.json",
+      "bytes": 429,
+      "sha256": "e697c005d6c586133eaa37bd80f2529474114e0b67cd026d90200a52d62125f4"
+    },
+    {
+      "path": "public/data/de/rankings/familie-fruehstueckscerealien.json",
+      "bytes": 423,
+      "sha256": "0683317b13eb3deb1f8330b5f5b52c8121b14fe008ee972b82edc832174fae95"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-pflanzliche-joghurts.json",
+      "bytes": 426,
+      "sha256": "28339e43962c049091703425a975c1cf49f3954e97af58789d2714dcc078305a"
+    },
+    {
+      "path": "public/data/de/rankings/beste-wahl-pflanzliche-joghurts.json",
+      "bytes": 406,
+      "sha256": "08a7566f74e6cf5fee7266160af820a57385e76d2ef9720f0e73c9641e35d486"
+    },
+    {
+      "path": "public/data/de/rankings/gute-zutaten-brotaufstriche.json",
+      "bytes": 429,
+      "sha256": "70479e4c977bbdeb96f64da8fa8d2d57f5a4ad8cd21d911ae93aae1402282821"
+    },
+    {
+      "path": "public/data/de/rankings/beste-wahl-brotaufstriche.json",
+      "bytes": 414,
+      "sha256": "ed8938df434fe4a373db23f6d3ecf4f3ba0dbc278bafc285a59796f661b2aa91"
+    },
+    {
+      "path": "public/data/de/rankings/proteinreich-nussmuse.json",
+      "bytes": 382,
+      "sha256": "653f0514c938ac8e9cae13259c7ec4dfda444aede30ed12bbd504e08da974e67"
+    },
+    {
+      "path": "public/data/de/rankings/gute-zutaten-nussmuse.json",
+      "bytes": 413,
+      "sha256": "7f4664c74286fbb813e25e84bc69812e4f9aea3822ca9f4c59f584d595dbc0a6"
+    },
+    {
+      "path": "public/data/de/rankings/beste-wahl-fertiggerichte.json",
+      "bytes": 426,
+      "sha256": "41a511352ce5e3cf8c49f7f47704b2c4645fbc72cbe8220c0082844c3f6fe33d"
+    },
+    {
+      "path": "public/data/de/rankings/familie-fertiggerichte.json",
+      "bytes": 402,
+      "sha256": "646c1ab43f4bd96ccf810bb2c8afd5e7d50b9c7587c844d0d8e352a3274c8407"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-erfrischungsgetraenke.json",
+      "bytes": 429,
+      "sha256": "8a39447edf9983d3e5594bca9177d6c83ab9ba19ca1536c5f24568e108aa9c0a"
+    },
+    {
+      "path": "public/data/de/rankings/gute-zutaten-erfrischungsgetraenke.json",
+      "bytes": 440,
+      "sha256": "60c4703c2d23113707129f5688cef8f342e49e205c0a52dcd1399b927e367c12"
+    },
+    {
+      "path": "public/data/de/rankings/familie-kinder-snacks.json",
+      "bytes": 403,
+      "sha256": "622aac30e4ce3a8528b0b4cf68beccc88b61887511473f44693e6cea41902888"
+    },
+    {
+      "path": "public/data/de/rankings/wenig-zucker-kinder-snacks.json",
+      "bytes": 405,
+      "sha256": "9154a6ad9193e5835c5d326bd7258d34abb7c8c7ff770511f92cf05c4dc46032"
+    },
+    {
+      "path": "public/data/de/comparisons/nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic.json",
+      "bytes": 1122,
+      "sha256": "d7f0eb9f4b935954e7e29fdb793716f64a876ab535d4594598bff0fabe8f9f64"
+    },
+    {
+      "path": "public/data/de/comparisons/kraftkern-proteinriegel-kakao-vs-morgenfeld-basis-muesli.json",
+      "bytes": 1183,
+      "sha256": "f721f3de2dc124a4994a2b902d5d8f5d29e0304ece88dfb60ab0a3c65025e5f2"
+    },
+    {
+      "path": "public/data/de/quality-report.json",
+      "bytes": 2398,
+      "sha256": "cd764ce07e04ed1de0ef6c48c340262e427205f3b92e7894ee89f51770e9e41f"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "attribute": "proteinreich",
+  "category": "joghurt-skyr",
+  "title": "Proteinreichste Joghurts und Skyr",
+  "sortScore": "protein",
+  "intro": "Proteinreichste Joghurts und Skyr: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": [
+    {
+      "id": "p-skyr-01",
+      "slug": "fjordgut-skyr-natur",
+      "name": "Fjordgut Skyr Natur",
+      "brand": "Fjordgut",
+      "category": "joghurt-skyr",
+      "categoryLabel": "Joghurt und Skyr",
+      "market": "DE",
+      "locale": "de-DE",
+      "overallScore": 98,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "proteinreich",
+        "vegetarisch"
+      ],
+      "allergens": [
+        "Milch"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "slug": "fertiggerichte",
+  "label": "Prepared meals",
+  "intent": "Convenient meals with transparent nutrition and ingredient tradeoffs.",
+  "description": "Prepared meals are compared by sodium, saturated fat, protein, and ingredients.",
+  "rankingAttributes": [
+    "beste-wahl",
+    "familie"
+  ],
+  "products": []
+}

@@ -1,11 +1,14 @@
 import { calculateScores } from "./scoring.ts";
-import { categoryLabels, categoryScoringProfiles } from "./catalog.ts";
+import { categoryLabels, categoryScoringProfiles, localizedCategoryLabel } from "./catalog.ts";
+import { licensedProductImage } from "./image-license.ts";
 import type {
   CategorySlug,
+  MarketCode,
   NutritionFacts,
   Product,
   ProductScore,
   PublishabilityStatus,
+  SiteLocale,
 } from "./types.ts";
 
 export type RawOpenFoodFactsRow = {
@@ -20,6 +23,8 @@ export type RawOpenFoodFactsRow = {
   last_modified_at: string | null;
   first_seen_at: string;
   import_run_id: string | null;
+  market?: MarketCode;
+  locale?: SiteLocale;
   payload: Record<string, unknown>;
 };
 
@@ -37,7 +42,11 @@ export type NormalizedOpenFoodFactsProduct = {
   brandName: string | null;
   category: CategorySlug;
   categoryLabel: string;
+  market: MarketCode;
+  locale: SiteLocale;
   imageUrl: string | null;
+  imageLicense: Product["imageLicense"];
+  imageSourceUrl: string | null;
   importedAt: string;
   sourceUpdatedAt: string | null;
   publishability: PublishabilityStatus;
@@ -53,19 +62,19 @@ export type NormalizedOpenFoodFactsProduct = {
 
 const categorySlugs = new Set<CategorySlug>(Object.keys(categoryLabels) as CategorySlug[]);
 
-const tagNames: Record<string, string> = {
-  vegan: "vegan",
-  vegetarian: "vegetarisch",
-  milk: "Milch",
-  lactose: "Laktose",
-  gluten: "Gluten",
-  oats: "Hafer",
-  almonds: "Mandeln",
-  hazelnuts: "Haselnüsse",
-  peanuts: "Erdnüsse",
-  soybeans: "Soja",
-  eggs: "Eier",
-  nuts: "Schalenfruechte",
+const tagNames: Record<string, { de: string; en: string }> = {
+  vegan: { de: "vegan", en: "vegan" },
+  vegetarian: { de: "vegetarisch", en: "vegetarian" },
+  milk: { de: "Milch", en: "milk" },
+  lactose: { de: "Laktose", en: "lactose" },
+  gluten: { de: "Gluten", en: "gluten" },
+  oats: { de: "Hafer", en: "oats" },
+  almonds: { de: "Mandeln", en: "almonds" },
+  hazelnuts: { de: "Haselnüsse", en: "hazelnuts" },
+  peanuts: { de: "Erdnüsse", en: "peanuts" },
+  soybeans: { de: "Soja", en: "soy" },
+  eggs: { de: "Eier", en: "eggs" },
+  nuts: { de: "Schalenfrüchte", en: "tree nuts" },
 };
 
 export function slugify(value: string) {
@@ -84,9 +93,10 @@ function stringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
-function humanizeTag(tag: string) {
+function humanizeTag(tag: string, locale: SiteLocale) {
   const value = tag.replace(/^[a-z]{2}:/i, "").trim().toLowerCase();
-  return tagNames[value] ?? value.replace(/[-_]+/g, " ");
+  const translated = tagNames[value];
+  return translated ? (locale === "de-DE" ? translated.de : translated.en) : value.replace(/[-_]+/g, " ");
 }
 
 function unique(values: string[]) {
@@ -119,24 +129,23 @@ export function splitIngredientText(value: string) {
   return unique(ingredients);
 }
 
-function ingredientNames(payload: Record<string, unknown>) {
+function ingredientNames(payload: Record<string, unknown>, locale: SiteLocale) {
   if (Array.isArray(payload.ingredients)) {
     const parsed = payload.ingredients
       .map((item) => {
         if (!item || typeof item !== "object") return null;
         const ingredient = item as Record<string, unknown>;
         if (typeof ingredient.text === "string") return ingredient.text;
-        if (typeof ingredient.id === "string") return humanizeTag(ingredient.id);
+        if (typeof ingredient.id === "string") return humanizeTag(ingredient.id, locale);
         return null;
       })
       .filter((item): item is string => Boolean(item));
     if (parsed.length) return unique(parsed);
   }
 
-  const text =
-    (typeof payload.ingredients_text_de === "string" && payload.ingredients_text_de) ||
-    (typeof payload.ingredients_text === "string" && payload.ingredients_text) ||
-    "";
+  const localizedText = locale === "de-DE" ? payload.ingredients_text_de : payload.ingredients_text_en;
+  const text = (typeof localizedText === "string" && localizedText) ||
+    (typeof payload.ingredients_text === "string" && payload.ingredients_text) || "";
   return splitIngredientText(text);
 }
 
@@ -200,6 +209,7 @@ function qualityFlags(input: {
   name: string | null;
   brandName: string | null;
   imageUrl: string | null;
+  imageSourceAllowed: boolean;
   ingredients: string[];
   payload: Record<string, unknown>;
   nutritionCompleteness: number;
@@ -218,6 +228,7 @@ function qualityFlags(input: {
   if (!input.ingredients.length) add("missing_ingredients", "warning");
   if (!Array.isArray(input.payload.allergens_tags)) add("allergens_unverified", "info");
   if (!input.imageUrl) add("missing_image", "info");
+  else if (!input.imageSourceAllowed) add("unlicensed_image_source", "warning");
 
   if (input.sourceUpdatedAt) {
     const ageMs = Date.now() - Date.parse(input.sourceUpdatedAt);
@@ -248,18 +259,22 @@ export function normalizeOpenFoodFactsRow(raw: RawOpenFoodFactsRow): NormalizedO
   }
 
   const category = raw.category_slug as CategorySlug;
+  const market = raw.market ?? "DE";
+  const locale = raw.locale ?? (market === "US" ? "en-US" : "de-DE");
   const gtin = String(raw.gtin || raw.external_id || "").trim();
   const name = raw.product_name?.trim() || null;
   const brandName = raw.brand_names?.split(",")[0]?.trim() || null;
-  const ingredients = ingredientNames(raw.payload);
-  const labels = unique(stringArray(raw.labels_tags).map(humanizeTag));
-  const allergens = unique(stringArray(raw.payload.allergens_tags).map(humanizeTag));
+  const image = licensedProductImage(raw.image_url, gtin);
+  const ingredients = ingredientNames(raw.payload, locale);
+  const labels = unique(stringArray(raw.labels_tags).map((tag) => humanizeTag(tag, locale)));
+  const allergens = unique(stringArray(raw.payload.allergens_tags).map((tag) => humanizeTag(tag, locale)));
   const { nutrition, completeness, implausible } = normalizeNutrition(raw.payload, category);
   const flags = qualityFlags({
     gtin,
     name,
     brandName,
     imageUrl: raw.image_url,
+    imageSourceAllowed: Boolean(image.imageUrl),
     ingredients,
     payload: raw.payload,
     nutritionCompleteness: completeness,
@@ -267,23 +282,29 @@ export function normalizeOpenFoodFactsRow(raw: RawOpenFoodFactsRow): NormalizedO
     sourceUpdatedAt: raw.last_modified_at,
   });
   const publishability = publishabilityFor(flags, nutrition, completeness);
-  const displayName = name ?? `Produkt ${gtin || raw.id}`;
+  const displayName = name ?? (locale === "de-DE" ? `Produkt ${gtin || raw.id}` : `Product ${gtin || raw.id}`);
   const baseProduct: Omit<Product, "scores"> = {
     id: raw.id,
     gtin,
     slug: `${slugify(displayName)}-${slugify(gtin).slice(-8)}`,
     name: displayName,
-    brand: brandName ?? "Unbekannte Marke",
+    brand: brandName ?? (locale === "de-DE" ? "Unbekannte Marke" : "Unknown brand"),
     category,
-    categoryLabel: categoryLabels[category],
+    categoryLabel: localizedCategoryLabel(category, locale),
+    market,
+    locale,
     imageTone:
       category === "proteinriegel" || category === "brotaufstriche"
         ? "cocoa"
         : category === "vegane-snacks" || category === "pflanzliche-joghurts"
           ? "green"
           : "oat",
-    imageUrl: raw.image_url,
-    description: `${displayName} aus der Kategorie ${categoryLabels[category]}.`,
+    imageUrl: image.imageUrl,
+    imageLicense: image.imageLicense,
+    imageSourceUrl: image.imageSourceUrl,
+    description: locale === "de-DE"
+      ? `${displayName} aus der Kategorie ${categoryLabels[category]}.`
+      : `${displayName} in the ${localizedCategoryLabel(category, locale)} category.`,
     labels,
     ingredients,
     allergens,
@@ -305,8 +326,12 @@ export function normalizeOpenFoodFactsRow(raw: RawOpenFoodFactsRow): NormalizedO
     name: displayName,
     brandName,
     category,
-    categoryLabel: categoryLabels[category],
-    imageUrl: raw.image_url,
+    categoryLabel: localizedCategoryLabel(category, locale),
+    market,
+    locale,
+    imageUrl: image.imageUrl,
+    imageLicense: image.imageLicense,
+    imageSourceUrl: image.imageSourceUrl,
     importedAt: raw.first_seen_at,
     sourceUpdatedAt: raw.last_modified_at,
     publishability,

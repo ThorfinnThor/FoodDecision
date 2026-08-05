@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { FAVORITES_KEY, readStoredIds, SAVED_STATE_EVENT, toggleStoredId, trackEvent } from "@/lib/client-state";
+import type { SiteLocale } from "@/lib/types";
 
-export function FavoriteButton({ productName, productSlug }: { productName: string; productSlug: string }) {
+export function FavoriteButton({ locale = "de-DE", productName, productSlug }: { locale?: SiteLocale; productName: string; productSlug: string }) {
   const [selected, setSelected] = useState(false);
+  const storageKey = `${FAVORITES_KEY}:${locale}`;
 
   useEffect(() => {
-    const sync = () => setSelected(readStoredIds(FAVORITES_KEY).includes(productSlug));
+    const sync = () => setSelected(readStoredIds(storageKey).includes(productSlug));
     sync();
     window.addEventListener(SAVED_STATE_EVENT, sync);
     window.addEventListener("storage", sync);
@@ -15,21 +17,21 @@ export function FavoriteButton({ productName, productSlug }: { productName: stri
       window.removeEventListener(SAVED_STATE_EVENT, sync);
       window.removeEventListener("storage", sync);
     };
-  }, [productSlug]);
+  }, [productSlug, storageKey]);
 
   function toggle() {
-    const next = toggleStoredId(FAVORITES_KEY, productSlug);
+    const next = toggleStoredId(storageKey, productSlug);
     setSelected(next);
     trackEvent("favorite_toggled", { entityType: "product", entityId: productSlug, metadata: { selected: next } });
   }
 
   return (
     <button
-      aria-label={`${productName} ${selected ? "aus Favoriten entfernen" : "zu Favoriten hinzufügen"}`}
+      aria-label={`${productName} ${selected ? (locale === "de-DE" ? "aus Favoriten entfernen" : "remove from favorites") : (locale === "de-DE" ? "zu Favoriten hinzufügen" : "add to favorites")}`}
       aria-pressed={selected}
       className="favorite-button"
       onClick={toggle}
-      title={selected ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+      title={selected ? (locale === "de-DE" ? "Aus Favoriten entfernen" : "Remove from favorites") : (locale === "de-DE" ? "Zu Favoriten hinzufügen" : "Add to favorites")}
       type="button"
     >
       <span aria-hidden="true">{selected ? "♥" : "♡"}</span>

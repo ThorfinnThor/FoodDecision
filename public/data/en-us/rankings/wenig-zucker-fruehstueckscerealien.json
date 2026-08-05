@@ -1,0 +1,10 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "fruehstueckscerealien",
+  "title": "Breakfast cereal with less sugar",
+  "sortScore": "low_sugar",
+  "intro": "Breakfast cereal with less sugar: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

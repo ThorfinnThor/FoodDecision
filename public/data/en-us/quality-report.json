@@ -1,0 +1,111 @@
+{
+  "generatedAt": "2026-08-05T11:21:54.642Z",
+  "locale": "en-US",
+  "market": "US",
+  "totals": {
+    "products": 0,
+    "rankingEligible": 0,
+    "licensedImages": 0,
+    "completeNutrition": 0,
+    "withIngredients": 0,
+    "withKnownBrand": 0
+  },
+  "categories": [
+    {
+      "slug": "hafermilch",
+      "label": "Oat milk",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "proteinriegel",
+      "label": "Protein bars",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "muesli",
+      "label": "Muesli",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "joghurt-skyr",
+      "label": "Yogurt and skyr",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "vegane-snacks",
+      "label": "Vegan snacks",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "fruehstueckscerealien",
+      "label": "Breakfast cereal",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "pflanzliche-joghurts",
+      "label": "Plant-based yogurt",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "brotaufstriche",
+      "label": "Spreads",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "nussmuse",
+      "label": "Nut butters",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "fertiggerichte",
+      "label": "Prepared meals",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "erfrischungsgetraenke",
+      "label": "Soft drinks",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    },
+    {
+      "slug": "kinder-snacks",
+      "label": "Kids' snacks",
+      "products": 0,
+      "rankingEligible": 0,
+      "licensedImages": 0,
+      "status": "thin"
+    }
+  ]
+}

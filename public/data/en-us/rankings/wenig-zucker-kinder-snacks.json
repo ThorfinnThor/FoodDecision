@@ -1,0 +1,10 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "kinder-snacks",
+  "title": "Kids' snacks with less sugar",
+  "sortScore": "low_sugar",
+  "intro": "Kids' snacks with less sugar: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

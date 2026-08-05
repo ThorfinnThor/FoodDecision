@@ -1,0 +1,10 @@
+{
+  "attribute": "proteinreich",
+  "category": "nussmuse",
+  "title": "Higher-protein nut butters",
+  "sortScore": "protein",
+  "intro": "Higher-protein nut butters: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

@@ -8,7 +8,7 @@ async function render() {
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request("http://localhost/de", {
       headers: { accept: "text/html" },
     }),
     {
@@ -29,23 +29,23 @@ test("server-renders the Food Decision Engine experience", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Food Decision Engine - Lebensmittel besser auswählen<\/title>/i);
+  assert.match(html, /<title>Lebensmittel besser auswählen - Food Decision Engine<\/title>/i);
   assert.match(html, /Food Decision Engine/);
   assert.match(html, /Finde Lebensmittel/);
-  assert.match(html, /Entscheide smarter/);
+  assert.match(html, /Vergleiche Produkte im richtigen Kontext/);
   assert.match(html, /Hafermilch/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
 });
 
 test("removes starter metadata and preview dependencies", async () => {
   const [page, layout, packageJson] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/[locale]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/[locale]/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /export const metadata:\s*Metadata/);
-  assert.match(layout, /title:\s*"Food Decision Engine"/);
+  assert.match(page, /generateMetadata/);
+  assert.match(layout, /Food Decision Engine/);
   assert.match(packageJson, /"name": "food-decision-engine"/);
   assert.doesNotMatch(`${page}\n${layout}\n${packageJson}`, /codex-preview|_sites-preview|react-loading-skeleton/);
 });

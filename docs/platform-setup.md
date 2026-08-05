@@ -19,11 +19,16 @@ This project uses three external services for the production path:
 After the project is ready:
 
 1. Open **Project Settings**.
-2. Click **API**.
+2. Click **API Keys**.
 3. Copy **Project URL** into GitHub secret `SUPABASE_URL`.
-4. Copy **service_role key** into GitHub secret `SUPABASE_SERVICE_ROLE_KEY`.
+4. Under **Secret keys**, create or copy a key beginning with `sb_secret_` into
+   GitHub secret `SUPABASE_SECRET_KEY`.
 5. Open **Project Settings** > **General**.
 6. Copy the project reference from the project URL or reference field into `SUPABASE_PROJECT_REF`.
+
+The scripts still accept the legacy JWT `SUPABASE_SERVICE_ROLE_KEY` during the
+transition. Prefer the new `SUPABASE_SECRET_KEY`; it avoids JWT clock-claim
+validation and can be revoked independently.
 
 For this project, the Supabase project ref is:
 
@@ -50,7 +55,7 @@ In your GitHub repository:
 5. Add these secrets:
 
 - `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_SECRET_KEY`
 - `SUPABASE_ACCESS_TOKEN`
 - `SUPABASE_PROJECT_REF`
 - `SUPABASE_DB_PASSWORD`
@@ -93,7 +98,11 @@ Run the first ingestion safely:
 3. Click **Ingest Open Food Facts**.
 4. Click **Run workflow**.
 5. Set **Import mode** to `dry-run`.
-6. Click **Run workflow**.
+6. Set **Catalog market** to `DE` or `US`.
+7. Set **Category slugs** to `all` or a comma-separated targeted list such as
+   `pflanzliche-joghurts,kinder-snacks`.
+8. Keep **Pages per category** at `1` and **Products per page** at `50`.
+9. Click **Run workflow**.
 
 After the dry run passes:
 
@@ -101,18 +110,19 @@ After the dry run passes:
 2. Click **Ingest Open Food Facts**.
 3. Click **Run workflow**.
 4. Set **Import mode** to `write-to-supabase`.
-5. Keep `max_pages` at `1` for the first real import.
-6. Keep `page_size` at `50`.
-7. Click **Run workflow**.
+5. Select the same market and category list used by the successful dry run.
+6. Keep **Pages per category** at `1` for the first real import.
+7. Keep **Products per page** at `50`.
+8. Click **Run workflow**.
 
-The catalog contains 12 categories. A first run with one page and 50 products
+Each market contains 12 category definitions. A first run with one page and 50 products
 per category validates the complete route, normalization, scoring and export
 pipeline while limiting load on Open Food Facts. After that succeeds, use
 `max_pages` `3` and `page_size` `50` for the first catalog expansion. The daily
 scheduled workflow continues from the same upsert-based process; repeated runs
 update existing products instead of creating duplicates.
 
-The real ingestion workflow fills the raw Open Food Facts landing table, then
+The real ingestion workflow fills the market-scoped Open Food Facts landing table, then
 normalizes products, applies publishability checks, calculates scores, rebuilds
 rankings, and verifies the Supabase-backed static export. Run **Supabase
 Migrations** after pulling a commit that adds a new migration and before running
@@ -129,18 +139,19 @@ the ingestion workflow.
 7. Add environment variable `NEXT_PUBLIC_SITE_URL` with your production URL.
 8. Add `STATIC_EXPORT_SOURCE` with value `supabase`.
 9. Add `SUPABASE_URL` with the project URL.
-10. Add `SUPABASE_SERVICE_ROLE_KEY` with the private service-role key. Apply it
-    to Production only and never prefix this variable with `NEXT_PUBLIC_`.
+10. Add `SUPABASE_SECRET_KEY` with the private key beginning with `sb_secret_`.
+    Apply it to Production only and never prefix this variable with
+    `NEXT_PUBLIC_`.
 11. Click **Deploy**.
 
-The service-role key is required at build time for the static export and at
+The secret key is required at build time for the static export and at
 runtime for consented newsletter subscriptions and anonymous aggregate product
 events. It remains server-only and is never sent to the browser.
 
 All tables in the public schema have Row Level Security enabled. The `anon` and
 `authenticated` database roles have no direct table privileges. Imports,
 static exports, newsletter writes and analytics writes use the server-only
-service-role key, which must never be exposed through a `NEXT_PUBLIC_` variable
+secret key, which must never be exposed through a `NEXT_PUBLIC_` variable
 or client-side code.
 
 Create the deploy hook used by GitHub Actions:
@@ -163,10 +174,24 @@ The deploy hook is the authoritative production path.
 After a code push that adds a migration:
 
 1. Run **Supabase Migrations** and wait for a green check.
-2. Run **Ingest Open Food Facts** in `dry-run` mode with one page and 50 products.
-3. Run it again in `write-to-supabase` mode with one page and 50 products.
-4. Verify the resulting Vercel production deployment.
-5. Expand to three pages and 50 products only after all 12 categories complete.
+2. Run **Ingest Open Food Facts** for market `DE` in `dry-run` mode with the
+   currently thin German categories, one page, and 50 products.
+3. Run the same targeted German selection in `write-to-supabase` mode.
+4. Run market `US` in `dry-run` mode with `all`, one page, and 50 products.
+5. Run the same US selection in `write-to-supabase` mode.
+6. Verify `/de`, `/en-us`, both manifests, and the catalog quality table in the
+   GitHub Actions summary after Vercel deploys.
+7. Expand one market at a time to three pages and 50 products. Prefer targeted
+   runs for categories marked `thin` over repeatedly importing every category.
+
+The quality summary reports products, ranking-eligible products, licensed image
+coverage, and thin categories for each market. A category is `thin` below 20
+published products, `developing` from 20 to 49, and `solid` at 50 or more. These
+labels guide ingestion work; they do not automatically make a page indexable.
+
+SEO remains conservative. Home pages can be discovered, while product,
+category, and ranking pages stay `noindex,follow` until the existing keyword
+approval and content-quality gates pass for that locale and market.
 
 Open Food Facts can temporarily return `503`. The importer retries with backoff
 and preserves completed categories. A single unavailable category is reported

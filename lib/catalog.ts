@@ -1,4 +1,5 @@
-import type { Category, CategorySlug, RankingPage, ScoreType } from "./types.ts";
+import { pick } from "./i18n.ts";
+import type { Category, CategorySlug, RankingPage, ScoreType, SiteLocale } from "./types.ts";
 
 export type CategoryScoringProfile = {
   basis: "100g" | "100ml";
@@ -153,4 +154,72 @@ export const defaultRankingPages: RankingPage[] = rankingBlueprints.map((ranking
 
 export function getCategoryDefinition(slug: string) {
   return categoryCatalog.find((category) => category.slug === slug);
+}
+
+const englishCategories: Record<CategorySlug, Pick<Category, "label" | "intent" | "description">> = {
+  hafermilch: { label: "Oat milk", intent: "Plant-based drinks for coffee, cereal, and everyday use.", description: "Oat drinks are compared by sugar, ingredients, protein, sodium, and data quality." },
+  proteinriegel: { label: "Protein bars", intent: "Protein-focused snacks with a transparent macro balance.", description: "Protein bars are compared by protein, sugar, ingredient complexity, and disclosed sweeteners." },
+  muesli: { label: "Muesli", intent: "Muesli with less sugar, useful fiber, and understandable ingredients.", description: "Muesli is compared by sugar, protein, fiber, and ingredient quality." },
+  "joghurt-skyr": { label: "Yogurt and skyr", intent: "Dairy products with useful protein and less added sugar.", description: "Yogurt, skyr, and quark are compared by protein, sugar, fat, ingredients, and allergens." },
+  "vegane-snacks": { label: "Vegan snacks", intent: "Plant-based snacks with a more balanced nutrition profile.", description: "Vegan is a filter, not a health claim. Sugar, sodium, fat, and ingredients still matter." },
+  fruehstueckscerealien: { label: "Breakfast cereal", intent: "Breakfast cereals with less sugar and a better everyday balance.", description: "Cereal is compared by sugar, protein, sodium, and ingredient quality." },
+  "pflanzliche-joghurts": { label: "Plant-based yogurt", intent: "Dairy-free yogurt alternatives with a balanced nutrition profile.", description: "Plant-based yogurt is compared by sugar, protein, ingredients, and vegan labeling." },
+  brotaufstriche: { label: "Spreads", intent: "Sweet and savory spreads with clearer ingredient tradeoffs.", description: "Spreads are compared by sugar, sodium, saturated fat, and ingredient quality." },
+  nussmuse: { label: "Nut butters", intent: "Nut butters with short ingredient lists and a useful nutrition profile.", description: "Nut butters are compared by protein, sugar, sodium, and ingredient-list simplicity." },
+  fertiggerichte: { label: "Prepared meals", intent: "Convenient meals with transparent nutrition and ingredient tradeoffs.", description: "Prepared meals are compared by sodium, saturated fat, protein, and ingredients." },
+  erfrischungsgetraenke: { label: "Soft drinks", intent: "Drinks with less sugar and clearly disclosed ingredients.", description: "Soft drinks are compared primarily by sugar and ingredients; sweeteners remain visible." },
+  "kinder-snacks": { label: "Kids' snacks", intent: "Family snacks assessed conservatively for sugar, sodium, and ingredients.", description: "Kids' snacks use stricter sugar, sodium, ingredient, and allergen checks." },
+};
+
+export function localizedCategoryCatalog(locale: SiteLocale): Category[] {
+  return categoryCatalog.map((category) => ({
+    ...category,
+    ...(locale === "en-US" ? englishCategories[category.slug] : {}),
+  }));
+}
+
+export function localizedCategoryLabel(slug: CategorySlug, locale: SiteLocale) {
+  return locale === "en-US" ? englishCategories[slug].label : categoryLabels[slug];
+}
+
+const englishRankingTitles: Record<string, string> = {
+  "wenig-zucker:hafermilch": "Oat milk with less sugar",
+  "beste-wahl:hafermilch": "Best oat milk overall",
+  "proteinreich:proteinriegel": "Highest-protein protein bars",
+  "wenig-zucker:proteinriegel": "Protein bars with less sugar",
+  "wenig-zucker:muesli": "Lower-sugar muesli",
+  "beste-wahl:muesli": "Best muesli overall",
+  "proteinreich:joghurt-skyr": "Highest-protein yogurt and skyr",
+  "wenig-zucker:joghurt-skyr": "Yogurt and skyr with less sugar",
+  "vegan:vegane-snacks": "Best vegan snacks",
+  "beste-wahl:vegane-snacks": "Best vegan snacks overall",
+  "wenig-zucker:fruehstueckscerealien": "Breakfast cereal with less sugar",
+  "familie:fruehstueckscerealien": "Family-friendly breakfast cereal",
+  "wenig-zucker:pflanzliche-joghurts": "Plant-based yogurt with less sugar",
+  "beste-wahl:pflanzliche-joghurts": "Best plant-based yogurt overall",
+  "gute-zutaten:brotaufstriche": "Spreads with simpler ingredients",
+  "beste-wahl:brotaufstriche": "Best spreads overall",
+  "proteinreich:nussmuse": "Higher-protein nut butters",
+  "gute-zutaten:nussmuse": "Nut butters with simpler ingredients",
+  "beste-wahl:fertiggerichte": "Best prepared meals overall",
+  "familie:fertiggerichte": "Family-friendly prepared meals",
+  "wenig-zucker:erfrischungsgetraenke": "Soft drinks with less sugar",
+  "gute-zutaten:erfrischungsgetraenke": "Soft drinks with simpler ingredients",
+  "familie:kinder-snacks": "Best kids' snacks for families",
+  "wenig-zucker:kinder-snacks": "Kids' snacks with less sugar",
+};
+
+export function localizedRankingPages(locale: SiteLocale): RankingPage[] {
+  return defaultRankingPages.map((ranking) => {
+    const title = pick(locale, ranking.title, englishRankingTitles[`${ranking.attribute}:${ranking.category}`] ?? ranking.title);
+    return {
+      ...ranking,
+      title,
+      intro: pick(
+        locale,
+        ranking.intro,
+        `${title}: products are compared using the same transparent category-specific rule, and data gaps remain visible.`,
+      ),
+    };
+  });
 }

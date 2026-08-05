@@ -28,7 +28,7 @@ test("defaults pages without an approved definition to noindex", () => {
 });
 
 test("requires both human keyword approval and page quality thresholds", () => {
-  const definition = getSeoPageDefinition("/best/wenig-zucker/hafermilch");
+  const definition = getSeoPageDefinition("/de/best/wenig-zucker/hafermilch");
   assert.ok(definition);
 
   const decision = evaluateSeoPage(definition, {

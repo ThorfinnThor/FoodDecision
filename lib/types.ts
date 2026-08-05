@@ -12,6 +12,9 @@ export type CategorySlug =
   | "erfrischungsgetraenke"
   | "kinder-snacks";
 
+export type MarketCode = "DE" | "US";
+export type SiteLocale = "de-DE" | "en-US";
+
 export type AffiliateOffer = {
   id: string;
   merchant: string;
@@ -71,8 +74,12 @@ export type Product = {
   brand: string;
   category: CategorySlug;
   categoryLabel: string;
+  market: MarketCode;
+  locale: SiteLocale;
   imageTone: string;
   imageUrl?: string | null;
+  imageLicense: "CC BY-SA" | null;
+  imageSourceUrl: string | null;
   description: string;
   labels: string[];
   ingredients: string[];

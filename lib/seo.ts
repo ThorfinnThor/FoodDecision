@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Product } from "./types";
-import { defaultRankingPages, getCategoryDefinition } from "./catalog.ts";
+import { localizedCategoryLabel, localizedRankingPages } from "./catalog.ts";
+import { categoryRouteSlug, localizedPath, rankingRouteSlug, supportedLocales } from "./i18n.ts";
 
 export type SeoKeyword = {
   id: string;
@@ -62,20 +63,23 @@ function readSeoJson<T>(file: string): T {
 const configuredSeoKeywords = readSeoJson<SeoKeyword[]>("keywords.json");
 const configuredSeoPageDefinitions = readSeoJson<SeoPageDefinition[]>("page-definitions.json");
 
-const generatedRankingDefinitions = defaultRankingPages
-  .filter((ranking) => !configuredSeoPageDefinitions.some((definition) => definition.path === `/best/${ranking.attribute}/${ranking.category}`))
-  .map((ranking): SeoPageDefinition => {
-    const path = `/best/${ranking.attribute}/${ranking.category}`;
-    const category = getCategoryDefinition(ranking.category);
+const generatedRankingDefinitions = supportedLocales.flatMap((locale) => localizedRankingPages(locale).map((ranking): SeoPageDefinition => {
+    const prefix = locale === "de-DE" ? "de" : "us";
+    const publicAttribute = rankingRouteSlug(ranking.attribute, locale);
+    const publicCategory = categoryRouteSlug(ranking.category, locale);
+    const path = localizedPath(locale, `/best/${publicAttribute}/${publicCategory}`);
+    const configured = locale === "de-DE"
+      ? configuredSeoPageDefinitions.find((definition) => definition.path === `/best/${ranking.attribute}/${ranking.category}`)
+      : null;
     return {
-      id: `de-food-${ranking.attribute}-${ranking.category}-page`,
-      slug: `${ranking.attribute}/${ranking.category}`,
+      id: `${prefix}-food-${ranking.attribute}-${ranking.category}-page`,
+      slug: `${publicAttribute}/${publicCategory}`,
       path,
-      keywordId: `de-food-${ranking.attribute}-${ranking.category}`,
+      keywordId: configured?.keywordId ?? `${prefix}-food-${ranking.attribute}-${ranking.category}`,
       template: "product-ranking",
       intent: "ranking",
       cluster: ranking.category,
-      filters: { category: ranking.category, scoreType: ranking.sortScore },
+      filters: { category: ranking.category, attribute: ranking.attribute, scoreType: ranking.sortScore, market: locale === "de-DE" ? "DE" : "US", locale },
       minimumResults: ranking.minProductsRequired,
       minimumDataCompleteness: 0.85,
       minimumUniqueInsights: 3,
@@ -83,19 +87,20 @@ const generatedRankingDefinitions = defaultRankingPages
       indexable: false,
       status: "draft",
       internalLinks: [
-        { relationship: "parent", href: `/category/${ranking.category}`, label: `${category?.label ?? ranking.category} im Überblick` },
-        { relationship: "next_step", href: `/finder?goal=${ranking.sortScore}`, label: "Passende Produkte im Finder" },
+        { relationship: "parent", href: localizedPath(locale, `/category/${publicCategory}`), label: locale === "de-DE" ? `${localizedCategoryLabel(ranking.category, locale)} im Überblick` : `${localizedCategoryLabel(ranking.category, locale)} overview` },
+        { relationship: "next_step", href: `${localizedPath(locale, "/finder")}?goal=${ranking.sortScore}`, label: locale === "de-DE" ? "Passende Produkte im Finder" : "Find matching products" },
       ],
     };
-  });
+  }));
 
 const generatedRankingKeywords = generatedRankingDefinitions.map((definition): SeoKeyword => {
-  const ranking = defaultRankingPages.find((item) => definition.path === `/best/${item.attribute}/${item.category}`);
+  const locale = String(definition.filters.locale);
+  const ranking = localizedRankingPages(locale === "en-US" ? "en-US" : "de-DE").find((item) => item.attribute === definition.filters.attribute && item.category === definition.filters.category);
   return {
     id: definition.keywordId,
     keyword: ranking?.title ?? definition.slug,
-    locale: "de",
-    market: "DE",
+    locale,
+    market: String(definition.filters.market),
     intent: "ranking",
     cluster: definition.cluster,
     priority: 50,
@@ -105,8 +110,8 @@ const generatedRankingKeywords = generatedRankingDefinitions.map((definition): S
   };
 });
 
-export const seoKeywords = [...configuredSeoKeywords, ...generatedRankingKeywords];
-export const seoPageDefinitions = [...configuredSeoPageDefinitions, ...generatedRankingDefinitions];
+export const seoKeywords = [...configuredSeoKeywords, ...generatedRankingKeywords.filter((generated) => !configuredSeoKeywords.some((configured) => configured.id === generated.id))];
+export const seoPageDefinitions = generatedRankingDefinitions;
 
 const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
 export const siteUrl = (

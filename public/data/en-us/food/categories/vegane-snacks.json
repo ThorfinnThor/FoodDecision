@@ -1,0 +1,11 @@
+{
+  "slug": "vegane-snacks",
+  "label": "Vegan snacks",
+  "intent": "Plant-based snacks with a more balanced nutrition profile.",
+  "description": "Vegan is a filter, not a health claim. Sugar, sodium, fat, and ingredients still matter.",
+  "rankingAttributes": [
+    "vegan",
+    "beste-wahl"
+  ],
+  "products": []
+}

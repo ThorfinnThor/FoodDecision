@@ -1,0 +1,340 @@
+{
+  "generatedAt": "2026-08-05T11:21:54.642Z",
+  "source": "fixtures",
+  "version": "food-static-data-v2",
+  "locale": "en-US",
+  "market": "US",
+  "counts": {
+    "products": 0,
+    "categories": 12,
+    "rankings": 24,
+    "comparisons": 0
+  },
+  "productSlugs": [],
+  "categorySlugs": [
+    "hafermilch",
+    "proteinriegel",
+    "muesli",
+    "joghurt-skyr",
+    "vegane-snacks",
+    "fruehstueckscerealien",
+    "pflanzliche-joghurts",
+    "brotaufstriche",
+    "nussmuse",
+    "fertiggerichte",
+    "erfrischungsgetraenke",
+    "kinder-snacks"
+  ],
+  "rankingPages": [
+    {
+      "attribute": "wenig-zucker",
+      "category": "hafermilch",
+      "file": "en-us/rankings/wenig-zucker-hafermilch.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "hafermilch",
+      "file": "en-us/rankings/beste-wahl-hafermilch.json"
+    },
+    {
+      "attribute": "proteinreich",
+      "category": "proteinriegel",
+      "file": "en-us/rankings/proteinreich-proteinriegel.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "proteinriegel",
+      "file": "en-us/rankings/wenig-zucker-proteinriegel.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "muesli",
+      "file": "en-us/rankings/wenig-zucker-muesli.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "muesli",
+      "file": "en-us/rankings/beste-wahl-muesli.json"
+    },
+    {
+      "attribute": "proteinreich",
+      "category": "joghurt-skyr",
+      "file": "en-us/rankings/proteinreich-joghurt-skyr.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "joghurt-skyr",
+      "file": "en-us/rankings/wenig-zucker-joghurt-skyr.json"
+    },
+    {
+      "attribute": "vegan",
+      "category": "vegane-snacks",
+      "file": "en-us/rankings/vegan-vegane-snacks.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "vegane-snacks",
+      "file": "en-us/rankings/beste-wahl-vegane-snacks.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "fruehstueckscerealien",
+      "file": "en-us/rankings/wenig-zucker-fruehstueckscerealien.json"
+    },
+    {
+      "attribute": "familie",
+      "category": "fruehstueckscerealien",
+      "file": "en-us/rankings/familie-fruehstueckscerealien.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "pflanzliche-joghurts",
+      "file": "en-us/rankings/wenig-zucker-pflanzliche-joghurts.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "pflanzliche-joghurts",
+      "file": "en-us/rankings/beste-wahl-pflanzliche-joghurts.json"
+    },
+    {
+      "attribute": "gute-zutaten",
+      "category": "brotaufstriche",
+      "file": "en-us/rankings/gute-zutaten-brotaufstriche.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "brotaufstriche",
+      "file": "en-us/rankings/beste-wahl-brotaufstriche.json"
+    },
+    {
+      "attribute": "proteinreich",
+      "category": "nussmuse",
+      "file": "en-us/rankings/proteinreich-nussmuse.json"
+    },
+    {
+      "attribute": "gute-zutaten",
+      "category": "nussmuse",
+      "file": "en-us/rankings/gute-zutaten-nussmuse.json"
+    },
+    {
+      "attribute": "beste-wahl",
+      "category": "fertiggerichte",
+      "file": "en-us/rankings/beste-wahl-fertiggerichte.json"
+    },
+    {
+      "attribute": "familie",
+      "category": "fertiggerichte",
+      "file": "en-us/rankings/familie-fertiggerichte.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "erfrischungsgetraenke",
+      "file": "en-us/rankings/wenig-zucker-erfrischungsgetraenke.json"
+    },
+    {
+      "attribute": "gute-zutaten",
+      "category": "erfrischungsgetraenke",
+      "file": "en-us/rankings/gute-zutaten-erfrischungsgetraenke.json"
+    },
+    {
+      "attribute": "familie",
+      "category": "kinder-snacks",
+      "file": "en-us/rankings/familie-kinder-snacks.json"
+    },
+    {
+      "attribute": "wenig-zucker",
+      "category": "kinder-snacks",
+      "file": "en-us/rankings/wenig-zucker-kinder-snacks.json"
+    }
+  ],
+  "comparisonPairs": [],
+  "productIndexFiles": [],
+  "searchIndexFiles": [],
+  "files": [
+    {
+      "path": "public/data/en-us/food/categories/hafermilch.json",
+      "bytes": 309,
+      "sha256": "a8576e7bf3662f5e1c19a42cf322d1d1f49b25bef6b0da84b6d3b918999dbcc3"
+    },
+    {
+      "path": "public/data/en-us/food/categories/proteinriegel.json",
+      "bytes": 330,
+      "sha256": "cd300bccec3c92b6a94501f28e7d1a020dc192092c01721a626dd8bf53fd3fad"
+    },
+    {
+      "path": "public/data/en-us/food/categories/muesli.json",
+      "bytes": 303,
+      "sha256": "82d0c63ca7c811db073d62580207878ab6b7609860faf1a91789033bb249ed61"
+    },
+    {
+      "path": "public/data/en-us/food/categories/joghurt-skyr.json",
+      "bytes": 327,
+      "sha256": "0e4d5a2655d4abfa691c0355aa50be476cd0881a1f2f724251edf8a79df66b95"
+    },
+    {
+      "path": "public/data/en-us/food/categories/vegane-snacks.json",
+      "bytes": 318,
+      "sha256": "315d8eaa575ad7e459bd4549f00d9d359656f49cb31dfc654965d25ad2b3cc66"
+    },
+    {
+      "path": "public/data/en-us/food/categories/fruehstueckscerealien.json",
+      "bytes": 321,
+      "sha256": "dd24b07e6e3a887b17b0ea47dec6c1a243c36f9a7985f0cb4acc54303f8bc2be"
+    },
+    {
+      "path": "public/data/en-us/food/categories/pflanzliche-joghurts.json",
+      "bytes": 339,
+      "sha256": "54386ff8fcf83454b3334167bec5a92e390591ad8acc6362e052385f97286865"
+    },
+    {
+      "path": "public/data/en-us/food/categories/brotaufstriche.json",
+      "bytes": 311,
+      "sha256": "87797c8e83aada2aa311f6003fb908401a66d25870d27e85b64df4d0e6f6caf3"
+    },
+    {
+      "path": "public/data/en-us/food/categories/nussmuse.json",
+      "bytes": 329,
+      "sha256": "a3b7de49142164c765550e05de62d16deb2d7f72a3aba513e30c40169bc9c1f4"
+    },
+    {
+      "path": "public/data/en-us/food/categories/fertiggerichte.json",
+      "bytes": 325,
+      "sha256": "90d68c434fc11a3fe14842b3f042faa23265f96b07bdf93b3bdc1954adb445a5"
+    },
+    {
+      "path": "public/data/en-us/food/categories/erfrischungsgetraenke.json",
+      "bytes": 332,
+      "sha256": "247845ccc0de247ee43be39bffb02ad7c8c7cec584c6aa5feec285afbd52fb9b"
+    },
+    {
+      "path": "public/data/en-us/food/categories/kinder-snacks.json",
+      "bytes": 322,
+      "sha256": "2985ca6b8f3d482122487908f0349a53ca1960f479188ea28da07c61f7e812dc"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-hafermilch.json",
+      "bytes": 338,
+      "sha256": "40644f75ec7123ba531176fe49116675cceaf5255b65f43ab501fff112b909a2"
+    },
+    {
+      "path": "public/data/en-us/rankings/beste-wahl-hafermilch.json",
+      "bytes": 334,
+      "sha256": "e156989b0bd996327ee8aae30466c436cafcf786700b4d3bd706b250bae68c7e"
+    },
+    {
+      "path": "public/data/en-us/rankings/proteinreich-proteinriegel.json",
+      "bytes": 347,
+      "sha256": "dc225ea8932f97b0c082c4eb61d2390547d27b9ebfde45d003f9a60db1217440"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-proteinriegel.json",
+      "bytes": 349,
+      "sha256": "0a8920970c46fee068c9e2eb8cbc8221436c5d720bef33948510017402d25c58"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-muesli.json",
+      "bytes": 322,
+      "sha256": "42e670b6c6a77a1547f06076f90d3452fb2ecad5a678f8e08fe0cb529e8fe15f"
+    },
+    {
+      "path": "public/data/en-us/rankings/beste-wahl-muesli.json",
+      "bytes": 326,
+      "sha256": "e110046800fc787ea2c87cb4199a1a9f024e637b7c36146efce9ba7c7382f429"
+    },
+    {
+      "path": "public/data/en-us/rankings/proteinreich-joghurt-skyr.json",
+      "bytes": 352,
+      "sha256": "6899f49096b481139fd248a1e1ed61df47385809e4504d394d166d17c6aee3e9"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-joghurt-skyr.json",
+      "bytes": 354,
+      "sha256": "8a04ecd41720f6507380df9214673aecc816c454d49c0cb8b6faff89ab41745a"
+    },
+    {
+      "path": "public/data/en-us/rankings/vegan-vegane-snacks.json",
+      "bytes": 316,
+      "sha256": "5ef0ec87b8108e8685d049e4c9a91365c9d9b390c8e1292f5d362dfe11087b4b"
+    },
+    {
+      "path": "public/data/en-us/rankings/beste-wahl-vegane-snacks.json",
+      "bytes": 345,
+      "sha256": "ab9baeb8c47323315cffe38e23186f03e537f6a3d924eaa2c8da2d690d129b66"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-fruehstueckscerealien.json",
+      "bytes": 365,
+      "sha256": "4e0f878809a47b83a406a74fa0f9a341c3569635627a23989586ab765f844bdb"
+    },
+    {
+      "path": "public/data/en-us/rankings/familie-fruehstueckscerealien.json",
+      "bytes": 357,
+      "sha256": "885a30ec798408dbeab5bb67fd3fed0446c0a16ac5834391274e570a15dcc954"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-pflanzliche-joghurts.json",
+      "bytes": 368,
+      "sha256": "9abfee2ff1c6d5a9b970bd7c6c1ab5f6b303eb886b70c75f94ce4816d564a1fd"
+    },
+    {
+      "path": "public/data/en-us/rankings/beste-wahl-pflanzliche-joghurts.json",
+      "bytes": 364,
+      "sha256": "7e665ba31487ccbdcc734bdc408c163f77c9eedfc184f03862adb4806d5363fd"
+    },
+    {
+      "path": "public/data/en-us/rankings/gute-zutaten-brotaufstriche.json",
+      "bytes": 367,
+      "sha256": "0b53482146f36255c94a38106a371c872a7182b44012419e43d39cdc2ffa6137"
+    },
+    {
+      "path": "public/data/en-us/rankings/beste-wahl-brotaufstriche.json",
+      "bytes": 336,
+      "sha256": "eb59e2c57e8912880d5aef7d38af6ead1d7007f94045b35afafcaeeee68e9367"
+    },
+    {
+      "path": "public/data/en-us/rankings/proteinreich-nussmuse.json",
+      "bytes": 338,
+      "sha256": "9dcc9bdeb4049c0680503c576937a4e2aad819ea9044b4ff8291d706a618c438"
+    },
+    {
+      "path": "public/data/en-us/rankings/gute-zutaten-nussmuse.json",
+      "bytes": 369,
+      "sha256": "807c08a7445c689969372a4d378e49aefa0e406cbcdb5cef0e9916db6231b22b"
+    },
+    {
+      "path": "public/data/en-us/rankings/beste-wahl-fertiggerichte.json",
+      "bytes": 350,
+      "sha256": "24aa6279f7d5f922e14de2b1614a09828ed1815a38a888d9716979c413a527f9"
+    },
+    {
+      "path": "public/data/en-us/rankings/familie-fertiggerichte.json",
+      "bytes": 346,
+      "sha256": "aba9ad66a3a77dcbe5c224f1ba23935f0a6c188d3bf53a3d7adc324035618e07"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-erfrischungsgetraenke.json",
+      "bytes": 355,
+      "sha256": "a5a31acb777208f041c043bb70e2e0f992761357bf605d29994a4b2f4d095ff8"
+    },
+    {
+      "path": "public/data/en-us/rankings/gute-zutaten-erfrischungsgetraenke.json",
+      "bytes": 382,
+      "sha256": "37dcee97b98550ad133ea01e4a27ebfc46dd3e14bf9f504e9c71ca405d3f6b6b"
+    },
+    {
+      "path": "public/data/en-us/rankings/familie-kinder-snacks.json",
+      "bytes": 345,
+      "sha256": "746668590e5e886a7fc3bb8b5cc8cd5e020242ca18d0c782e1beb453ba42d704"
+    },
+    {
+      "path": "public/data/en-us/rankings/wenig-zucker-kinder-snacks.json",
+      "bytes": 349,
+      "sha256": "fd9c5b2da7b94c2934773d7523d1acacecc86c100570e3cefc54763e801d22f4"
+    },
+    {
+      "path": "public/data/en-us/quality-report.json",
+      "bytes": 2371,
+      "sha256": "d97ea8fd887ed998a8e68dc7642c381cd7a05a728b966e19da6b95d3d8e4e05c"
+    }
+  ]
+}

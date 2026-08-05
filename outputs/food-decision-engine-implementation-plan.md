@@ -1,6 +1,51 @@
 # Food Decision Engine - Implementierungsplan
 
-Stand: 2026-07-29
+Stand: 2026-08-05
+
+## 0. Verbindliche Sprint-Aktualisierung
+
+Die folgenden Entscheidungen ersetzen widersprechende Annahmen in aelteren
+Abschnitten dieses Plans:
+
+- Maerkte: Deutschland (`DE`, `de-DE`) und USA (`US`, `en-US`).
+- Oeffentliche URL-Struktur: `/de/...` und `/en-us/...`; keine automatische
+  Geo- oder Browser-Sprachweiterleitung.
+- Datenisolation: Importlaeufe, Rohprodukte, normalisierte Produkte, Rankings,
+  Exporte, Favoriten, Einkaufslisten und Finder-Praeferenzen sind marktbezogen.
+- SEO: eigene Canonicals je Locale, uebersetzte Kategorie- und Ranking-Slugs,
+  reziproke `hreflang`-Links nur fuer tatsaechlich entsprechende Seiten und
+  `x-default` auf Deutsch. Ungepruefte skalierte Seiten bleiben `noindex,follow`.
+- Bilder: Im aktuellen Sprint werden ausschliesslich HTTPS-Produktbilder der
+  erlaubten Open-Food-Facts-Hosts angezeigt. Sie werden als CC BY-SA
+  gekennzeichnet und auf die Produktquelle verlinkt. Andere Bildquellen werden
+  ausgeblendet und als Datenqualitaetsproblem protokolliert.
+- Wachstum: Zuerst werden die vorhandenen 12 Kategorien pro Markt stabilisiert.
+  Kategorien unter 20 veroeffentlichten Produkten gelten als `thin`, 20 bis 49
+  als `developing`, ab 50 als `solid`. Erst danach werden neue Kategorien
+  ergaenzt.
+- Monetarisierung: Affiliate-Links werden erst nach einer stabilen Live-Version
+  umgesetzt. Affiliate-Daten duerfen Scores, Rankings und Empfehlungen niemals
+  beeinflussen.
+- Exportskalierung: Supabase wird paginiert abgefragt; Produkt- und Suchindizes
+  werden in Bloecke zu maximal 500 Eintraegen geteilt. Dadurch endet ein voller
+  Import nicht still bei der Supabase-Standardgrenze von 1.000 Zeilen.
+- Nutzwert vor SEO-Menge: Kategorie- und Ranking-Seiten enthalten
+  datenabgeleitete Kennzahlen, Vergleichskontext, Datenabdeckung und sichtbare
+  Unsicherheit. Seiten werden nicht allein wegen vorhandener Produkte indexiert.
+
+### Reihenfolge fuer den naechsten Live-Ausbau
+
+1. Migration `0007_market_localization_foundation.sql` anwenden.
+2. Duennen deutschen Kategorien gezielt per Dry Run und danach Write Run
+   auffuellen.
+3. US-Katalog mit einer Seite und 50 Produkten je Kategorie trocken testen.
+4. Den US-Katalog mit denselben Einstellungen schreiben und normalisieren.
+5. Beide Marktmanifeste, die Qualitaetszusammenfassung und `/de` sowie `/en-us`
+   in der Live-Version pruefen.
+6. Pro Markt auf drei Seiten zu je 50 Produkten erweitern; bei OFF-503 nur
+   betroffene Kategorien erneut ausfuehren.
+7. Erst nach stabilen Katalogen neue Kategorien und danach Affiliate-Links
+   beginnen.
 
 ## 1. Produktvision
 
@@ -33,7 +78,7 @@ Das langfristige Produkt verbindet strukturierte Produktdaten, nachvollziehbare 
 
 Vor der Implementierung muessen die folgenden Punkte festgelegt sein. Diese Entscheidungen begrenzen den Scope und verhindern, dass aus dem MVP eine unkontrollierte Datenbank wird.
 
-### Zielmarkt und Sprache
+### Zielmarkt und Sprache (historische Ausgangsannahme, durch Abschnitt 0 ersetzt)
 
 - Zielmarkt: Deutschland
 - Sprache: Deutsch

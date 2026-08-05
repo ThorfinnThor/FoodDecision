@@ -1,0 +1,10 @@
+{
+  "attribute": "vegan",
+  "category": "vegane-snacks",
+  "title": "Best vegan snacks",
+  "sortScore": "vegan",
+  "intro": "Best vegan snacks: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "items": []
+}

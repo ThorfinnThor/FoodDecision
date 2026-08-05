@@ -4,6 +4,8 @@ import {
   assertDeploymentExportPolicy,
   mapSupabaseProduct,
   resolveExportSource,
+  isFutureJwtError,
+  supabaseAuthHeaders,
 } from "../scripts/export/static-data.ts";
 
 function productRow(nutritionFacts) {
@@ -16,6 +18,8 @@ function productRow(nutritionFacts) {
     imported_at: "2026-07-31T10:00:00.000Z",
     source_updated_at: null,
     publishability: "ranking_eligible",
+    market: "DE",
+    locale: "de-DE",
     brands: { name: "Test Marke" },
     nutrition_facts: nutritionFacts,
     product_categories: [{ categories: { slug: "muesli", label: "Muesli" } }],
@@ -62,4 +66,14 @@ test("rejects fixture exports in Vercel deployments", () => {
   assert.doesNotThrow(() => assertDeploymentExportPolicy({ isVercel: true, exportSource: "supabase" }));
   assert.equal(resolveExportSource("supabase"), "supabase");
   assert.throws(() => resolveExportSource("unknown"), /Unsupported STATIC_EXPORT_SOURCE/);
+});
+
+test("uses the correct headers for new secret keys and retries only future-JWT errors", () => {
+  assert.deepEqual(supabaseAuthHeaders("sb_secret_example"), {
+    apikey: "sb_secret_example",
+    Accept: "application/json",
+  });
+  assert.equal(supabaseAuthHeaders("legacy.jwt").Authorization, "Bearer legacy.jwt");
+  assert.equal(isFutureJwtError(401, '{"code":"PGRST303","message":"JWT issued at future"}'), true);
+  assert.equal(isFutureJwtError(401, '{"code":"PGRST301","message":"Invalid JWT"}'), false);
 });

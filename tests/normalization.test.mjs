@@ -71,3 +71,22 @@ test("blocks products without nutrition and keeps utility parsing stable", () =>
   assert.deepEqual(splitIngredientText("A, B (C, D); E"), ["A", "B (C, D)", "E"]);
   assert.equal(slugify("Muesli fuer Groß & Klein"), "muesli-fuer-gross-klein");
 });
+
+test("uses US English source text and hides images from unapproved hosts", () => {
+  const product = normalizeOpenFoodFactsRow(rawRow({
+    market: "US",
+    locale: "en-US",
+    product_name: "Morning Crunch",
+    image_url: "https://example.com/product.jpg",
+    payload: {
+      ingredients_text_en: "Oats, almonds, salt",
+      allergens_tags: ["en:almonds"],
+      nutriments: rawRow().payload.nutriments,
+    },
+  }));
+  assert.equal(product.market, "US");
+  assert.equal(product.categoryLabel, "Muesli");
+  assert.equal(product.imageUrl, null);
+  assert.ok(product.qualityFlags.some((flag) => flag.flag === "unlicensed_image_source"));
+  assert.equal(product.scores.find((score) => score.type === "low_sugar")?.label, "Sugar score");
+});

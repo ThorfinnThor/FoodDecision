@@ -1,0 +1,11 @@
+{
+  "slug": "erfrischungsgetraenke",
+  "label": "Soft drinks",
+  "intent": "Drinks with less sugar and clearly disclosed ingredients.",
+  "description": "Soft drinks are compared primarily by sugar and ingredients; sweeteners remain visible.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "gute-zutaten"
+  ],
+  "products": []
+}
