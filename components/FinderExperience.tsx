@@ -138,7 +138,7 @@ export function FinderExperience({
               <button aria-pressed={criteria.category === "all"} onClick={() => update("category", "all")} type="button"><strong>{pick(locale, "Alle Produkte", "All products")}</strong><span>{products.length} {pick(locale, "bewertete Produkte", "assessed products")}</span></button>
               {categories.map((item) => {
                 const count = products.filter((product) => product.category === item.slug).length;
-                return <button aria-pressed={criteria.category === item.slug} key={item.slug} onClick={() => update("category", item.slug)} type="button"><strong>{item.label}</strong><span>{count ? `${count} ${count === 1 ? pick(locale, "Produkt", "product") : pick(locale, "Produkte", "products")}` : pick(locale, "Nach nächstem Import verfügbar", "Available after the next import")}</span></button>;
+                return <button aria-pressed={criteria.category === item.slug} key={item.slug} onClick={() => update("category", item.slug)} type="button"><strong>{item.label}</strong><span>{count} {count === 1 ? pick(locale, "Produkt", "product") : pick(locale, "Produkte", "products")}</span></button>;
               })}
             </div>
           </div>

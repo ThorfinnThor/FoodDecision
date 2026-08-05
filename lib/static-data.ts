@@ -38,6 +38,8 @@ function createCatalog(locale: SiteLocale) {
   const getProduct = (slug: string) => products.find((product) => product.slug === slug);
   const getProductByGtin = (gtin: string) => products.find((product) => product.gtin === gtin);
   const getProductsByCategory = (category: CategorySlug) => products.filter((product) => product.category === category);
+  const getAvailableCategories = () => categories.filter((category) => getProductsByCategory(category.slug).length > 0);
+  const getCategoryProductCount = (category: CategorySlug) => getProductsByCategory(category).length;
   const getRanking = (attribute: string, category: string) =>
     rankingPages.find((page) => page.attribute === attribute && page.category === category);
   const rankedProducts = (category: CategorySlug, scoreType: ScoreType) =>
@@ -104,6 +106,8 @@ function createCatalog(locale: SiteLocale) {
     rankingPages,
     comparisonPairs: manifest.comparisonPairs,
     getCategories,
+    getAvailableCategories,
+    getCategoryProductCount,
     getCategory,
     getProduct,
     getProductByGtin,
@@ -135,6 +139,8 @@ export const products = defaultCatalog.products;
 export const rankingPages = defaultCatalog.rankingPages;
 export const comparisonPairs = defaultCatalog.comparisonPairs;
 export const getCategories = defaultCatalog.getCategories;
+export const getAvailableCategories = defaultCatalog.getAvailableCategories;
+export const getCategoryProductCount = defaultCatalog.getCategoryProductCount;
 export const getCategory = defaultCatalog.getCategory;
 export const getProduct = defaultCatalog.getProduct;
 export const getProductByGtin = defaultCatalog.getProductByGtin;

@@ -13,15 +13,16 @@ import { getCatalog } from "@/lib/static-data";
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
 export function generateStaticParams() {
-  return (["de-DE", "en-US"] as const).flatMap((locale) => getCatalog(locale).getCategories().map((category) => ({ locale: locale === "de-DE" ? "de" : "en-us", slug: categoryRouteSlug(category.slug, locale) })));
+  return (["de-DE", "en-US"] as const).flatMap((locale) => getCatalog(locale).getAvailableCategories().map((category) => ({ locale: locale === "de-DE" ? "de" : "en-us", slug: categoryRouteSlug(category.slug, locale) })));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const values = await params;
   const locale = requireLocale(values.locale);
   const internalSlug = categoryFromRouteSlug(values.slug, locale);
-  const category = internalSlug ? getCatalog(locale).getCategory(internalSlug) : null;
-  if (!category) return {};
+  const catalog = getCatalog(locale);
+  const category = internalSlug ? catalog.getCategory(internalSlug) : null;
+  if (!category || catalog.getCategoryProductCount(category.slug) === 0) return { robots: { index: false, follow: false } };
   return {
     title: `${category.label} - Food Decision Engine`,
     description: category.description,
@@ -46,8 +47,9 @@ export default async function CategoryPage({ params }: Props) {
   if (!category) notFound();
   const path = (value = "/") => localizedPath(locale, value);
   const items = catalog.getProductsByCategory(category.slug);
+  if (!items.length) notFound();
   const insights = categoryInsights(items);
-  const rankings = catalog.rankingPages.filter((ranking) => ranking.category === category.slug);
+  const rankings = catalog.rankingPages.filter((ranking) => ranking.category === category.slug && catalog.rankedProducts(ranking.category, ranking.sortScore).length > 0);
 
   return <main>
     <StructuredData data={{ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [

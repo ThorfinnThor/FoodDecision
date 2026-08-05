@@ -7,6 +7,7 @@ import {
   isFutureJwtError,
   supabaseAuthHeaders,
 } from "../scripts/export/static-data.ts";
+import { getCatalog } from "../lib/static-data.ts";
 
 function productRow(nutritionFacts) {
   return {
@@ -76,4 +77,13 @@ test("uses the correct headers for new secret keys and retries only future-JWT e
   assert.equal(supabaseAuthHeaders("legacy.jwt").Authorization, "Bearer legacy.jwt");
   assert.equal(isFutureJwtError(401, '{"code":"PGRST303","message":"JWT issued at future"}'), true);
   assert.equal(isFutureJwtError(401, '{"code":"PGRST301","message":"Invalid JWT"}'), false);
+});
+
+test("only exposes categories that have products in the current market catalog", () => {
+  const catalog = getCatalog("de-DE");
+  const available = catalog.getAvailableCategories();
+
+  assert.ok(available.length > 0);
+  assert.ok(available.length < catalog.getCategories().length);
+  assert.ok(available.every((category) => catalog.getCategoryProductCount(category.slug) > 0));
 });
