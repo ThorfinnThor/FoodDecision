@@ -107,7 +107,7 @@ async function deleteForProducts(table: string, productIds: string[]) {
 
 async function latestSuccessfulImportRun() {
   const rows = await supabaseRequest<Array<{ id: string }>>(
-    `import_runs?select=id&status=eq.success&market=eq.${market}&order=finished_at.desc&limit=1`,
+    `import_runs?select=id&status=eq.success&imported_count=gt.0&market=eq.${market}&order=finished_at.desc&limit=1`,
   );
   if (!rows.length) throw new Error("No successful import run is available to normalize.");
   return rows[0].id;

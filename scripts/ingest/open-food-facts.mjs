@@ -9,7 +9,7 @@ const SOURCE_NAME = "Open Food Facts";
 const SOURCE_URL = "https://world.openfoodfacts.org";
 const SOURCE_LICENSE = "ODbL database; DbCL contents; CC BY-SA product images";
 
-const categoryJobs = [
+export const categoryJobs = [
   {
     slug: "hafermilch",
     offCategory: "oat-milks",
@@ -34,7 +34,7 @@ const categoryJobs = [
     slug: "vegane-snacks",
     offCategory: "snacks",
     extraParams: {
-      labels_tags: "en:vegan",
+      labels_tags_en: "Vegan",
     },
   },
   {
@@ -44,8 +44,10 @@ const categoryJobs = [
   },
   {
     slug: "pflanzliche-joghurts",
-    offCategory: "plant-based-yogurts",
-    extraParams: {},
+    offCategory: "yogurts",
+    extraParams: {
+      labels_tags_en: "Vegan",
+    },
   },
   {
     slug: "brotaufstriche",
@@ -71,7 +73,7 @@ const categoryJobs = [
     slug: "kinder-snacks",
     offCategory: "snacks",
     extraParams: {
-      labels_tags: "en:for-children",
+      labels_tags_en: "For children",
     },
   },
 ];
@@ -106,9 +108,12 @@ const maxPages = Number(process.env.OFF_MAX_PAGES ?? "1");
 const requestDelayMs = Number(process.env.OFF_REQUEST_DELAY_MS ?? "7000");
 const fetchRetries = Number(process.env.OFF_FETCH_RETRIES ?? "4");
 const fetchRetryBaseMs = Number(process.env.OFF_FETCH_RETRY_BASE_MS ?? "10000");
-const allowEmptyDryRun = process.env.OFF_ALLOW_EMPTY_DRY_RUN !== "false";
+const allowEmptyDryRun = process.env.OFF_ALLOW_EMPTY_DRY_RUN === "true";
 export function shouldContinueOnCategoryError(value = process.env.OFF_CONTINUE_ON_CATEGORY_ERROR) {
   return value !== "false";
+}
+export function shouldRejectEmptyImport(rowCount, isDryRun = dryRun, emptyDryRunAllowed = allowEmptyDryRun) {
+  return rowCount === 0 && !(isDryRun && emptyDryRunAllowed);
 }
 const continueOnCategoryError = shouldContinueOnCategoryError();
 const upsertBatchSize = Number(process.env.OFF_UPSERT_BATCH_SIZE ?? "100");
@@ -379,6 +384,7 @@ async function collectProducts(importRunId) {
 
   for (const job of selectedCategoryJobs) {
     let completedPages = 0;
+    const initialRowCount = rows.length;
     try {
       for (let page = 1; page <= maxPages; page += 1) {
         const data = await fetchOffPage(job, page);
@@ -393,6 +399,12 @@ async function collectProducts(importRunId) {
         if (products.length < pageSize) break;
         if (requestDelayMs > 0) await sleep(requestDelayMs);
       }
+
+      if (rows.length === initialRowCount) {
+        const message = "Open Food Facts returned no usable products for this category.";
+        failures.push({ category: job.slug, completedPages, message });
+        console.warn(`Stopping ${job.slug} after ${completedPages} successful page(s): ${message}`);
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       failures.push({ category: job.slug, completedPages, message: clippedMessage(message) });
@@ -404,7 +416,7 @@ async function collectProducts(importRunId) {
     }
   }
 
-  if (failures.length && rows.length === 0 && !(dryRun && allowEmptyDryRun)) {
+  if (shouldRejectEmptyImport(rows.length)) {
     throw new Error(`Open Food Facts returned no usable products. Failures: ${JSON.stringify(failures)}`);
   }
 
@@ -427,6 +439,17 @@ async function writeStepSummary({ counts, failures }) {
     `- Result: ${status}`,
     "",
   ];
+  if (failures.length) {
+    lines.push(
+      "### Category failures",
+      "",
+      ...failures.map(
+        (failure) =>
+          `- ${failure.category}: ${failure.completedPages} successful page(s) - ${clippedMessage(failure.message, 180)}`,
+      ),
+      "",
+    );
+  }
   await appendFile(path, `${lines.join("\n")}\n`, "utf8");
 }
 
