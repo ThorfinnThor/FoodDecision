@@ -4,6 +4,7 @@ import {
   categoryJobs,
   shouldContinueOnCategoryError,
   shouldRejectEmptyImport,
+  summaryFailureMessage,
 } from "../scripts/ingest/open-food-facts.mjs";
 
 test("continues partial imports unless strict category handling is requested", () => {
@@ -28,4 +29,9 @@ test("rejects empty production imports before normalization", () => {
   assert.equal(shouldRejectEmptyImport(0, true, false), true);
   assert.equal(shouldRejectEmptyImport(0, true, true), false);
   assert.equal(shouldRejectEmptyImport(1, false, false), false);
+});
+
+test("keeps category failures readable in GitHub summaries", () => {
+  const message = summaryFailureMessage("Open Food Facts failed 503:\n<html>\n  unavailable  </html>");
+  assert.equal(message, "Open Food Facts failed 503: <html> unavailable </html>");
 });

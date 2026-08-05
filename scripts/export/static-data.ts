@@ -485,7 +485,7 @@ async function exportStaticData() {
     locales: localeManifests,
   });
 
-  if (process.env.GITHUB_STEP_SUMMARY) {
+  if (source === "supabase" && process.env.GITHUB_STEP_SUMMARY) {
     const lines = ["## Catalog quality", "", "| Market | Products | Ranking eligible | Licensed images | Thin categories |", "| --- | ---: | ---: | ---: | ---: |"];
     for (const report of qualityReports) {
       lines.push(`| ${report.market} | ${report.totals.products} | ${report.totals.rankingEligible} | ${report.totals.licensedImages} | ${report.categories.filter((category) => category.status === "thin").length} |`);

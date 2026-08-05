@@ -185,6 +185,10 @@ function clippedMessage(value, maxLength = 1000) {
   return text.length > maxLength ? `${text.slice(0, maxLength)}... [truncated]` : text;
 }
 
+export function summaryFailureMessage(value) {
+  return clippedMessage(value, 180).replace(/\s+/g, " ").trim();
+}
+
 function modifiedAt(product) {
   if (!product.last_modified_t) return null;
   return new Date(Number(product.last_modified_t) * 1000).toISOString();
@@ -445,7 +449,7 @@ async function writeStepSummary({ counts, failures }) {
       "",
       ...failures.map(
         (failure) =>
-          `- ${failure.category}: ${failure.completedPages} successful page(s) - ${clippedMessage(failure.message, 180)}`,
+          `- ${failure.category}: ${failure.completedPages} successful page(s) - ${summaryFailureMessage(failure.message)}`,
       ),
       "",
     );
