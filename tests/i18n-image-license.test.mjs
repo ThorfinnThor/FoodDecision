@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { categoryImages } from "../lib/category-images.ts";
@@ -37,4 +37,12 @@ test("every category photo is local, commercially reusable, and attributed", () 
     assert.ok(image.alt["de-DE"].length > 8);
     assert.ok(image.alt["en-US"].length > 8);
   }
+});
+
+test("keeps localized action labels in their authored sentence case", () => {
+  const styles = readFileSync(join(process.cwd(), "app", "globals.css"), "utf8");
+  const heroActionRule = styles.match(/\.hero-actions > a:not\(\.button-link\)\s*\{[^}]+\}/)?.[0];
+
+  assert.ok(heroActionRule, "hero action styles are missing");
+  assert.doesNotMatch(heroActionRule, /text-transform\s*:\s*capitalize/);
 });

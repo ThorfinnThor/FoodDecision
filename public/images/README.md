@@ -29,5 +29,5 @@ in-product attribution list. The files are not retouched; the UI uses CSS
 | `categories/spreads.jpg` | Shixart1985 | CC BY 2.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Person_spreads_cream_on_slice_of_bread_closeup.jpg) |
 | `categories/nut-butter.jpg` | NIAID | CC BY 2.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Peanut_ButterToast_(32136852453).jpg) |
 | `categories/ready-meals.jpg` | Ella Olsson | CC BY 2.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Meal_prep_container_(44260855980).jpg) |
-| `categories/soft-drinks.jpg` | Fornax | CC BY-SA 3.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Glass_sparkling_lemonade.jpg) |
+| `categories/soft-drinks.jpg` | pic_p_ter | Public domain | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Glass_cola.jpg) |
 | `categories/kids-snacks.jpg` | Cindyparnell | CC BY 4.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Healthy_kids_lunch_packed.jpg) |

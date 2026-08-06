@@ -103,12 +103,12 @@ export const categoryImages = {
   },
   erfrischungsgetraenke: {
     src: "/images/categories/soft-drinks.jpg",
-    alt: { "de-DE": "Ein Glas sprudelnde Limonade", "en-US": "A glass of sparkling lemonade" },
-    creator: "Fornax",
-    sourceUrl: "https://commons.wikimedia.org/wiki/File:Glass_sparkling_lemonade.jpg",
-    license: "CC BY-SA 3.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
-    objectPosition: "center 64%",
+    alt: { "de-DE": "Ein Glas kalte Cola mit Eis und Zitrone", "en-US": "A glass of cold cola with ice and lemon" },
+    creator: "pic_p_ter",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Glass_cola.jpg",
+    license: "Public domain",
+    licenseUrl: "https://creativecommons.org/publicdomain/mark/1.0/",
+    objectPosition: "center 52%",
   },
   "kinder-snacks": {
     src: "/images/categories/kids-snacks.jpg",
