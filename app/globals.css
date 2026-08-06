@@ -455,6 +455,10 @@ main { min-height: 70vh; }
 .number-filter small { color: var(--color-text-500); }
 .stacked-field { display: grid; font-size: 13px; gap: 6px; }
 .finder-results-toolbar { align-items: start; display: flex; gap: 24px; justify-content: space-between; }
+.finder-result-actions { display: flex; flex: 0 0 auto; gap: 8px; }
+.active-filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 24px; }
+.active-filter-bar button { align-items: center; background: var(--color-primary-50); border: 1px solid #dcebd1; border-radius: var(--radius-pill); color: var(--color-text-700); display: inline-flex; font-size: 13px; gap: 8px; min-height: 36px; padding: 7px 11px; }
+.active-filter-bar button b { color: var(--color-primary-700); font-size: 17px; line-height: 1; }
 .load-more-button { margin: 28px auto 0; }
 .form-error { color: #9f2f18; font-size: 13px; }
 
@@ -552,6 +556,7 @@ main { min-height: 70vh; }
 @media (max-width: 600px) {
   .category-choice-grid, .catalog-toolbar, .comparison-choice-grid, .related-link-grid, .preferences-toggle-grid { grid-template-columns: 1fr; }
   .finder-results-toolbar, .comparison-builder-toolbar { align-items: stretch; flex-direction: column; }
+  .finder-result-actions { flex-wrap: wrap; }
   .number-filter { grid-template-columns: minmax(0, 1fr) 100px 36px; }
   .comparison-builder { border-radius: var(--radius-md); padding: 16px; }
   .versus-mark { height: 24px; }

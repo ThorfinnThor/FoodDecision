@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PREFERENCES_KEY, trackEvent } from "@/lib/client-state";
-import { productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
+import { defaultFinderCriteria, finderCriteriaToSearchParams, productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
 import { pick } from "@/lib/i18n";
 import type { Category, Product, ScoreType, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
@@ -21,59 +21,44 @@ const allergenChoices = {
   "en-US": ["milk", "gluten", "soy", "eggs", "peanuts", "almonds", "hazelnuts"],
 } as const;
 
-function defaultCriteria(initialGoal: ScoreType, initialQuery: string): FinderCriteria {
-  return {
-    category: "all",
-    goal: initialGoal,
-    veganOnly: initialGoal === "vegan",
-    additiveFree: false,
-    sweetenerFree: false,
-    palmOilFree: false,
-    excludedAllergens: [],
-    maxSugar: null,
-    minProtein: null,
-    maxCalories: null,
-    includeIngredient: "",
-    excludeIngredient: "",
-    minimumConfidence: "any",
-    query: initialQuery,
-  };
-}
-
 export function FinderExperience({
   categories,
-  initialGoal,
-  initialQuery,
+  initialCriteria,
   products,
   locale,
+  showResultsInitially,
 }: {
   categories: Category[];
-  initialGoal: ScoreType;
-  initialQuery: string;
+  initialCriteria: FinderCriteria;
   products: Product[];
   locale: SiteLocale;
+  showResultsInitially: boolean;
 }) {
-  const [step, setStep] = useState(0);
-  const [criteria, setCriteria] = useState<FinderCriteria>(() => defaultCriteria(initialGoal, initialQuery));
+  const [step, setStep] = useState(showResultsInitially ? 3 : 0);
+  const [criteria, setCriteria] = useState<FinderCriteria>(initialCriteria);
   const [visibleCount, setVisibleCount] = useState(24);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
   const preferencesKey = `${PREFERENCES_KEY}:${locale}`;
 
   useEffect(() => {
+    if (showResultsInitially) return;
     const timer = window.setTimeout(() => {
       try {
         const stored = JSON.parse(window.localStorage.getItem(preferencesKey) ?? "{}") as Partial<FinderCriteria>;
-        setCriteria((current) => ({
-          ...current,
-          ...stored,
-          goal: initialGoal !== "overall_match" ? initialGoal : stored.goal ?? current.goal,
-          query: initialQuery || stored.query || "",
-        }));
+        setCriteria((current) => ({ ...current, ...stored }));
       } catch {
         // Invalid local preferences are ignored and replaced on the next save.
       }
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [initialGoal, initialQuery, preferencesKey]);
+  }, [preferencesKey, showResultsInitially]);
+
+  useEffect(() => {
+    if (step !== 3) return;
+    const search = finderCriteriaToSearchParams(criteria).toString();
+    window.history.replaceState({}, "", `${window.location.pathname}${search ? `?${search}` : ""}`);
+    window.localStorage.setItem(preferencesKey, JSON.stringify(criteria));
+  }, [criteria, preferencesKey, step]);
 
   const results = useMemo(
     () => products
@@ -96,6 +81,23 @@ export function FinderExperience({
     setCriteria((current) => ({ ...current, [key]: value }));
     setVisibleCount(24);
   };
+  const activeFilters: Array<{ key: string; label: string; clear: () => void }> = [];
+  const selectedCategory = categories.find((item) => item.slug === criteria.category);
+  const selectedGoal = localizedGoals.find((item) => item.value === criteria.goal);
+  if (criteria.goal !== "overall_match") activeFilters.push({ key: "goal", label: selectedGoal?.label ?? criteria.goal, clear: () => update("goal", "overall_match") });
+  if (selectedCategory) activeFilters.push({ key: "category", label: selectedCategory.label, clear: () => update("category", "all") });
+  if (criteria.veganOnly) activeFilters.push({ key: "vegan", label: pick(locale, "Nur vegan", "Vegan only"), clear: () => update("veganOnly", false) });
+  if (criteria.additiveFree) activeFilters.push({ key: "additives", label: pick(locale, "Ohne Zusatzstoffe", "No common additives"), clear: () => update("additiveFree", false) });
+  if (criteria.sweetenerFree) activeFilters.push({ key: "sweeteners", label: pick(locale, "Ohne Süßungsmittel", "No sweeteners"), clear: () => update("sweetenerFree", false) });
+  if (criteria.palmOilFree) activeFilters.push({ key: "palm", label: pick(locale, "Ohne Palmöl", "No palm oil"), clear: () => update("palmOilFree", false) });
+  criteria.excludedAllergens.forEach((allergen) => activeFilters.push({ key: `allergen-${allergen}`, label: `${pick(locale, "Ohne", "No")} ${allergen}`, clear: () => toggleAllergen(allergen) }));
+  if (criteria.maxSugar !== null) activeFilters.push({ key: "maxSugar", label: `${pick(locale, "Zucker max.", "Sugar max.")} ${criteria.maxSugar} g`, clear: () => update("maxSugar", null) });
+  if (criteria.minProtein !== null) activeFilters.push({ key: "minProtein", label: `${pick(locale, "Protein min.", "Protein min.")} ${criteria.minProtein} g`, clear: () => update("minProtein", null) });
+  if (criteria.maxCalories !== null) activeFilters.push({ key: "maxCalories", label: `${pick(locale, "Kalorien max.", "Calories max.")} ${criteria.maxCalories}`, clear: () => update("maxCalories", null) });
+  if (criteria.includeIngredient) activeFilters.push({ key: "include", label: `+ ${criteria.includeIngredient}`, clear: () => update("includeIngredient", "") });
+  if (criteria.excludeIngredient) activeFilters.push({ key: "exclude", label: `− ${criteria.excludeIngredient}`, clear: () => update("excludeIngredient", "") });
+  if (criteria.minimumConfidence !== "any") activeFilters.push({ key: "confidence", label: `${pick(locale, "Datensicherheit", "Confidence")}: ${criteria.minimumConfidence}`, clear: () => update("minimumConfidence", "any") });
+  if (criteria.query) activeFilters.push({ key: "query", label: `“${criteria.query}”`, clear: () => update("query", "") });
 
   function toggleAllergen(allergen: string) {
     update(
@@ -108,16 +110,19 @@ export function FinderExperience({
 
   function showResults() {
     setStep(3);
-    window.localStorage.setItem(preferencesKey, JSON.stringify(criteria));
-    const url = new URL(window.location.href);
-    url.searchParams.set("goal", criteria.goal);
-    if (criteria.category === "all") url.searchParams.delete("category");
-    else url.searchParams.set("category", criteria.category);
-    window.history.replaceState({}, "", url);
     trackEvent("finder_completed", {
       entityType: "finder",
       metadata: { goal: criteria.goal, category: criteria.category, resultCount: results.length },
     });
+  }
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    }
   }
 
   return (
@@ -197,14 +202,15 @@ export function FinderExperience({
           <div className="finder-step finder-results-step">
             <div className="finder-results-toolbar">
               <div className="finder-step-heading"><span>{results.length} {pick(locale, results.length === 1 ? "passendes Produkt" : "passende Produkte", results.length === 1 ? "matching product" : "matching products")}</span><h2>{pick(locale, "Deine Auswahl", "Your shortlist")}</h2><p>{pick(locale, "Der Match-Score kombiniert deine Priorität, aktive Filter, Gesamturteil und Datenvollständigkeit.", "The match score combines your priority, active filters, overall score, and data completeness.")}</p></div>
-              <button className="secondary-command" onClick={() => setStep(2)} type="button">{pick(locale, "Filter anpassen", "Adjust filters")}</button>
+              <div className="finder-result-actions"><button className="secondary-command" onClick={() => setStep(2)} type="button">{pick(locale, "Filter anpassen", "Adjust filters")}</button><button className="secondary-command" onClick={copyLink} type="button">{copyStatus === "copied" ? pick(locale, "Link kopiert", "Link copied") : copyStatus === "failed" ? pick(locale, "Kopieren fehlgeschlagen", "Copy failed") : pick(locale, "Link kopieren", "Copy link")}</button></div>
             </div>
+            {activeFilters.length ? <div className="active-filter-bar" aria-label={pick(locale, "Aktive Filter", "Active filters")}>{activeFilters.map((filter) => <button key={filter.key} onClick={filter.clear} title={pick(locale, `${filter.label} entfernen`, `Remove ${filter.label}`)} type="button"><span>{filter.label}</span><b aria-hidden="true">×</b></button>)}</div> : null}
             {results.length ? (
               <>
                 <div className="product-grid">{results.slice(0, visibleCount).map(({ product, match }) => <ProductCard key={product.id} matchReasons={match.reasons} matchScore={match.score} product={product} />)}</div>
                 {visibleCount < results.length ? <button className="load-more-button" onClick={() => setVisibleCount((count) => count + 24)} type="button">{pick(locale, "Weitere Produkte laden", "Load more products")}</button> : null}
               </>
-            ) : <div className="empty-state"><h3>{pick(locale, "Keine passende Kombination gefunden", "No matching combination found")}</h3><p>{pick(locale, "Lockere einen Grenzwert oder entferne einen Ausschluss. Unbekannte Werte gelten bei aktiven Grenzen nicht als passend.", "Relax a limit or remove an exclusion. Unknown values do not pass active limits.")}</p><button onClick={() => setCriteria(defaultCriteria(criteria.goal, ""))} type="button">{pick(locale, "Filter zurücksetzen", "Reset filters")}</button></div>}
+            ) : <div className="empty-state"><h3>{pick(locale, "Keine passende Kombination gefunden", "No matching combination found")}</h3><p>{pick(locale, "Lockere einen Grenzwert oder entferne einen Ausschluss. Unbekannte Werte gelten bei aktiven Grenzen nicht als passend.", "Relax a limit or remove an exclusion. Unknown values do not pass active limits.")}</p><button onClick={() => setCriteria(defaultFinderCriteria(criteria.goal))} type="button">{pick(locale, "Filter zurücksetzen", "Reset filters")}</button></div>}
           </div>
         ) : null}
 

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { localeSegment } from "./i18n.ts";
 import { scoreByType } from "./scoring.ts";
-import { entitySlug, productMatch } from "./product-insights.ts";
+import { alternativeReasons, entitySlug, productMatch } from "./product-insights.ts";
 import type { Category, CategorySlug, Product, RankingPage, ScoreType, SiteLocale } from "./types.ts";
 
 type StaticManifest = {
@@ -54,16 +54,20 @@ function createCatalog(locale: SiteLocale) {
       .filter((candidate) => candidate.publishability === "ranking_eligible" || candidate.publishability === "published")
       .map((candidate) => ({
         product: candidate,
-        match: productMatch(candidate, {
-          goal,
-          maxSugar: null,
-          minProtein: null,
-          maxCalories: null,
-          veganOnly: false,
-          additiveFree: false,
-          sweetenerFree: false,
-          palmOilFree: false,
-        }),
+        match: (() => {
+          const match = productMatch(candidate, {
+            goal,
+            maxSugar: null,
+            minProtein: null,
+            maxCalories: null,
+            veganOnly: false,
+            additiveFree: false,
+            sweetenerFree: false,
+            palmOilFree: false,
+          });
+          const comparativeReasons = alternativeReasons(product, candidate, goal);
+          return { ...match, reasons: comparativeReasons.length ? comparativeReasons : match.reasons };
+        })(),
       }))
       .sort((a, b) => b.match.score - a.match.score)
       .slice(0, limit);

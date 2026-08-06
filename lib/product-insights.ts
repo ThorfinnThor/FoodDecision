@@ -18,6 +18,8 @@ export type FinderCriteria = {
   query: string;
 };
 
+export type FinderSearchParams = Record<string, string | string[] | undefined>;
+
 export type ProductTraits = {
   vegan: boolean;
   additiveFree: boolean;
@@ -46,6 +48,9 @@ export type DecisionSummary = {
   peerCount: number;
 };
 
+const finderGoals = new Set<ScoreType>(["overall_match", "protein", "low_sugar", "vegan", "family", "ingredient_quality"]);
+const finderParamNames = new Set(["category", "goal", "vegan", "additives", "sweeteners", "palm", "allergens", "maxSugar", "minProtein", "maxCalories", "include", "exclude", "confidence", "q"]);
+
 const additivePattern = /emulgator|stabilisator|verdickungsmittel|konservierung|farbstoff|geschmacksverstaerker|aroma|e\s?\d{3,4}/i;
 const sweetenerPattern = /suessstoff|süßstoff|erythrit|xylit|stevia|acesulfam|aspartam|sucralose|saccharin|maltit|sorbit/i;
 const palmOilPattern = /palmoel|palmöl|palmfett|palmkern/i;
@@ -57,6 +62,82 @@ export function normalizeText(value: string) {
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+}
+
+export function defaultFinderCriteria(goal: ScoreType = "overall_match", query = ""): FinderCriteria {
+  return {
+    category: "all",
+    goal,
+    veganOnly: goal === "vegan",
+    additiveFree: false,
+    sweetenerFree: false,
+    palmOilFree: false,
+    excludedAllergens: [],
+    maxSugar: null,
+    minProtein: null,
+    maxCalories: null,
+    includeIngredient: "",
+    excludeIngredient: "",
+    minimumConfidence: "any",
+    query,
+  };
+}
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+function nonNegativeNumber(value: string | string[] | undefined) {
+  const raw = firstParam(value);
+  if (!raw.trim()) return null;
+  const number = Number(raw);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+}
+
+export function hasFinderSearchParams(params: FinderSearchParams) {
+  return Object.keys(params).some((key) => finderParamNames.has(key));
+}
+
+export function finderCriteriaFromSearchParams(params: FinderSearchParams, categories: CategorySlug[]): FinderCriteria {
+  const requestedGoal = firstParam(params.goal) as ScoreType;
+  const goal = finderGoals.has(requestedGoal) ? requestedGoal : "overall_match";
+  const criteria = defaultFinderCriteria(goal, firstParam(params.q));
+  const category = firstParam(params.category) as CategorySlug;
+  const confidence = firstParam(params.confidence);
+  return {
+    ...criteria,
+    category: categories.includes(category) ? category : "all",
+    veganOnly: firstParam(params.vegan) === "1" || goal === "vegan",
+    additiveFree: firstParam(params.additives) === "1",
+    sweetenerFree: firstParam(params.sweeteners) === "1",
+    palmOilFree: firstParam(params.palm) === "1",
+    excludedAllergens: firstParam(params.allergens).split(",").map((item) => item.trim()).filter(Boolean).slice(0, 20),
+    maxSugar: nonNegativeNumber(params.maxSugar),
+    minProtein: nonNegativeNumber(params.minProtein),
+    maxCalories: nonNegativeNumber(params.maxCalories),
+    includeIngredient: firstParam(params.include),
+    excludeIngredient: firstParam(params.exclude),
+    minimumConfidence: confidence === "medium" || confidence === "high" ? confidence : "any",
+  };
+}
+
+export function finderCriteriaToSearchParams(criteria: FinderCriteria) {
+  const params = new URLSearchParams();
+  params.set("goal", criteria.goal);
+  if (criteria.category !== "all") params.set("category", criteria.category);
+  if (criteria.veganOnly) params.set("vegan", "1");
+  if (criteria.additiveFree) params.set("additives", "1");
+  if (criteria.sweetenerFree) params.set("sweeteners", "1");
+  if (criteria.palmOilFree) params.set("palm", "1");
+  if (criteria.excludedAllergens.length) params.set("allergens", criteria.excludedAllergens.join(","));
+  if (criteria.maxSugar !== null) params.set("maxSugar", String(criteria.maxSugar));
+  if (criteria.minProtein !== null) params.set("minProtein", String(criteria.minProtein));
+  if (criteria.maxCalories !== null) params.set("maxCalories", String(criteria.maxCalories));
+  if (criteria.includeIngredient.trim()) params.set("include", criteria.includeIngredient.trim());
+  if (criteria.excludeIngredient.trim()) params.set("exclude", criteria.excludeIngredient.trim());
+  if (criteria.minimumConfidence !== "any") params.set("confidence", criteria.minimumConfidence);
+  if (criteria.query.trim()) params.set("q", criteria.query.trim());
+  return params;
 }
 
 export function entitySlug(value: string) {
@@ -203,6 +284,24 @@ export function productMatch(product: Product, criteria: Pick<FinderCriteria, "g
   if (!reasons.length) reasons.push("Nach Ziel-Score und Datenvollständigkeit eingeordnet.");
 
   return { score: Math.max(0, Math.min(100, Math.round(score))), reasons: reasons.slice(0, 3) };
+}
+
+export function alternativeReasons(current: Product, candidate: Product, goal: ScoreType = "overall_match") {
+  if (current.category !== candidate.category || current.nutrition.basis !== candidate.nutrition.basis) return [];
+  const locale = current.locale;
+  const reasons: string[] = [];
+  const goalDifference = (scoreByType(candidate, goal)?.score ?? 0) - (scoreByType(current, goal)?.score ?? 0);
+  if (goalDifference >= 5) reasons.push(locale === "de-DE" ? `${goalDifference} Punkte stärker beim gewählten Ziel.` : `${goalDifference} points stronger for the selected goal.`);
+  if (current.nutrition.sugar !== null && candidate.nutrition.sugar !== null && candidate.nutrition.sugar < current.nutrition.sugar) {
+    const difference = Number((current.nutrition.sugar - candidate.nutrition.sugar).toFixed(2));
+    reasons.push(locale === "de-DE" ? `${difference} g weniger Zucker pro ${current.nutrition.basis}.` : `${difference} g less sugar per ${current.nutrition.basis}.`);
+  }
+  if (current.nutrition.protein !== null && candidate.nutrition.protein !== null && candidate.nutrition.protein > current.nutrition.protein) {
+    const difference = Number((candidate.nutrition.protein - current.nutrition.protein).toFixed(2));
+    reasons.push(locale === "de-DE" ? `${difference} g mehr Protein pro ${current.nutrition.basis}.` : `${difference} g more protein per ${current.nutrition.basis}.`);
+  }
+  if (dataCompleteness(candidate) - dataCompleteness(current) >= 0.1) reasons.push(locale === "de-DE" ? "Vollständigere Produktdaten." : "More complete product data.");
+  return reasons.slice(0, 3);
 }
 
 export function nutritionValue(product: Product, attribute: string) {

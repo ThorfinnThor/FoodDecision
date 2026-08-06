@@ -2,7 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { categoryCatalog, defaultRankingPages } from "../lib/catalog.ts";
 import { products } from "../lib/data.ts";
-import { productDecisionSummary, productMatch, productMatchesCriteria, productTraits } from "../lib/product-insights.ts";
+import {
+  alternativeReasons,
+  finderCriteriaFromSearchParams,
+  finderCriteriaToSearchParams,
+  productDecisionSummary,
+  productMatch,
+  productMatchesCriteria,
+  productTraits,
+} from "../lib/product-insights.ts";
 
 const muesli = products.find((product) => product.slug === "morgenfeld-basis-muesli");
 const proteinBar = products.find((product) => product.slug === "kraftkern-proteinriegel-kakao");
@@ -55,4 +63,38 @@ test("summarizes category-relative strengths without inventing missing compariso
   assert.ok(summary.bestFor.length > 0);
   assert.deepEqual(summary.peerMetrics.map((metric) => metric.key), ["sugar", "protein"]);
   assert.ok(summary.dataCompleteness > 0 && summary.dataCompleteness <= 100);
+});
+
+test("round-trips complete Finder criteria through a shareable URL", () => {
+  const criteria = {
+    category: "muesli",
+    goal: "low_sugar",
+    veganOnly: true,
+    additiveFree: true,
+    sweetenerFree: true,
+    palmOilFree: true,
+    excludedAllergens: ["Milch", "Soja"],
+    maxSugar: 8,
+    minProtein: 10,
+    maxCalories: 420,
+    includeIngredient: "Hafer",
+    excludeIngredient: "Kokos",
+    minimumConfidence: "high",
+    query: "Morgenfeld",
+  };
+  const params = finderCriteriaToSearchParams(criteria);
+  const parsed = finderCriteriaFromSearchParams(Object.fromEntries(params), ["muesli", "hafermilch"]);
+
+  assert.deepEqual(parsed, criteria);
+});
+
+test("rejects invalid Finder URL values and explains measurable alternative tradeoffs", () => {
+  const parsed = finderCriteriaFromSearchParams({ category: "unknown", maxSugar: "-2", goal: "magic" }, ["muesli"]);
+  assert.equal(parsed.category, "all");
+  assert.equal(parsed.maxSugar, null);
+  assert.equal(parsed.goal, "overall_match");
+
+  const oatProducts = products.filter((product) => product.category === "hafermilch");
+  const reasons = alternativeReasons(oatProducts[1], oatProducts[0]);
+  assert.ok(reasons.some((reason) => /weniger Zucker/.test(reason)));
 });
