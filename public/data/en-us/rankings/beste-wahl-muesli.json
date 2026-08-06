@@ -6,5 +6,31 @@
   "intro": "Best muesli overall: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
-  "items": []
+  "market": "US",
+  "locale": "en-US",
+  "items": [
+    {
+      "id": "p-muesli-01-us",
+      "slug": "morgenfeld-basis-muesli",
+      "name": "Morgenfeld Whole Grain Muesli",
+      "brand": "Morgenfeld",
+      "category": "muesli",
+      "categoryLabel": "Muesli",
+      "market": "US",
+      "locale": "en-US",
+      "overallScore": 94,
+      "lowSugarScore": 100,
+      "proteinScore": 89,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "whole grain",
+        "no added sugar",
+        "vegan"
+      ],
+      "allergens": [
+        "Gluten",
+        "Hazelnuts"
+      ]
+    }
+  ]
 }

@@ -1,0 +1,142 @@
+{
+  "id": "p-hafer-02-us",
+  "gtin": "4000000000012",
+  "slug": "oatly-style-haferdrink-classic",
+  "name": "Oatly Style Original Oat Drink",
+  "brand": "Oatly Style",
+  "category": "hafermilch",
+  "categoryLabel": "Oat milk",
+  "imageTone": "blue",
+  "description": "Classic oat drink for coffee and cereal with a moderate sugar level.",
+  "labels": [
+    "vegan"
+  ],
+  "ingredients": [
+    "Water",
+    "Oats",
+    "Canola oil",
+    "Minerals",
+    "Salt"
+  ],
+  "allergens": [
+    "Oats"
+  ],
+  "nutrition": {
+    "energyKcal": 46,
+    "fat": 1.5,
+    "saturatedFat": 0.2,
+    "carbohydrates": 6.7,
+    "sugar": 4.2,
+    "fiber": 0.8,
+    "protein": 1,
+    "salt": 0.11,
+    "basis": "100ml"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-20",
+  "affiliateAvailable": false,
+  "priceHint": null,
+  "publishability": "published",
+  "qualityFlags": [
+    "ranking_confidence_medium"
+  ],
+  "market": "US",
+  "locale": "en-US",
+  "imageLicense": null,
+  "imageSourceUrl": null,
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition score",
+      "score": 69,
+      "grade": "okay",
+      "confidence": "high",
+      "positives": [
+        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient score",
+      "score": 92,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Short ingredient list.",
+        "No added sugar detected in the ingredient list."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "protein",
+      "label": "Protein score",
+      "score": 29,
+      "grade": "weak",
+      "confidence": "high",
+      "positives": [
+        "Solid protein level: 1 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Sugar score",
+      "score": 71,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "family",
+      "label": "Family score",
+      "score": 84,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Conservative assessment based on sugar, ingredients, and salt."
+      ],
+      "negatives": [
+        "Check allergens: Oats."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Labeled vegan or plant-based."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall score",
+      "score": 70,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Combines the most important sub-scores for a quick decision."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "id": "p-snack-01-us",
+  "gtin": "4000000000051",
+  "slug": "gruenbiss-linsen-cracker",
+  "name": "Green Bite Lentil Crackers",
+  "brand": "Gruenbiss",
+  "category": "vegane-snacks",
+  "categoryLabel": "Vegan snacks",
+  "imageTone": "green",
+  "description": "Vegan lentil crackers with useful protein and relatively high sodium.",
+  "labels": [
+    "vegan",
+    "protein source"
+  ],
+  "ingredients": [
+    "Lentil flour",
+    "Rice flour",
+    "Sunflower oil",
+    "Sea salt",
+    "Rosemary"
+  ],
+  "allergens": [],
+  "nutrition": {
+    "energyKcal": 418,
+    "fat": 13,
+    "saturatedFat": 1.3,
+    "carbohydrates": 55,
+    "sugar": 2.4,
+    "fiber": 7.8,
+    "protein": 14,
+    "salt": 1.6,
+    "basis": "100g"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-22",
+  "affiliateAvailable": false,
+  "priceHint": null,
+  "publishability": "ranking_eligible",
+  "qualityFlags": [
+    "salt_high"
+  ],
+  "market": "US",
+  "locale": "en-US",
+  "imageLicense": null,
+  "imageSourceUrl": null,
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition score",
+      "score": 82,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+      ],
+      "negatives": [
+        "Salt is relatively high for this category."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient score",
+      "score": 92,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Short ingredient list.",
+        "No added sugar detected in the ingredient list."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "protein",
+      "label": "Protein score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Very high in protein for this category: 14 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Sugar score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Very low sugar for this category: 2.4 g per 100 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "family",
+      "label": "Family score",
+      "score": 88,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Conservative assessment based on sugar, ingredients, and salt."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Labeled vegan or plant-based."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall score",
+      "score": 91,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Combines the most important sub-scores for a quick decision."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    }
+  ]
+}

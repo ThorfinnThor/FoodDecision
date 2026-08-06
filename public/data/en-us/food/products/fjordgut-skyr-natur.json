@@ -1,0 +1,140 @@
+{
+  "id": "p-skyr-01-us",
+  "gtin": "4000000000041",
+  "slug": "fjordgut-skyr-natur",
+  "name": "Fjordgut Plain Skyr",
+  "brand": "Fjordgut",
+  "category": "joghurt-skyr",
+  "categoryLabel": "Yogurt and skyr",
+  "imageTone": "white",
+  "description": "Plain skyr with high protein and a short ingredient list.",
+  "labels": [
+    "high protein",
+    "vegetarian"
+  ],
+  "ingredients": [
+    "Skim milk",
+    "Live cultures"
+  ],
+  "allergens": [
+    "Milk"
+  ],
+  "nutrition": {
+    "energyKcal": 64,
+    "fat": 0.2,
+    "saturatedFat": 0.1,
+    "carbohydrates": 4,
+    "sugar": 4,
+    "fiber": 0,
+    "protein": 11,
+    "salt": 0.12,
+    "basis": "100g"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-25",
+  "affiliateAvailable": false,
+  "priceHint": null,
+  "publishability": "ranking_eligible",
+  "qualityFlags": [],
+  "market": "US",
+  "locale": "en-US",
+  "imageLicense": null,
+  "imageSourceUrl": null,
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient score",
+      "score": 92,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Short ingredient list.",
+        "No added sugar detected in the ingredient list."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "protein",
+      "label": "Protein score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Very high in protein for this category: 11 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Sugar score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Very low sugar for this category: 4 g per 100 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "family",
+      "label": "Family score",
+      "score": 96,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Conservative assessment based on sugar, ingredients, and salt."
+      ],
+      "negatives": [
+        "Check allergens: Milk."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan score",
+      "score": 0,
+      "grade": "weak",
+      "confidence": "high",
+      "positives": [],
+      "negatives": [
+        "Product data indicates milk or lactose."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall score",
+      "score": 98,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Combines the most important sub-scores for a quick decision."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    }
+  ]
+}

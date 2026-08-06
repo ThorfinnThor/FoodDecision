@@ -1,53 +1,53 @@
 {
-  "generatedAt": "2026-08-05T11:21:54.642Z",
+  "generatedAt": "2026-08-06T12:52:56.078Z",
   "locale": "en-US",
   "market": "US",
   "totals": {
-    "products": 0,
-    "rankingEligible": 0,
+    "products": 6,
+    "rankingEligible": 5,
     "licensedImages": 0,
-    "completeNutrition": 0,
-    "withIngredients": 0,
-    "withKnownBrand": 0
+    "completeNutrition": 6,
+    "withIngredients": 6,
+    "withKnownBrand": 6
   },
   "categories": [
     {
       "slug": "hafermilch",
       "label": "Oat milk",
-      "products": 0,
-      "rankingEligible": 0,
+      "products": 2,
+      "rankingEligible": 1,
       "licensedImages": 0,
       "status": "thin"
     },
     {
       "slug": "proteinriegel",
       "label": "Protein bars",
-      "products": 0,
-      "rankingEligible": 0,
+      "products": 1,
+      "rankingEligible": 1,
       "licensedImages": 0,
       "status": "thin"
     },
     {
       "slug": "muesli",
       "label": "Muesli",
-      "products": 0,
-      "rankingEligible": 0,
+      "products": 1,
+      "rankingEligible": 1,
       "licensedImages": 0,
       "status": "thin"
     },
     {
       "slug": "joghurt-skyr",
       "label": "Yogurt and skyr",
-      "products": 0,
-      "rankingEligible": 0,
+      "products": 1,
+      "rankingEligible": 1,
       "licensedImages": 0,
       "status": "thin"
     },
     {
       "slug": "vegane-snacks",
       "label": "Vegan snacks",
-      "products": 0,
-      "rankingEligible": 0,
+      "products": 1,
+      "rankingEligible": 1,
       "licensedImages": 0,
       "status": "thin"
     },

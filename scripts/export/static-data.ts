@@ -290,7 +290,11 @@ async function loadSupabaseData() {
 function loadFixtureData() {
   return {
     products: fixtureProducts,
-    rankings: localizedRankingPages("de-DE").map((ranking) => ({ ...ranking, market: "DE", locale: "de-DE" })),
+    rankings: supportedLocales.flatMap((locale) => localizedRankingPages(locale).map((ranking) => ({
+      ...ranking,
+      market: locale === "de-DE" ? "DE" as const : "US" as const,
+      locale,
+    }))),
   };
 }
 

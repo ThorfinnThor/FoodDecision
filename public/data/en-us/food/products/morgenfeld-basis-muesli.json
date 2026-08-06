@@ -1,0 +1,145 @@
+{
+  "id": "p-muesli-01-us",
+  "gtin": "4000000000031",
+  "slug": "morgenfeld-basis-muesli",
+  "name": "Morgenfeld Whole Grain Muesli",
+  "brand": "Morgenfeld",
+  "category": "muesli",
+  "categoryLabel": "Muesli",
+  "imageTone": "grain",
+  "description": "Simple whole-grain muesli with no added sugar.",
+  "labels": [
+    "whole grain",
+    "no added sugar",
+    "vegan"
+  ],
+  "ingredients": [
+    "Rolled oats",
+    "Spelt flakes",
+    "Flaxseed",
+    "Sunflower seeds",
+    "Hazelnuts"
+  ],
+  "allergens": [
+    "Gluten",
+    "Hazelnuts"
+  ],
+  "nutrition": {
+    "energyKcal": 372,
+    "fat": 7.9,
+    "saturatedFat": 1.1,
+    "carbohydrates": 58,
+    "sugar": 4.9,
+    "fiber": 10.5,
+    "protein": 12.4,
+    "salt": 0.03,
+    "basis": "100g"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-16",
+  "affiliateAvailable": false,
+  "priceHint": null,
+  "publishability": "ranking_eligible",
+  "qualityFlags": [],
+  "market": "US",
+  "locale": "en-US",
+  "imageLicense": null,
+  "imageSourceUrl": null,
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition score",
+      "score": 95,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient score",
+      "score": 92,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Short ingredient list.",
+        "No added sugar detected in the ingredient list."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "protein",
+      "label": "Protein score",
+      "score": 89,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Solid protein level: 12.4 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Sugar score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Very low sugar for this category: 4.9 g per 100 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "family",
+      "label": "Family score",
+      "score": 96,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Conservative assessment based on sugar, ingredients, and salt."
+      ],
+      "negatives": [
+        "Check allergens: Gluten, Hazelnuts."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Labeled vegan or plant-based."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall score",
+      "score": 94,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Combines the most important sub-scores for a quick decision."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    }
+  ]
+}

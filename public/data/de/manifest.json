@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T11:21:54.637Z",
+  "generatedAt": "2026-08-06T12:52:56.070Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locale": "de-DE",
@@ -398,7 +398,7 @@
     {
       "path": "public/data/de/quality-report.json",
       "bytes": 2398,
-      "sha256": "cd764ce07e04ed1de0ef6c48c340262e427205f3b92e7894ee89f51770e9e41f"
+      "sha256": "f7410cdf7316700d9b52a53a35a77cf1ea815e3b99920e7f155e32e2f8346687"
     }
   ]
 }

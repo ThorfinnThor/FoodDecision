@@ -7,5 +7,28 @@
     "proteinreich",
     "wenig-zucker"
   ],
-  "products": []
+  "products": [
+    {
+      "id": "p-riegel-01-us",
+      "slug": "kraftkern-proteinriegel-kakao",
+      "name": "Kraftkern Cocoa Protein Bar",
+      "brand": "Kraftkern",
+      "category": "proteinriegel",
+      "categoryLabel": "Protein bars",
+      "market": "US",
+      "locale": "en-US",
+      "overallScore": 86,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "high protein",
+        "vegetarian"
+      ],
+      "allergens": [
+        "Milk",
+        "Almonds"
+      ]
+    }
+  ]
 }

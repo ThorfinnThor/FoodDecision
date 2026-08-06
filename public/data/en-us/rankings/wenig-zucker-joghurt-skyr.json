@@ -6,5 +6,29 @@
   "intro": "Yogurt and skyr with less sugar: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
-  "items": []
+  "market": "US",
+  "locale": "en-US",
+  "items": [
+    {
+      "id": "p-skyr-01-us",
+      "slug": "fjordgut-skyr-natur",
+      "name": "Fjordgut Plain Skyr",
+      "brand": "Fjordgut",
+      "category": "joghurt-skyr",
+      "categoryLabel": "Yogurt and skyr",
+      "market": "US",
+      "locale": "en-US",
+      "overallScore": 98,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "high protein",
+        "vegetarian"
+      ],
+      "allergens": [
+        "Milk"
+      ]
+    }
+  ]
 }

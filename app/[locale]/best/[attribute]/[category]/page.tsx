@@ -1,22 +1,258 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { RankingDecision } from "@/components/RankingDecision";
 import { RankingList } from "@/components/RankingList";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StructuredData } from "@/components/StructuredData";
-import { categoryFromRouteSlug, categoryRouteSlug, localizedPath, pick, rankingFromRouteSlug, rankingRouteSlug } from "@/lib/i18n";
+import {
+  categoryFromRouteSlug,
+  categoryRouteSlug,
+  localizedPath,
+  pick,
+  rankingFromRouteSlug,
+  rankingRouteSlug,
+} from "@/lib/i18n";
 import { requireLocale } from "@/lib/locale-page";
-import { absoluteUrl, averageDataCompleteness, countUniqueInsights, evaluateSeoPage, getSeoPageDefinition } from "@/lib/seo";
+import { buildRankingInsights } from "@/lib/ranking-insights";
+import {
+  absoluteUrl,
+  averageDataCompleteness,
+  countUniqueInsights,
+  evaluateSeoPage,
+  getSeoPageDefinition,
+} from "@/lib/seo";
 import { getCatalog } from "@/lib/static-data";
 
-type Props = { params: Promise<{ locale: string; attribute: string; category: string }> };
-export function generateStaticParams() { return (["de-DE", "en-US"] as const).flatMap((locale) => { const catalog = getCatalog(locale); return catalog.rankingPages.filter((page) => catalog.rankedProducts(page.category, page.sortScore).length > 0).map((page) => ({ locale: locale === "de-DE" ? "de" : "en-us", attribute: rankingRouteSlug(page.attribute, locale), category: categoryRouteSlug(page.category, locale) })); }); }
+type Props = {
+  params: Promise<{ locale: string; attribute: string; category: string }>;
+};
 
-function resolve(values: { locale: string; attribute: string; category: string }) { const locale = requireLocale(values.locale); const catalog = getCatalog(locale); const attribute = rankingFromRouteSlug(values.attribute, locale); const category = categoryFromRouteSlug(values.category, locale); const ranking = attribute && category ? catalog.getRanking(attribute, category) : null; return { locale, catalog, ranking, attribute, category }; }
+export function generateStaticParams() {
+  return (["de-DE", "en-US"] as const).flatMap((locale) => {
+    const catalog = getCatalog(locale);
+    return catalog.rankingPages
+      .filter((page) => catalog.rankedProducts(page.category, page.sortScore).length > 0)
+      .map((page) => ({
+        locale: locale === "de-DE" ? "de" : "en-us",
+        attribute: rankingRouteSlug(page.attribute, locale),
+        category: categoryRouteSlug(page.category, locale),
+      }));
+  });
+}
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> { const values = await params; const { locale, catalog, ranking } = resolve(values); if (!ranking) return {}; const items = catalog.rankedProducts(ranking.category, ranking.sortScore); const canonical = localizedPath(locale, `/best/${values.attribute}/${values.category}`); const decision = evaluateSeoPage(getSeoPageDefinition(canonical), { resultCount: items.length, dataCompleteness: averageDataCompleteness(items), uniqueInsightCount: countUniqueInsights(items), title: ranking.title, h1: ranking.title }); const counterpartLocale = locale === "de-DE" ? "en-US" : "de-DE"; const counterpart = localizedPath(counterpartLocale, `/best/${rankingRouteSlug(ranking.attribute, counterpartLocale)}/${categoryRouteSlug(ranking.category, counterpartLocale)}`); return { title: `${ranking.title} - Food Decision Engine`, description: ranking.intro, alternates: { canonical, languages: { [locale]: canonical, [counterpartLocale]: counterpart, "x-default": localizedPath("de-DE", `/best/${rankingRouteSlug(ranking.attribute, "de-DE")}/${categoryRouteSlug(ranking.category, "de-DE")}`) } }, robots: { index: decision.indexable, follow: true } }; }
+function resolve(values: { locale: string; attribute: string; category: string }) {
+  const locale = requireLocale(values.locale);
+  const catalog = getCatalog(locale);
+  const attribute = rankingFromRouteSlug(values.attribute, locale);
+  const category = categoryFromRouteSlug(values.category, locale);
+  const ranking = attribute && category ? catalog.getRanking(attribute, category) : null;
+  const items = ranking ? catalog.rankedProducts(ranking.category, ranking.sortScore) : [];
+  const categoryItems = category ? catalog.getProductsByCategory(category) : [];
+  const insights = ranking
+    ? buildRankingInsights(locale, ranking, items, categoryItems, catalog.manifest.generatedAt)
+    : null;
+  return { locale, catalog, ranking, items, categoryItems, insights };
+}
 
-export default async function RankingPage({ params }: Props) { const values = await params; const { locale, catalog, ranking } = resolve(values); if (!ranking) notFound(); const path = (value = "/") => localizedPath(locale, value); const items = catalog.rankedProducts(ranking.category, ranking.sortScore); const category = catalog.getCategory(ranking.category); const insights = { completeness: Math.round(averageDataCompleteness(items) * 100), products: items.length };
-  if (!items.length) notFound();
-  return <main><StructuredData data={{ "@context": "https://schema.org", "@type": "ItemList", name: ranking.title, inLanguage: locale, url: absoluteUrl(path(`/best/${values.attribute}/${values.category}`)), numberOfItems: items.length, itemListElement: items.map((product, index) => ({ "@type": "ListItem", position: index + 1, name: product.name, url: absoluteUrl(path(`/product/${product.slug}`)) })) }} /><SiteHeader locale={locale} /><nav className="breadcrumb" aria-label="Breadcrumb"><Link href={path()}>{pick(locale, "Start", "Home")}</Link><span>/</span><Link href={path(`/category/${values.category}`)}>{category?.label}</Link><span>/</span><span>{pick(locale, "Ranking", "Ranking")}</span></nav><section className="subpage-hero"><p className="eyebrow">{pick(locale, "Datenbasiertes Ranking", "Data-based ranking")}</p><h1>{ranking.title}</h1><p>{ranking.intro}</p></section><section className="ranking-context"><div><p className="eyebrow">{pick(locale, "So wird sortiert", "How it is sorted")}</p><h2>{pick(locale, "Vergleichbar und transparent", "Comparable and transparent")}</h2></div><p>{pick(locale, `Aktuell werden ${insights.products} geeignete Produkte anhand desselben Kriteriums verglichen. Datenvollständigkeit: ${insights.completeness} %.`, `${insights.products} eligible products are currently compared using the same criterion. Data completeness: ${insights.completeness}%.`)}</p></section><section className="section">{items.length ? <RankingList locale={locale} products={items} /> : <div className="empty-state"><h2>{pick(locale, "Noch kein belastbares Ranking", "No reliable ranking yet")}</h2><p>{pick(locale, "Diese Seite bleibt bis zu ausreichender Produkt- und Datenabdeckung aus dem Suchindex.", "This page stays out of search until product and data coverage are sufficient.")}</p></div>}</section></main>;
+function seoDecision(
+  path: string,
+  ranking: NonNullable<ReturnType<typeof resolve>["ranking"]>,
+  items: ReturnType<typeof resolve>["items"],
+) {
+  return evaluateSeoPage(getSeoPageDefinition(path), {
+    resultCount: items.length,
+    dataCompleteness: averageDataCompleteness(items),
+    uniqueInsightCount: countUniqueInsights(items),
+    title: ranking.title,
+    h1: ranking.title,
+  });
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const values = await params;
+  const { locale, catalog, ranking, items, insights } = resolve(values);
+  if (!ranking || !insights) return { robots: { index: false, follow: false } };
+
+  const canonical = localizedPath(locale, `/best/${values.attribute}/${values.category}`);
+  const decision = seoDecision(canonical, ranking, items);
+  const description = insights.answer;
+
+  return {
+    title: `${ranking.title} - Food Decision Engine`,
+    description,
+    alternates: {
+      canonical,
+      languages: {
+        "de-DE": localizedPath("de-DE", `/best/${rankingRouteSlug(ranking.attribute, "de-DE")}/${categoryRouteSlug(ranking.category, "de-DE")}`),
+        "en-US": localizedPath("en-US", `/best/${rankingRouteSlug(ranking.attribute, "en-US")}/${categoryRouteSlug(ranking.category, "en-US")}`),
+        "x-default": localizedPath("de-DE", `/best/${rankingRouteSlug(ranking.attribute, "de-DE")}/${categoryRouteSlug(ranking.category, "de-DE")}`),
+      },
+    },
+    robots: {
+      index: decision.indexable,
+      follow: true,
+      googleBot: { index: decision.indexable, follow: true },
+    },
+    openGraph: {
+      type: "website",
+      title: ranking.title,
+      description,
+      url: canonical,
+      locale: locale === "de-DE" ? "de_DE" : "en_US",
+      images: insights.topPick.imageUrl && insights.topPick.imageLicense
+        ? [{ url: insights.topPick.imageUrl, alt: `${insights.topPick.name} - ${insights.topPick.brand}` }]
+        : undefined,
+    },
+    other: {
+      "data-catalog-generated-at": catalog.manifest.generatedAt,
+    },
+  };
+}
+
+export default async function RankingPage({ params }: Props) {
+  const values = await params;
+  const { locale, catalog, ranking, items, insights } = resolve(values);
+  if (!ranking || !insights || !items.length) notFound();
+
+  const path = (value = "/") => localizedPath(locale, value);
+  const category = catalog.getCategory(ranking.category);
+  if (!category) notFound();
+
+  const canonical = path(`/best/${values.attribute}/${values.category}`);
+  const categoryPath = path(`/category/${categoryRouteSlug(category.slug, locale)}`);
+  const relatedRankings = catalog.rankingPages
+    .filter((candidate) => candidate.category === ranking.category && candidate.attribute !== ranking.attribute)
+    .filter((candidate) => catalog.rankedProducts(candidate.category, candidate.sortScore).length >= candidate.minProductsRequired)
+    .slice(0, 2);
+  const sameGoalRankings = catalog.rankingPages
+    .filter((candidate) => candidate.attribute === ranking.attribute && candidate.category !== ranking.category)
+    .filter((candidate) => catalog.rankedProducts(candidate.category, candidate.sortScore).length >= candidate.minProductsRequired)
+    .slice(0, 4);
+
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: pick(locale, "Start", "Home"), item: absoluteUrl(path()) },
+      { "@type": "ListItem", position: 2, name: category.label, item: absoluteUrl(categoryPath) },
+      { "@type": "ListItem", position: 3, name: ranking.title, item: absoluteUrl(canonical) },
+    ],
+  };
+  const itemListData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: ranking.title,
+    description: insights.answer,
+    inLanguage: locale,
+    url: absoluteUrl(canonical),
+    numberOfItems: items.length,
+    itemListElement: items.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: product.name,
+      url: absoluteUrl(path(`/product/${product.slug}`)),
+    })),
+  };
+  const faqData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: insights.questions.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+
+  return <main>
+    <StructuredData data={breadcrumbData} />
+    <StructuredData data={itemListData} />
+    <StructuredData data={faqData} />
+    <SiteHeader locale={locale} />
+
+    <nav className="breadcrumb" aria-label={pick(locale, "Brotkrumen", "Breadcrumb")}>
+      <Link href={path()}>{pick(locale, "Start", "Home")}</Link>
+      <span aria-hidden="true">/</span>
+      <Link href={categoryPath}>{category.label}</Link>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{pick(locale, "Ranking", "Ranking")}</span>
+    </nav>
+
+    <section className="subpage-hero ranking-page-hero">
+      <p className="eyebrow">{pick(locale, "Datenbasierte Entscheidung", "Data-based decision")}</p>
+      <h1>{ranking.title}</h1>
+      <p>{ranking.intro}</p>
+    </section>
+
+    <RankingDecision locale={locale} ranking={ranking} insights={insights} />
+
+    <section className="ranking-context ranking-stat-band" aria-label={pick(locale, "Ranking-Daten", "Ranking data")}>
+      <div>
+        <p className="eyebrow">{pick(locale, "Katalog auf einen Blick", "Catalog at a glance")}</p>
+        <h2>{pick(locale, "Vergleichbar und transparent", "Comparable and transparent")}</h2>
+      </div>
+      <dl className="insight-stats">
+        <div><dt>{pick(locale, "Geeignete Produkte", "Eligible products")}</dt><dd>{insights.stats.eligibleProducts}</dd></div>
+        <div><dt>{insights.stats.benchmarkLabel}</dt><dd>{insights.stats.benchmarkValue}</dd></div>
+        <div><dt>{pick(locale, "Hohe Datensicherheit", "High confidence")}</dt><dd>{insights.stats.highConfidenceCoverage}%</dd></div>
+        <div><dt>{pick(locale, "Zutatenabdeckung", "Ingredient coverage")}</dt><dd>{insights.stats.ingredientCoverage}%</dd></div>
+      </dl>
+    </section>
+
+    <section className="section ranking-results-section" aria-labelledby="complete-ranking-title">
+      <div className="section-heading split-heading">
+        <div>
+          <p className="eyebrow">{pick(locale, "Vollständiges Ranking", "Complete ranking")}</p>
+          <h2 id="complete-ranking-title">{items.length === 1
+            ? pick(locale, "1 Platzierung", "1 ranked product")
+            : pick(locale, `Alle ${items.length} Platzierungen`, `All ${items.length} ranked products`)}</h2>
+        </div>
+        <p>{pick(
+          locale,
+          "Jede Platzierung nutzt dieselbe kategoriespezifische Regel. Öffne ein Produkt für Nährwerte, Zutaten, Allergene und alle Teil-Scores.",
+          "Every position uses the same category-specific rule. Open a product for nutrition, ingredients, allergens, and all component scores.",
+        )}</p>
+      </div>
+      <RankingList locale={locale} products={items} scoreType={ranking.sortScore} />
+    </section>
+
+    <section className="section section-soft ranking-method-section" aria-labelledby="ranking-method-title">
+      <div className="section-heading">
+        <p className="eyebrow">{pick(locale, "So entsteht die Reihenfolge", "How the order is calculated")}</p>
+        <h2 id="ranking-method-title">{pick(locale, "Eine Regel für alle Produkte", "One rule for every product")}</h2>
+        <p>{pick(
+          locale,
+          "Die Reihenfolge wird aus strukturierten Produktdaten berechnet. Es gibt keine bezahlten Platzierungen und fehlende Angaben werden nicht geschätzt.",
+          "The order is calculated from structured product data. There are no paid placements, and missing values are never estimated.",
+        )}</p>
+      </div>
+      <div className="ranking-method-grid">
+        {insights.method.map((item, index) => <article key={item.title}><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.body}</p></article>)}
+      </div>
+      <Link className="text-link ranking-method-link" href={path("/methodology")}>{pick(locale, "Vollständige Methodik ansehen", "Read the full methodology")} <span aria-hidden="true">→</span></Link>
+    </section>
+
+    <section className="detail-section ranking-questions-section" aria-labelledby="ranking-questions-title">
+      <div className="section-heading">
+        <p className="eyebrow">{pick(locale, "Richtig einordnen", "Use the ranking well")}</p>
+        <h2 id="ranking-questions-title">{pick(locale, "Fragen vor deiner Entscheidung", "Questions before you choose")}</h2>
+      </div>
+      <div className="faq-list">
+        {insights.questions.map((item) => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+      </div>
+    </section>
+
+    <section className="detail-section related-ranking-section" aria-labelledby="related-ranking-title">
+      <div className="section-heading">
+        <p className="eyebrow">{pick(locale, "Nächster sinnvoller Schritt", "Useful next step")}</p>
+        <h2 id="related-ranking-title">{pick(locale, "Entscheidung weiter eingrenzen", "Narrow your decision")}</h2>
+      </div>
+      <nav className="ranking-related-links" aria-label={pick(locale, "Ähnliche Entscheidungen", "Related decisions")}>
+        <Link href={`${path("/finder")}?goal=${ranking.sortScore}&category=${ranking.category}`}>{pick(locale, "Mit eigenen Filtern im Finder", "Use your own filters in Finder")}<span aria-hidden="true">→</span></Link>
+        <Link href={categoryPath}>{pick(locale, `${category.label}: alle Produkte`, `All ${category.label.toLowerCase()} products`)}<span aria-hidden="true">→</span></Link>
+        {relatedRankings.map((candidate) => <Link href={path(`/best/${rankingRouteSlug(candidate.attribute, locale)}/${categoryRouteSlug(candidate.category, locale)}`)} key={`${candidate.attribute}-${candidate.category}`}>{candidate.title}<span aria-hidden="true">→</span></Link>)}
+        {sameGoalRankings.map((candidate) => <Link href={path(`/best/${rankingRouteSlug(candidate.attribute, locale)}/${categoryRouteSlug(candidate.category, locale)}`)} key={`${candidate.attribute}-${candidate.category}`}>{candidate.title}<span aria-hidden="true">→</span></Link>)}
+      </nav>
+    </section>
+  </main>;
 }

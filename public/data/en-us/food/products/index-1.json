@@ -1,0 +1,129 @@
+[
+  {
+    "id": "p-hafer-01-us",
+    "slug": "nordhafer-barista-ohne-zucker",
+    "name": "Nordhafer Barista No Added Sugar",
+    "brand": "Nordhafer",
+    "category": "hafermilch",
+    "categoryLabel": "Oat milk",
+    "market": "US",
+    "locale": "en-US",
+    "overallScore": 82,
+    "lowSugarScore": 100,
+    "proteinScore": 31,
+    "publishability": "ranking_eligible",
+    "labels": [
+      "vegan",
+      "no added sugar",
+      "calcium"
+    ],
+    "allergens": [
+      "Oats"
+    ]
+  },
+  {
+    "id": "p-hafer-02-us",
+    "slug": "oatly-style-haferdrink-classic",
+    "name": "Oatly Style Original Oat Drink",
+    "brand": "Oatly Style",
+    "category": "hafermilch",
+    "categoryLabel": "Oat milk",
+    "market": "US",
+    "locale": "en-US",
+    "overallScore": 70,
+    "lowSugarScore": 71,
+    "proteinScore": 29,
+    "publishability": "published",
+    "labels": [
+      "vegan"
+    ],
+    "allergens": [
+      "Oats"
+    ]
+  },
+  {
+    "id": "p-riegel-01-us",
+    "slug": "kraftkern-proteinriegel-kakao",
+    "name": "Kraftkern Cocoa Protein Bar",
+    "brand": "Kraftkern",
+    "category": "proteinriegel",
+    "categoryLabel": "Protein bars",
+    "market": "US",
+    "locale": "en-US",
+    "overallScore": 86,
+    "lowSugarScore": 100,
+    "proteinScore": 100,
+    "publishability": "ranking_eligible",
+    "labels": [
+      "high protein",
+      "vegetarian"
+    ],
+    "allergens": [
+      "Milk",
+      "Almonds"
+    ]
+  },
+  {
+    "id": "p-muesli-01-us",
+    "slug": "morgenfeld-basis-muesli",
+    "name": "Morgenfeld Whole Grain Muesli",
+    "brand": "Morgenfeld",
+    "category": "muesli",
+    "categoryLabel": "Muesli",
+    "market": "US",
+    "locale": "en-US",
+    "overallScore": 94,
+    "lowSugarScore": 100,
+    "proteinScore": 89,
+    "publishability": "ranking_eligible",
+    "labels": [
+      "whole grain",
+      "no added sugar",
+      "vegan"
+    ],
+    "allergens": [
+      "Gluten",
+      "Hazelnuts"
+    ]
+  },
+  {
+    "id": "p-skyr-01-us",
+    "slug": "fjordgut-skyr-natur",
+    "name": "Fjordgut Plain Skyr",
+    "brand": "Fjordgut",
+    "category": "joghurt-skyr",
+    "categoryLabel": "Yogurt and skyr",
+    "market": "US",
+    "locale": "en-US",
+    "overallScore": 98,
+    "lowSugarScore": 100,
+    "proteinScore": 100,
+    "publishability": "ranking_eligible",
+    "labels": [
+      "high protein",
+      "vegetarian"
+    ],
+    "allergens": [
+      "Milk"
+    ]
+  },
+  {
+    "id": "p-snack-01-us",
+    "slug": "gruenbiss-linsen-cracker",
+    "name": "Green Bite Lentil Crackers",
+    "brand": "Gruenbiss",
+    "category": "vegane-snacks",
+    "categoryLabel": "Vegan snacks",
+    "market": "US",
+    "locale": "en-US",
+    "overallScore": 91,
+    "lowSugarScore": 100,
+    "proteinScore": 100,
+    "publishability": "ranking_eligible",
+    "labels": [
+      "vegan",
+      "protein source"
+    ],
+    "allergens": []
+  }
+]

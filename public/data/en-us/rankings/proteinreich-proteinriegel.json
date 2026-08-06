@@ -1,10 +1,35 @@
 {
   "attribute": "proteinreich",
   "category": "proteinriegel",
-  "title": "Highest-protein protein bars",
+  "title": "High-protein bars ranked by protein content",
   "sortScore": "protein",
-  "intro": "Highest-protein protein bars: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "intro": "High-protein bars ranked by protein content: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
-  "items": []
+  "market": "US",
+  "locale": "en-US",
+  "items": [
+    {
+      "id": "p-riegel-01-us",
+      "slug": "kraftkern-proteinriegel-kakao",
+      "name": "Kraftkern Cocoa Protein Bar",
+      "brand": "Kraftkern",
+      "category": "proteinriegel",
+      "categoryLabel": "Protein bars",
+      "market": "US",
+      "locale": "en-US",
+      "overallScore": 86,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "high protein",
+        "vegetarian"
+      ],
+      "allergens": [
+        "Milk",
+        "Almonds"
+      ]
+    }
+  ]
 }

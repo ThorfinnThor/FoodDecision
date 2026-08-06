@@ -1,6 +1,6 @@
 import { calculateScores, scoreByType } from "./scoring.ts";
 import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types.ts";
-import { categoryCatalog, defaultRankingPages } from "./catalog.ts";
+import { categoryCatalog, defaultRankingPages, localizedCategoryLabel } from "./catalog.ts";
 
 const categories: Category[] = categoryCatalog;
 
@@ -199,7 +199,7 @@ const baseProducts: Array<Omit<Product, "scores" | "market" | "locale" | "imageL
   },
 ];
 
-export const products: Product[] = baseProducts.map((product) => {
+const germanProducts: Product[] = baseProducts.map((product) => {
   const completeProduct: Omit<Product, "scores"> = {
     ...product,
     market: "DE",
@@ -209,6 +209,77 @@ export const products: Product[] = baseProducts.map((product) => {
   };
   return { ...completeProduct, scores: calculateScores(completeProduct) };
 });
+
+const englishProductContent: Record<string, {
+  name: string;
+  description: string;
+  labels: string[];
+  ingredients: string[];
+  allergens: string[];
+}> = {
+  "nordhafer-barista-ohne-zucker": {
+    name: "Nordhafer Barista No Added Sugar",
+    description: "Unsweetened barista oat milk with a short ingredient list and added calcium.",
+    labels: ["vegan", "no added sugar", "calcium"],
+    ingredients: ["Water", "Oats", "Canola oil", "Calcium carbonate", "Sea salt"],
+    allergens: ["Oats"],
+  },
+  "oatly-style-haferdrink-classic": {
+    name: "Oatly Style Original Oat Drink",
+    description: "Classic oat drink for coffee and cereal with a moderate sugar level.",
+    labels: ["vegan"],
+    ingredients: ["Water", "Oats", "Canola oil", "Minerals", "Salt"],
+    allergens: ["Oats"],
+  },
+  "kraftkern-proteinriegel-kakao": {
+    name: "Kraftkern Cocoa Protein Bar",
+    description: "High-protein cocoa bar with a moderate sugar level.",
+    labels: ["high protein", "vegetarian"],
+    ingredients: ["Milk protein", "Cocoa mass", "Almonds", "Fiber", "Erythritol", "Natural flavor"],
+    allergens: ["Milk", "Almonds"],
+  },
+  "morgenfeld-basis-muesli": {
+    name: "Morgenfeld Whole Grain Muesli",
+    description: "Simple whole-grain muesli with no added sugar.",
+    labels: ["whole grain", "no added sugar", "vegan"],
+    ingredients: ["Rolled oats", "Spelt flakes", "Flaxseed", "Sunflower seeds", "Hazelnuts"],
+    allergens: ["Gluten", "Hazelnuts"],
+  },
+  "fjordgut-skyr-natur": {
+    name: "Fjordgut Plain Skyr",
+    description: "Plain skyr with high protein and a short ingredient list.",
+    labels: ["high protein", "vegetarian"],
+    ingredients: ["Skim milk", "Live cultures"],
+    allergens: ["Milk"],
+  },
+  "gruenbiss-linsen-cracker": {
+    name: "Green Bite Lentil Crackers",
+    description: "Vegan lentil crackers with useful protein and relatively high sodium.",
+    labels: ["vegan", "protein source"],
+    ingredients: ["Lentil flour", "Rice flour", "Sunflower oil", "Sea salt", "Rosemary"],
+    allergens: [],
+  },
+};
+
+const usProducts: Product[] = baseProducts.map((product) => {
+  const content = englishProductContent[product.slug];
+  if (!content) throw new Error(`Missing English fixture content for ${product.slug}`);
+  const completeProduct: Omit<Product, "scores"> = {
+    ...product,
+    ...content,
+    id: `${product.id}-us`,
+    market: "US",
+    locale: "en-US",
+    categoryLabel: localizedCategoryLabel(product.category, "en-US"),
+    affiliateAvailable: false,
+    priceHint: null,
+    imageLicense: null,
+    imageSourceUrl: null,
+  };
+  return { ...completeProduct, scores: calculateScores(completeProduct) };
+});
+
+export const products: Product[] = [...germanProducts, ...usProducts];
 
 export const rankingPages: RankingPage[] = defaultRankingPages;
 

@@ -6,5 +6,27 @@
   "intro": "Best vegan snacks overall: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
-  "items": []
+  "market": "US",
+  "locale": "en-US",
+  "items": [
+    {
+      "id": "p-snack-01-us",
+      "slug": "gruenbiss-linsen-cracker",
+      "name": "Green Bite Lentil Crackers",
+      "brand": "Gruenbiss",
+      "category": "vegane-snacks",
+      "categoryLabel": "Vegan snacks",
+      "market": "US",
+      "locale": "en-US",
+      "overallScore": 91,
+      "lowSugarScore": 100,
+      "proteinScore": 100,
+      "publishability": "ranking_eligible",
+      "labels": [
+        "vegan",
+        "protein source"
+      ],
+      "allergens": []
+    }
+  ]
 }

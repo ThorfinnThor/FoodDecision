@@ -71,23 +71,32 @@ const generatedRankingDefinitions = supportedLocales.flatMap((locale) => localiz
     const configured = locale === "de-DE"
       ? configuredSeoPageDefinitions.find((definition) => definition.path === `/best/${ranking.attribute}/${ranking.category}`)
       : null;
+    const relatedRanking = localizedRankingPages(locale).find((candidate) =>
+      candidate.category === ranking.category && candidate.attribute !== ranking.attribute,
+    );
+    const relatedLinks: SeoInternalLink[] = relatedRanking ? [{
+      relationship: "related",
+      href: localizedPath(locale, `/best/${rankingRouteSlug(relatedRanking.attribute, locale)}/${publicCategory}`),
+      label: relatedRanking.title,
+    }] : [];
     return {
       id: `${prefix}-food-${ranking.attribute}-${ranking.category}-page`,
       slug: `${publicAttribute}/${publicCategory}`,
       path,
       keywordId: configured?.keywordId ?? `${prefix}-food-${ranking.attribute}-${ranking.category}`,
-      template: "product-ranking",
-      intent: "ranking",
-      cluster: ranking.category,
-      filters: { category: ranking.category, attribute: ranking.attribute, scoreType: ranking.sortScore, market: locale === "de-DE" ? "DE" : "US", locale },
-      minimumResults: ranking.minProductsRequired,
-      minimumDataCompleteness: 0.85,
-      minimumUniqueInsights: 3,
+      template: configured?.template ?? "product-ranking",
+      intent: configured?.intent ?? "ranking",
+      cluster: configured?.cluster ?? ranking.category,
+      filters: { ...configured?.filters, category: ranking.category, attribute: ranking.attribute, scoreType: ranking.sortScore, market: locale === "de-DE" ? "DE" : "US", locale },
+      minimumResults: configured?.minimumResults ?? ranking.minProductsRequired,
+      minimumDataCompleteness: configured?.minimumDataCompleteness ?? 0.85,
+      minimumUniqueInsights: configured?.minimumUniqueInsights ?? 3,
       canonical: path,
-      indexable: false,
-      status: "draft",
+      indexable: configured?.indexable ?? false,
+      status: configured?.status ?? "draft",
       internalLinks: [
         { relationship: "parent", href: localizedPath(locale, `/category/${publicCategory}`), label: locale === "de-DE" ? `${localizedCategoryLabel(ranking.category, locale)} im Überblick` : `${localizedCategoryLabel(ranking.category, locale)} overview` },
+        ...relatedLinks,
         { relationship: "next_step", href: `${localizedPath(locale, "/finder")}?goal=${ranking.sortScore}`, label: locale === "de-DE" ? "Passende Produkte im Finder" : "Find matching products" },
       ],
     };

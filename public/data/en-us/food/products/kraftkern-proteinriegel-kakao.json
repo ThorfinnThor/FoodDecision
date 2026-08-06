@@ -1,0 +1,148 @@
+{
+  "id": "p-riegel-01-us",
+  "gtin": "4000000000021",
+  "slug": "kraftkern-proteinriegel-kakao",
+  "name": "Kraftkern Cocoa Protein Bar",
+  "brand": "Kraftkern",
+  "category": "proteinriegel",
+  "categoryLabel": "Protein bars",
+  "imageTone": "cocoa",
+  "description": "High-protein cocoa bar with a moderate sugar level.",
+  "labels": [
+    "high protein",
+    "vegetarian"
+  ],
+  "ingredients": [
+    "Milk protein",
+    "Cocoa mass",
+    "Almonds",
+    "Fiber",
+    "Erythritol",
+    "Natural flavor"
+  ],
+  "allergens": [
+    "Milk",
+    "Almonds"
+  ],
+  "nutrition": {
+    "energyKcal": 365,
+    "fat": 13,
+    "saturatedFat": 5.1,
+    "carbohydrates": 28,
+    "sugar": 3.8,
+    "fiber": 14,
+    "protein": 32,
+    "salt": 0.58,
+    "basis": "100g"
+  },
+  "source": "Open Food Facts Fixture",
+  "importedAt": "2026-07-30",
+  "sourceUpdatedAt": "2026-07-29",
+  "affiliateAvailable": false,
+  "priceHint": null,
+  "publishability": "ranking_eligible",
+  "qualityFlags": [],
+  "market": "US",
+  "locale": "en-US",
+  "imageLicense": null,
+  "imageSourceUrl": null,
+  "scores": [
+    {
+      "type": "nutrition",
+      "label": "Nutrition score",
+      "score": 78,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+      ],
+      "negatives": [
+        "Saturated fat lowers the score."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "ingredient_quality",
+      "label": "Ingredient score",
+      "score": 78,
+      "grade": "good",
+      "confidence": "high",
+      "positives": [
+        "No added sugar detected in the ingredient list."
+      ],
+      "negatives": [
+        "Additives or flavorings detected."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "protein",
+      "label": "Protein score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Very high in protein for this category: 32 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "low_sugar",
+      "label": "Sugar score",
+      "score": 100,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Very low sugar for this category: 3.8 g per 100 g."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "family",
+      "label": "Family score",
+      "score": 88,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Conservative assessment based on sugar, ingredients, and salt."
+      ],
+      "negatives": [
+        "Check allergens: Milk, Almonds."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "vegan",
+      "label": "Vegan score",
+      "score": 0,
+      "grade": "weak",
+      "confidence": "high",
+      "positives": [],
+      "negatives": [
+        "Product data indicates milk or lactose."
+      ],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    },
+    {
+      "type": "overall_match",
+      "label": "Overall score",
+      "score": 86,
+      "grade": "excellent",
+      "confidence": "high",
+      "positives": [
+        "Combines the most important sub-scores for a quick decision."
+      ],
+      "negatives": [],
+      "missingData": [],
+      "ruleVersion": "2026.07"
+    }
+  ]
+}

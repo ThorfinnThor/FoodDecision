@@ -49,7 +49,10 @@ export default async function CategoryPage({ params }: Props) {
   const items = catalog.getProductsByCategory(category.slug);
   if (!items.length) notFound();
   const insights = categoryInsights(items);
-  const rankings = catalog.rankingPages.filter((ranking) => ranking.category === category.slug && catalog.rankedProducts(ranking.category, ranking.sortScore).length > 0);
+  const rankings = catalog.rankingPages.filter((ranking) =>
+    ranking.category === category.slug
+    && catalog.rankedProducts(ranking.category, ranking.sortScore).length >= ranking.minProductsRequired,
+  );
 
   return <main>
     <StructuredData data={{ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [

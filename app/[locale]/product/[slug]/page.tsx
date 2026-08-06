@@ -27,7 +27,10 @@ export default async function ProductPage({ params }: Props) {
   const path = (value = "/") => localizedPath(locale, value); const c = (de: string, en: string) => pick(locale, de, en);
   const alternatives = catalog.getAlternatives(product, "overall_match", 3); const comparisonTarget = alternatives[0]?.product ?? null; const overall = scoreByType(product, "overall_match");
   const positives = [...new Set(product.scores.flatMap((score) => score.positives))].slice(0, 4); const negatives = [...new Set(product.scores.flatMap((score) => score.negatives))].slice(0, 3);
-  const relatedRankings = catalog.rankingPages.filter((ranking) => ranking.category === product.category).slice(0, 3);
+  const relatedRankings = catalog.rankingPages
+    .filter((ranking) => ranking.category === product.category)
+    .filter((ranking) => catalog.rankedProducts(ranking.category, ranking.sortScore).length >= ranking.minProductsRequired)
+    .slice(0, 3);
   return <main className="product-page">
     <StructuredData data={{ "@context": "https://schema.org", "@type": "Product", name: product.name, description: product.description, brand: { "@type": "Brand", name: product.brand }, gtin13: product.gtin, category: product.categoryLabel, image: product.imageUrl || undefined, url: absoluteUrl(path(`/product/${product.slug}`)), inLanguage: locale }} />
     <SiteHeader locale={locale} />

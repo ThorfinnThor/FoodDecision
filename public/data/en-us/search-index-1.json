@@ -1,0 +1,123 @@
+[
+  {
+    "id": "p-hafer-01-us",
+    "slug": "nordhafer-barista-ohne-zucker",
+    "name": "Nordhafer Barista No Added Sugar",
+    "brand": "Nordhafer",
+    "score": 82,
+    "category": "hafermilch",
+    "filterValues": {
+      "labels": [
+        "vegan",
+        "no added sugar",
+        "calcium"
+      ],
+      "allergens": [
+        "Oats"
+      ],
+      "sugar": 2.1,
+      "protein": 1.1,
+      "calories": 42
+    }
+  },
+  {
+    "id": "p-hafer-02-us",
+    "slug": "oatly-style-haferdrink-classic",
+    "name": "Oatly Style Original Oat Drink",
+    "brand": "Oatly Style",
+    "score": 70,
+    "category": "hafermilch",
+    "filterValues": {
+      "labels": [
+        "vegan"
+      ],
+      "allergens": [
+        "Oats"
+      ],
+      "sugar": 4.2,
+      "protein": 1,
+      "calories": 46
+    }
+  },
+  {
+    "id": "p-riegel-01-us",
+    "slug": "kraftkern-proteinriegel-kakao",
+    "name": "Kraftkern Cocoa Protein Bar",
+    "brand": "Kraftkern",
+    "score": 86,
+    "category": "proteinriegel",
+    "filterValues": {
+      "labels": [
+        "high protein",
+        "vegetarian"
+      ],
+      "allergens": [
+        "Milk",
+        "Almonds"
+      ],
+      "sugar": 3.8,
+      "protein": 32,
+      "calories": 365
+    }
+  },
+  {
+    "id": "p-muesli-01-us",
+    "slug": "morgenfeld-basis-muesli",
+    "name": "Morgenfeld Whole Grain Muesli",
+    "brand": "Morgenfeld",
+    "score": 94,
+    "category": "muesli",
+    "filterValues": {
+      "labels": [
+        "whole grain",
+        "no added sugar",
+        "vegan"
+      ],
+      "allergens": [
+        "Gluten",
+        "Hazelnuts"
+      ],
+      "sugar": 4.9,
+      "protein": 12.4,
+      "calories": 372
+    }
+  },
+  {
+    "id": "p-skyr-01-us",
+    "slug": "fjordgut-skyr-natur",
+    "name": "Fjordgut Plain Skyr",
+    "brand": "Fjordgut",
+    "score": 98,
+    "category": "joghurt-skyr",
+    "filterValues": {
+      "labels": [
+        "high protein",
+        "vegetarian"
+      ],
+      "allergens": [
+        "Milk"
+      ],
+      "sugar": 4,
+      "protein": 11,
+      "calories": 64
+    }
+  },
+  {
+    "id": "p-snack-01-us",
+    "slug": "gruenbiss-linsen-cracker",
+    "name": "Green Bite Lentil Crackers",
+    "brand": "Gruenbiss",
+    "score": 91,
+    "category": "vegane-snacks",
+    "filterValues": {
+      "labels": [
+        "vegan",
+        "protein source"
+      ],
+      "allergens": [],
+      "sugar": 2.4,
+      "protein": 14,
+      "calories": 418
+    }
+  }
+]
