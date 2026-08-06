@@ -1,5 +1,5 @@
 import { scoreByType } from "./scoring.ts";
-import type { CategorySlug, Product, ScoreConfidence, ScoreType } from "./types.ts";
+import type { CategorySlug, Product, ProductScore, ScoreConfidence, ScoreType } from "./types.ts";
 
 export type FinderCriteria = {
   category: CategorySlug | "all";
@@ -29,6 +29,21 @@ export type ProductTraits = {
 export type MatchResult = {
   score: number;
   reasons: string[];
+};
+
+export type PeerMetric = {
+  key: "sugar" | "protein";
+  value: number;
+  median: number;
+  percentDifference: number;
+  position: "better" | "typical" | "worse";
+};
+
+export type DecisionSummary = {
+  bestFor: Array<{ type: ScoreType; label: string; score: number; reason: string }>;
+  peerMetrics: PeerMetric[];
+  dataCompleteness: number;
+  peerCount: number;
 };
 
 const additivePattern = /emulgator|stabilisator|verdickungsmittel|konservierung|farbstoff|geschmacksverstaerker|aroma|e\s?\d{3,4}/i;
@@ -75,6 +90,71 @@ export function dataCompleteness(product: Product) {
     ...nutritionValues,
   ];
   return checks.filter((value) => value !== null && value !== undefined && value !== "").length / checks.length;
+}
+
+function median(values: number[]) {
+  if (!values.length) return null;
+  const sorted = values.slice().sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function decisionLabel(type: ScoreType, product: Product) {
+  const labels: Record<ScoreType, [string, string]> = {
+    nutrition: ["Ausgewogene Nährwerte", "Balanced nutrition"],
+    ingredient_quality: ["Einfachere Zutaten", "Simpler ingredients"],
+    protein: ["Mehr Protein", "Higher protein"],
+    low_sugar: ["Weniger Zucker", "Lower sugar"],
+    family: ["Familien", "Families"],
+    vegan: ["Vegane Auswahl", "Vegan choices"],
+    overall_match: ["Gesamtwahl", "Overall choice"],
+  };
+  return labels[type][product.locale === "de-DE" ? 0 : 1];
+}
+
+function peerMetric(product: Product, peers: Product[], key: PeerMetric["key"], lowerIsBetter: boolean): PeerMetric | null {
+  const value = product.nutrition[key];
+  const peerMedian = median(peers.map((peer) => peer.nutrition[key]).filter((item): item is number => typeof item === "number"));
+  if (value === null || peerMedian === null) return null;
+  const percentDifference = peerMedian === 0 ? 0 : Math.round(((value - peerMedian) / peerMedian) * 100);
+  const meaningfulDifference = Math.abs(percentDifference) >= 5;
+  const favorable = lowerIsBetter ? value < peerMedian : value > peerMedian;
+  return {
+    key,
+    value,
+    median: peerMedian,
+    percentDifference,
+    position: meaningfulDifference ? (favorable ? "better" : "worse") : "typical",
+  };
+}
+
+export function productDecisionSummary(product: Product, categoryProducts: Product[]): DecisionSummary {
+  const peers = categoryProducts.filter((peer) => peer.category === product.category && peer.nutrition.basis === product.nutrition.basis);
+  const preferredTypes: ScoreType[] = ["low_sugar", "protein", "ingredient_quality", "family", "vegan"];
+  const traits = productTraits(product);
+  const bestFor = preferredTypes
+    .map((type) => scoreByType(product, type))
+    .filter((score): score is ProductScore => score !== undefined && score.score !== null && score.score >= 70)
+    .filter((score) => score.type !== "vegan" || traits.vegan)
+    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+    .slice(0, 2)
+    .map((score) => ({
+      type: score.type,
+      label: decisionLabel(score.type, product),
+      score: score.score ?? 0,
+      reason: score.positives[0] ?? (product.locale === "de-DE" ? "Im Kategorievergleich überdurchschnittlich bewertet." : "Scores above average within its category."),
+    }));
+  const peerMetrics = [
+    peerMetric(product, peers, "sugar", true),
+    peerMetric(product, peers, "protein", false),
+  ].filter((metric): metric is PeerMetric => metric !== null);
+
+  return {
+    bestFor,
+    peerMetrics,
+    dataCompleteness: Math.round(dataCompleteness(product) * 100),
+    peerCount: peers.length,
+  };
 }
 
 function confidenceRank(confidence: ScoreConfidence) {
@@ -133,4 +213,3 @@ export function nutritionValue(product: Product, attribute: string) {
   if (attribute === "salz") return product.nutrition.salt;
   return null;
 }
-

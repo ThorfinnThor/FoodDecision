@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { categoryCatalog, defaultRankingPages } from "../lib/catalog.ts";
 import { products } from "../lib/data.ts";
-import { productMatch, productMatchesCriteria, productTraits } from "../lib/product-insights.ts";
+import { productDecisionSummary, productMatch, productMatchesCriteria, productTraits } from "../lib/product-insights.ts";
 
 const muesli = products.find((product) => product.slug === "morgenfeld-basis-muesli");
 const proteinBar = products.find((product) => product.slug === "kraftkern-proteinriegel-kakao");
@@ -43,4 +43,16 @@ test("applies hard finder exclusions before calculating a match", () => {
   const match = productMatch(muesli, criteria);
   assert.ok(match.score >= 70);
   assert.ok(match.reasons.length > 0);
+});
+
+test("summarizes category-relative strengths without inventing missing comparisons", () => {
+  const oatProducts = products.filter((product) => product.category === "hafermilch");
+  const oatMilk = oatProducts[0];
+  assert.ok(oatMilk);
+
+  const summary = productDecisionSummary(oatMilk, oatProducts);
+  assert.equal(summary.peerCount, oatProducts.length);
+  assert.ok(summary.bestFor.length > 0);
+  assert.deepEqual(summary.peerMetrics.map((metric) => metric.key), ["sugar", "protein"]);
+  assert.ok(summary.dataCompleteness > 0 && summary.dataCompleteness <= 100);
 });

@@ -216,6 +216,9 @@ main { min-height: 70vh; }
 .suitability-grid span { color: var(--color-text-500); font-size: 13px; }
 .suitability-grid strong { display: block; font-size: 28px; font-variant-numeric: tabular-nums; margin: 10px 0 6px; }
 .suitability-grid p { color: var(--color-text-700); font-size: 13px; margin: 0; }
+.suitability-grid .decision-text-value { font-size: 21px; line-height: 1.25; }
+.peer-metric.is-better { border-color: #a7d78c; }
+.peer-metric.is-worse { border-color: #f2c38b; }
 .score-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .score-detail { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 20px; }
 .score-detail-head { align-items: start; display: flex; gap: 12px; justify-content: space-between; }
@@ -309,6 +312,9 @@ main { min-height: 70vh; }
 .compare-summary-grid span { color: var(--color-primary-700); font-size: 13px; font-weight: 700; }
 .compare-summary-grid strong { display: block; font-size: 18px; margin: 10px 0; }
 .compare-summary-grid p { color: var(--color-text-700); font-size: 13px; line-height: 1.5; margin: 0; }
+.comparison-goal-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: -12px 0 24px; }
+.comparison-goal-picker button { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-700); font-weight: 700; min-height: 42px; padding: 9px 13px; }
+.comparison-goal-picker button[aria-pressed="true"] { background: var(--color-text-900); border-color: var(--color-text-900); color: #fff; }
 .comparison-table-wrap { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow-x: auto; }
 .comparison-table { border-collapse: collapse; min-width: 780px; width: 100%; }
 .comparison-table th, .comparison-table td { border-bottom: 1px solid var(--color-border); padding: 16px; text-align: left; }
