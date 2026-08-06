@@ -10,6 +10,7 @@ import {
   productMatch,
   productMatchesCriteria,
   productTraits,
+  rankImprovingAlternatives,
 } from "../lib/product-insights.ts";
 
 const muesli = products.find((product) => product.slug === "morgenfeld-basis-muesli");
@@ -97,4 +98,20 @@ test("rejects invalid Finder URL values and explains measurable alternative trad
   const oatProducts = products.filter((product) => product.category === "hafermilch");
   const reasons = alternativeReasons(oatProducts[1], oatProducts[0]);
   assert.ok(reasons.some((reason) => /weniger Zucker/.test(reason)));
+});
+
+test("recommends only measurable, same-category improvements", () => {
+  const oatProducts = products.filter((product) => product.category === "hafermilch");
+  const current = oatProducts.find((product) => product.slug === "oatly-style-haferdrink-classic");
+  assert.ok(current);
+
+  const recommendations = rankImprovingAlternatives(current, products, "low_sugar");
+  assert.equal(recommendations.length, 1);
+  assert.equal(recommendations[0].product.slug, "nordhafer-barista-ohne-zucker");
+  assert.ok(recommendations[0].scoreDelta >= 3);
+  assert.ok(recommendations[0].reasons.some((reason) => /weniger Zucker/.test(reason)));
+  assert.ok(recommendations.every((item) => item.product.category === current.category));
+  assert.ok(recommendations.every((item) => item.product.market === current.market && item.product.locale === current.locale));
+
+  assert.equal(rankImprovingAlternatives(recommendations[0].product, oatProducts, "low_sugar").length, 0);
 });

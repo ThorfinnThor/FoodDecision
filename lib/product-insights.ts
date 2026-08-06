@@ -48,6 +48,20 @@ export type DecisionSummary = {
   peerCount: number;
 };
 
+export const alternativeGoalOrder = ["overall_match", "low_sugar", "protein", "ingredient_quality"] as const;
+export type AlternativeGoal = (typeof alternativeGoalOrder)[number];
+
+export type AlternativeRecommendation = {
+  product: Product;
+  goal: AlternativeGoal;
+  currentScore: number;
+  candidateScore: number;
+  scoreDelta: number;
+  reasons: string[];
+  tradeoffs: string[];
+  confidence: ScoreConfidence;
+};
+
 const finderGoals = new Set<ScoreType>(["overall_match", "protein", "low_sugar", "vegan", "family", "ingredient_quality"]);
 const finderParamNames = new Set(["category", "goal", "vegan", "additives", "sweeteners", "palm", "allergens", "maxSugar", "minProtein", "maxCalories", "include", "exclude", "confidence", "q"]);
 
@@ -302,6 +316,87 @@ export function alternativeReasons(current: Product, candidate: Product, goal: S
   }
   if (dataCompleteness(candidate) - dataCompleteness(current) >= 0.1) reasons.push(locale === "de-DE" ? "Vollständigere Produktdaten." : "More complete product data.");
   return reasons.slice(0, 3);
+}
+
+function alternativeTradeoffs(current: Product, candidate: Product, goal: AlternativeGoal) {
+  const locale = current.locale;
+  const tradeoffs: string[] = [];
+  const format = (value: number) => Number(value.toFixed(2)).toLocaleString(locale);
+
+  if (
+    goal !== "low_sugar"
+    && current.nutrition.sugar !== null
+    && candidate.nutrition.sugar !== null
+    && candidate.nutrition.sugar - current.nutrition.sugar >= 0.5
+  ) {
+    const difference = candidate.nutrition.sugar - current.nutrition.sugar;
+    tradeoffs.push(locale === "de-DE" ? `${format(difference)} g mehr Zucker pro ${current.nutrition.basis}.` : `${format(difference)} g more sugar per ${current.nutrition.basis}.`);
+  }
+  if (
+    goal !== "protein"
+    && current.nutrition.protein !== null
+    && candidate.nutrition.protein !== null
+    && current.nutrition.protein - candidate.nutrition.protein >= 0.5
+  ) {
+    const difference = current.nutrition.protein - candidate.nutrition.protein;
+    tradeoffs.push(locale === "de-DE" ? `${format(difference)} g weniger Protein pro ${current.nutrition.basis}.` : `${format(difference)} g less protein per ${current.nutrition.basis}.`);
+  }
+  if (
+    current.nutrition.energyKcal !== null
+    && candidate.nutrition.energyKcal !== null
+    && candidate.nutrition.energyKcal - current.nutrition.energyKcal >= Math.max(10, current.nutrition.energyKcal * 0.08)
+  ) {
+    const difference = candidate.nutrition.energyKcal - current.nutrition.energyKcal;
+    tradeoffs.push(locale === "de-DE" ? `${format(difference)} kcal mehr pro ${current.nutrition.basis}.` : `${format(difference)} more kcal per ${current.nutrition.basis}.`);
+  }
+  if (goal !== "ingredient_quality" && candidate.ingredients.length - current.ingredients.length >= 3) {
+    tradeoffs.push(locale === "de-DE" ? "Längere Zutatenliste." : "Longer ingredient list.");
+  }
+  if (dataCompleteness(current) - dataCompleteness(candidate) >= 0.1) {
+    tradeoffs.push(locale === "de-DE" ? "Weniger vollständige Produktdaten." : "Less complete product data.");
+  }
+
+  return tradeoffs.slice(0, 2);
+}
+
+export function alternativeRecommendation(current: Product, candidate: Product, goal: AlternativeGoal): AlternativeRecommendation | null {
+  if (
+    current.market !== candidate.market
+    || current.locale !== candidate.locale
+    || current.category !== candidate.category
+    || current.nutrition.basis !== candidate.nutrition.basis
+  ) return null;
+  const currentGoal = scoreByType(current, goal);
+  const candidateGoal = scoreByType(candidate, goal);
+  if (currentGoal?.score === null || currentGoal?.score === undefined || candidateGoal?.score === null || candidateGoal?.score === undefined) return null;
+  const scoreDelta = candidateGoal.score - currentGoal.score;
+  if (scoreDelta < 3 || candidateGoal.confidence === "low") return null;
+
+  const reasons = alternativeReasons(current, candidate, goal);
+  if (!reasons.some((reason) => reason.includes(`${scoreDelta}`))) {
+    reasons.unshift(current.locale === "de-DE" ? `${scoreDelta} Punkte stärker beim gewählten Ziel.` : `${scoreDelta} points stronger for the selected goal.`);
+  }
+
+  return {
+    product: candidate,
+    goal,
+    currentScore: currentGoal.score,
+    candidateScore: candidateGoal.score,
+    scoreDelta,
+    reasons: reasons.slice(0, 3),
+    tradeoffs: alternativeTradeoffs(current, candidate, goal),
+    confidence: candidateGoal.confidence,
+  };
+}
+
+export function rankImprovingAlternatives(current: Product, candidates: Product[], goal: AlternativeGoal, limit = 3) {
+  return candidates
+    .filter((candidate) => candidate.slug !== current.slug)
+    .filter((candidate) => candidate.publishability === "ranking_eligible" || candidate.publishability === "published")
+    .map((candidate) => alternativeRecommendation(current, candidate, goal))
+    .filter((recommendation): recommendation is AlternativeRecommendation => recommendation !== null)
+    .sort((a, b) => b.scoreDelta - a.scoreDelta || dataCompleteness(b.product) - dataCompleteness(a.product))
+    .slice(0, limit);
 }
 
 export function nutritionValue(product: Product, attribute: string) {
