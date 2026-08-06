@@ -10,6 +10,7 @@ import { requireLocale, localeAlternates } from "@/lib/locale-page";
 import { absoluteUrl } from "@/lib/seo";
 import { getCatalog } from "@/lib/static-data";
 import { scoreByType } from "@/lib/scoring";
+import { categoryImage, categoryImageAlt } from "@/lib/category-images";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -75,10 +76,11 @@ export default async function Home({ params }: Props) {
         <div className="section-heading split-heading"><div><p className="eyebrow">{pick(locale, "Nach Kategorie entdecken", "Explore by category")}</p><h2>{pick(locale, "Vergleiche Produkte im richtigen Kontext", "Compare products in the right context")}</h2></div><p>{pick(locale, "Jede Produktgruppe nutzt passende Zielwerte, damit die Bewertung fair und nützlich bleibt.", "Each category uses appropriate reference values so comparisons stay fair and useful.")}</p></div>
         <div className="category-grid">{availableCategories.map((category) => (
           <Link href={path(`/category/${categoryRouteSlug(category.slug, locale)}`)} className={`category-card category-${category.slug}`} key={category.slug}>
-            <Image alt="" aria-hidden="true" fill sizes="(max-width: 720px) 80vw, 25vw" src="/images/food-decision-hero.png" />
+            <Image alt={categoryImageAlt(category.slug, locale)} fill sizes="(max-width: 600px) 82vw, (max-width: 1080px) 33vw, 25vw" src={categoryImage(category.slug).src} style={{ objectPosition: categoryImage(category.slug).objectPosition }} />
             <span className="category-card-overlay"><strong>{category.label}</strong><small>{category.intent}</small><b>{catalog.getCategoryProductCount(category.slug)} {pick(locale, "Produkte ansehen", "products")} <span aria-hidden="true">→</span></b></span>
           </Link>
         ))}</div>
+        <Link className="category-credit-link" href={path("/image-credits")}>{pick(locale, "Bildnachweise und Lizenzen", "Photo credits and licenses")} <span aria-hidden="true">→</span></Link>
         {!availableCategories.length ? <div className="empty-state"><h3>{pick(locale, "Dieser Marktkatalog wird gerade aufgebaut", "This market catalog is being built")}</h3><p>{pick(locale, "Kategorien werden sichtbar, sobald geprüfte Produkte verfügbar sind.", "Categories appear as soon as assessed products are available.")}</p></div> : null}
       </section>
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CatalogGrid } from "@/components/CatalogGrid";
@@ -9,6 +10,7 @@ import { categoryFromRouteSlug, categoryRouteSlug, localizedPath, pick, rankingR
 import { requireLocale } from "@/lib/locale-page";
 import { absoluteUrl } from "@/lib/seo";
 import { getCatalog } from "@/lib/static-data";
+import { categoryImage, categoryImageAlt } from "@/lib/category-images";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -53,6 +55,7 @@ export default async function CategoryPage({ params }: Props) {
     ranking.category === category.slug
     && catalog.rankedProducts(ranking.category, ranking.sortScore).length >= ranking.minProductsRequired,
   );
+  const heroImage = categoryImage(category.slug);
 
   return <main>
     <StructuredData data={{ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
@@ -61,7 +64,12 @@ export default async function CategoryPage({ params }: Props) {
     ] }} />
     <SiteHeader locale={locale} />
     <nav className="breadcrumb" aria-label="Breadcrumb"><Link href={path()}>{pick(locale, "Start", "Home")}</Link><span aria-hidden="true">/</span><span aria-current="page">{category.label}</span></nav>
-    <section className="subpage-hero"><p className="eyebrow">{pick(locale, "Kategorie entdecken", "Explore category")}</p><h1>{category.label}</h1><p>{category.description}</p><div className="hero-actions">{rankings.map((ranking) => <Link href={path(`/best/${rankingRouteSlug(ranking.attribute, locale)}/${categoryRouteSlug(category.slug, locale)}`)} key={ranking.attribute}>{ranking.title}</Link>)}</div></section>
+    <section className="category-page-hero">
+      <Image alt={categoryImageAlt(category.slug, locale)} fill priority sizes="100vw" src={heroImage.src} style={{ objectPosition: heroImage.objectPosition }} />
+      <div className="category-page-hero-shade" />
+      <div className="category-page-hero-content"><p className="eyebrow">{pick(locale, "Kategorie entdecken", "Explore category")}</p><h1>{category.label}</h1><p>{category.description}</p><div className="hero-actions">{rankings.map((ranking) => <Link href={path(`/best/${rankingRouteSlug(ranking.attribute, locale)}/${categoryRouteSlug(category.slug, locale)}`)} key={ranking.attribute}>{ranking.title}</Link>)}</div></div>
+      <a className="category-page-image-credit" href={heroImage.sourceUrl} rel="license noreferrer" target="_blank">{pick(locale, "Foto", "Photo")}: {heroImage.creator} · {heroImage.license}</a>
+    </section>
     <section className="ranking-context category-facts"><div><p className="eyebrow">{pick(locale, "Katalog auf einen Blick", "Catalog at a glance")}</p><h2>{pick(locale, "Was die aktuellen Daten zeigen", "What the current data shows")}</h2></div><dl className="insight-stats"><div><dt>{pick(locale, "Produkte", "Products")}</dt><dd>{insights.products}</dd></div><div><dt>{pick(locale, "Median Zucker", "Median sugar")}</dt><dd>{insights.medianSugar === null ? "-" : `${insights.medianSugar.toFixed(1)} g`}</dd></div><div><dt>{pick(locale, "Median Protein", "Median protein")}</dt><dd>{insights.medianProtein === null ? "-" : `${insights.medianProtein.toFixed(1)} g`}</dd></div><div><dt>{pick(locale, "Zutatenabdeckung", "Ingredient coverage")}</dt><dd>{insights.ingredientCoverage}%</dd></div></dl></section>
     <section className="section"><div className="section-heading"><p className="eyebrow">{pick(locale, "Produkte vergleichen", "Compare products")}</p><h2>{items.length} {pick(locale, "Produkte mit nachvollziehbarer Bewertung", "products with explainable scoring")}</h2><p>{pick(locale, "Sortiere nach deinem Ziel oder öffne eine Produktseite für alle Details.", "Sort by your goal or open a product for all details.")}</p></div><CatalogGrid locale={locale} products={items} /></section>
   </main>;

@@ -19,12 +19,13 @@ export function SiteFooter({ locale }: { locale: SiteLocale }) {
           <Link href={path("/products")}>{pick(locale, "Produkte", "Products")}</Link>
           <Link href={path("/compare")}>{pick(locale, "Vergleiche", "Compare")}</Link>
           <Link href={path("/methodology")}>{pick(locale, "Methodik", "Methodology")}</Link>
+          <Link href={path("/image-credits")}>{pick(locale, "Bildnachweise", "Photo credits")}</Link>
           <a href="https://world.openfoodfacts.org" rel="noreferrer" target="_blank">{pick(locale, "Datenquelle", "Data source")}</a>
         </nav>
       </div>
       <div className="footer-meta">
         <span>{pick(locale, "Produktdaten können unvollständig sein. Angaben auf der Verpackung haben Vorrang.", "Product data may be incomplete. Always rely on the current package label.")}</span>
-        <span>{pick(locale, "Open Food Facts: ODbL · Bilder: CC BY-SA", "Open Food Facts: ODbL · Images: CC BY-SA")}</span>
+        <span>{pick(locale, "Open Food Facts: ODbL · Produktbilder: CC BY-SA · Kategoriebilder: offene Lizenzen", "Open Food Facts: ODbL · Product images: CC BY-SA · Category photos: open licenses")}</span>
       </div>
     </footer>
   );
