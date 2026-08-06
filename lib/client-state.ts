@@ -1,25 +1,36 @@
 "use client";
 
-export { FAVORITES_KEY, PREFERENCES_KEY, SAVED_STATE_EVENT, SHOPPING_LIST_KEY } from "./storage-keys";
+export { FAVORITES_KEY, PREFERENCES_KEY, SAVED_STATE_EVENT, SHOPPING_CHECKED_KEY, SHOPPING_LIST_KEY } from "./storage-keys";
 import { SAVED_STATE_EVENT } from "./storage-keys";
+import { cleanStoredIds, mergeStoredIds, toggleStoredIds, withoutStoredIds } from "./saved-state";
 
 export function readStoredIds(key: string) {
   if (typeof window === "undefined") return [] as string[];
   try {
-    const value = JSON.parse(window.localStorage.getItem(key) ?? "[]");
-    return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+    return cleanStoredIds(JSON.parse(window.localStorage.getItem(key) ?? "[]"));
   } catch {
     return [];
   }
 }
 
+export function writeStoredIds(key: string, ids: string[]) {
+  const next = cleanStoredIds(ids);
+  window.localStorage.setItem(key, JSON.stringify(next));
+  window.dispatchEvent(new CustomEvent(SAVED_STATE_EVENT, { detail: { key, ids: next } }));
+  return next;
+}
+
+export function addStoredIds(key: string, ids: string[]) {
+  return writeStoredIds(key, mergeStoredIds(readStoredIds(key), ids));
+}
+
+export function removeStoredIds(key: string, ids: string[]) {
+  return writeStoredIds(key, withoutStoredIds(readStoredIds(key), ids));
+}
+
 export function toggleStoredId(key: string, id: string) {
-  const ids = new Set(readStoredIds(key));
-  const selected = !ids.has(id);
-  if (selected) ids.add(id);
-  else ids.delete(id);
-  window.localStorage.setItem(key, JSON.stringify([...ids]));
-  window.dispatchEvent(new CustomEvent(SAVED_STATE_EVENT, { detail: { key, id, selected } }));
+  const { ids, selected } = toggleStoredIds(readStoredIds(key), id);
+  writeStoredIds(key, ids);
   return selected;
 }
 

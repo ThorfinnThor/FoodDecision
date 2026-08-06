@@ -21,6 +21,7 @@ export function SiteHeader({ locale }: { locale: SiteLocale }) {
         <div className="header-actions">
           <LocaleSwitcher locale={locale} />
           <Link className="saved-link" href={path("/favorites")} title={pick(locale, "Favoriten", "Favorites")}>♡</Link>
+          <Link className="saved-link" href={path("/shopping-list")} title={pick(locale, "Einkaufsliste", "Shopping list")}><span aria-hidden="true">✓</span><span className="sr-only">{pick(locale, "Einkaufsliste", "Shopping list")}</span></Link>
           <Link className="search-link" href={path("/scan")}>{pick(locale, "Scannen", "Scan")}</Link>
           <Link className="primary-link" href={path("/finder")}>{pick(locale, "Finder starten", "Start finder")}</Link>
         </div>
