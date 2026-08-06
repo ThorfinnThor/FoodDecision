@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PREFERENCES_KEY, trackEvent } from "@/lib/client-state";
-import { defaultFinderCriteria, finderCriteriaToSearchParams, productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
+import { defaultFinderCriteria, finderCriteriaFromStored, finderCriteriaToSearchParams, productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
 import { pick } from "@/lib/i18n";
 import type { Category, Product, ScoreType, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
@@ -38,20 +38,21 @@ export function FinderExperience({
   const [criteria, setCriteria] = useState<FinderCriteria>(initialCriteria);
   const [visibleCount, setVisibleCount] = useState(24);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
+  const [hasInteracted, setHasInteracted] = useState(false);
   const preferencesKey = `${PREFERENCES_KEY}:${locale}`;
 
   useEffect(() => {
     if (showResultsInitially) return;
     const timer = window.setTimeout(() => {
       try {
-        const stored = JSON.parse(window.localStorage.getItem(preferencesKey) ?? "{}") as Partial<FinderCriteria>;
-        setCriteria((current) => ({ ...current, ...stored }));
+        const stored = JSON.parse(window.localStorage.getItem(preferencesKey) ?? "{}");
+        if (!hasInteracted) setCriteria(finderCriteriaFromStored(stored, categories.map((category) => category.slug)));
       } catch {
         // Invalid local preferences are ignored and replaced on the next save.
       }
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [preferencesKey, showResultsInitially]);
+  }, [categories, hasInteracted, preferencesKey, showResultsInitially]);
 
   useEffect(() => {
     if (step !== 3) return;
@@ -78,6 +79,7 @@ export function FinderExperience({
     { value: "vegan" as const, label: "Vegan", description: "Consider vegan labels and known allergens." },
   ];
   const update = <K extends keyof FinderCriteria>(key: K, value: FinderCriteria[K]) => {
+    setHasInteracted(true);
     setCriteria((current) => ({ ...current, [key]: value }));
     setVisibleCount(24);
   };

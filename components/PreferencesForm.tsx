@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PREFERENCES_KEY } from "@/lib/storage-keys";
-import type { FinderCriteria } from "@/lib/product-insights";
+import { finderCriteriaFromStored, type FinderCriteria } from "@/lib/product-insights";
 import type { ScoreType, SiteLocale } from "@/lib/types";
 
 const defaultPreferences: Partial<FinderCriteria> = { goal: "overall_match", veganOnly: false, additiveFree: false, sweetenerFree: false, palmOilFree: false, excludedAllergens: [] };
@@ -14,13 +14,24 @@ export function PreferencesForm({ locale }: { locale: SiteLocale }) {
   const en = locale === "en-US";
   const [preferences, setPreferences] = useState<Partial<FinderCriteria>>(defaultPreferences);
   const [saved, setSaved] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      try { setPreferences({ ...defaultPreferences, ...JSON.parse(window.localStorage.getItem(storageKey) ?? "{}") }); } catch { setPreferences(defaultPreferences); }
+      if (hasInteracted) return;
+      try {
+        const stored = window.localStorage.getItem(storageKey);
+        setPreferences(stored ? finderCriteriaFromStored(JSON.parse(stored), []) : defaultPreferences);
+      } catch {
+        setPreferences(defaultPreferences);
+      }
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [storageKey]);
-  const update = <K extends keyof FinderCriteria>(key: K, value: FinderCriteria[K]) => { setSaved(false); setPreferences((current) => ({ ...current, [key]: value })); };
+  }, [hasInteracted, storageKey]);
+  const update = <K extends keyof FinderCriteria>(key: K, value: FinderCriteria[K]) => {
+    setHasInteracted(true);
+    setSaved(false);
+    setPreferences((current) => ({ ...current, [key]: value }));
+  };
   const excluded = preferences.excludedAllergens ?? [];
   function save() { window.localStorage.setItem(storageKey, JSON.stringify(preferences)); setSaved(true); }
 

@@ -20,6 +20,11 @@ export type FinderCriteria = {
 
 export type FinderSearchParams = Record<string, string | string[] | undefined>;
 
+export type CriteriaAssessment = {
+  passes: boolean;
+  failures: string[];
+};
+
 export type ProductTraits = {
   vegan: boolean;
   additiveFree: boolean;
@@ -132,6 +137,37 @@ export function finderCriteriaFromSearchParams(params: FinderSearchParams, categ
     includeIngredient: firstParam(params.include),
     excludeIngredient: firstParam(params.exclude),
     minimumConfidence: confidence === "medium" || confidence === "high" ? confidence : "any",
+  };
+}
+
+export function finderCriteriaFromStored(value: unknown, categories: CategorySlug[]): FinderCriteria {
+  const stored = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+  const requestedGoal = typeof stored.goal === "string" ? stored.goal as ScoreType : "overall_match";
+  const goal = finderGoals.has(requestedGoal) ? requestedGoal : "overall_match";
+  const defaults = defaultFinderCriteria(goal);
+  const category = typeof stored.category === "string" ? stored.category as CategorySlug : "all";
+  const numberOrNull = (candidate: unknown) => typeof candidate === "number" && Number.isFinite(candidate) && candidate >= 0 ? candidate : null;
+  const text = (candidate: unknown) => typeof candidate === "string" ? candidate.trim().slice(0, 120) : "";
+  const confidence = stored.minimumConfidence === "medium" || stored.minimumConfidence === "high" ? stored.minimumConfidence : "any";
+  const excludedAllergens = Array.isArray(stored.excludedAllergens)
+    ? [...new Set(stored.excludedAllergens.filter((item): item is string => typeof item === "string").map((item) => item.trim()).filter(Boolean))].slice(0, 20)
+    : [];
+
+  return {
+    ...defaults,
+    category: category === "all" || categories.includes(category) ? category : "all",
+    veganOnly: stored.veganOnly === true || goal === "vegan",
+    additiveFree: stored.additiveFree === true,
+    sweetenerFree: stored.sweetenerFree === true,
+    palmOilFree: stored.palmOilFree === true,
+    excludedAllergens,
+    maxSugar: numberOrNull(stored.maxSugar),
+    minProtein: numberOrNull(stored.minProtein),
+    maxCalories: numberOrNull(stored.maxCalories),
+    includeIngredient: text(stored.includeIngredient),
+    excludeIngredient: text(stored.excludeIngredient),
+    minimumConfidence: confidence,
+    query: text(stored.query),
   };
 }
 
@@ -256,46 +292,71 @@ function confidenceRank(confidence: ScoreConfidence) {
   return confidence === "high" ? 3 : confidence === "medium" ? 2 : 1;
 }
 
-export function productMatchesCriteria(product: Product, criteria: FinderCriteria) {
+export function assessProductCriteria(product: Product, criteria: FinderCriteria): CriteriaAssessment {
   const traits = productTraits(product);
   const ingredientText = normalizeText(product.ingredients.join(" "));
   const queryText = normalizeText([product.name, product.brand, product.categoryLabel, ...product.ingredients].join(" "));
   const goalScore = scoreByType(product, criteria.goal);
+  const failures: string[] = [];
+  const c = (de: string, en: string) => product.locale === "de-DE" ? de : en;
+  const ingredientChecksActive = criteria.additiveFree || criteria.sweetenerFree || criteria.palmOilFree || Boolean(criteria.includeIngredient.trim()) || Boolean(criteria.excludeIngredient.trim());
 
-  if (criteria.category !== "all" && product.category !== criteria.category) return false;
-  if (criteria.veganOnly && !traits.vegan) return false;
-  if (criteria.additiveFree && !traits.additiveFree) return false;
-  if (criteria.sweetenerFree && !traits.sweetenerFree) return false;
-  if (criteria.palmOilFree && !traits.palmOilFree) return false;
-  if (criteria.maxSugar !== null && (product.nutrition.sugar === null || product.nutrition.sugar > criteria.maxSugar)) return false;
-  if (criteria.minProtein !== null && (product.nutrition.protein === null || product.nutrition.protein < criteria.minProtein)) return false;
-  if (criteria.maxCalories !== null && (product.nutrition.energyKcal === null || product.nutrition.energyKcal > criteria.maxCalories)) return false;
-  if (criteria.includeIngredient.trim() && !ingredientText.includes(normalizeText(criteria.includeIngredient.trim()))) return false;
-  if (criteria.excludeIngredient.trim() && ingredientText.includes(normalizeText(criteria.excludeIngredient.trim()))) return false;
-  if (criteria.query.trim() && !queryText.includes(normalizeText(criteria.query.trim()))) return false;
-  if (criteria.excludedAllergens.some((allergen) => normalizeText(product.allergens.join(" ")).includes(normalizeText(allergen)))) return false;
+  if (criteria.category !== "all" && product.category !== criteria.category) failures.push(c("Andere Produktkategorie als ausgewählt.", "Different product category than selected."));
+  if (criteria.veganOnly && !traits.vegan) failures.push(c("Nicht verlässlich als vegan oder pflanzlich erkannt.", "Not reliably identified as vegan or plant-based."));
+  if (ingredientChecksActive && !product.ingredients.length) {
+    failures.push(c("Zutatenliste fehlt; Zutaten-Ausschlüsse können nicht geprüft werden.", "The ingredient list is missing, so ingredient exclusions cannot be verified."));
+  } else {
+    if (criteria.additiveFree && !traits.additiveFree) failures.push(c("Typische Zusatzstoffe in der Zutatenliste erkannt.", "Common additives were detected in the ingredient list."));
+    if (criteria.sweetenerFree && !traits.sweetenerFree) failures.push(c("Süßungsmittel in der Zutatenliste erkannt.", "Sweeteners were detected in the ingredient list."));
+    if (criteria.palmOilFree && !traits.palmOilFree) failures.push(c("Palmöl in der Zutatenliste erkannt.", "Palm oil was detected in the ingredient list."));
+    if (criteria.includeIngredient.trim() && !ingredientText.includes(normalizeText(criteria.includeIngredient.trim()))) failures.push(c(`Gesuchte Zutat „${criteria.includeIngredient.trim()}“ nicht gefunden.`, `Required ingredient “${criteria.includeIngredient.trim()}” was not found.`));
+    if (criteria.excludeIngredient.trim() && ingredientText.includes(normalizeText(criteria.excludeIngredient.trim()))) failures.push(c(`Ausgeschlossene Zutat „${criteria.excludeIngredient.trim()}“ erkannt.`, `Excluded ingredient “${criteria.excludeIngredient.trim()}” was detected.`));
+  }
+  if (criteria.maxSugar !== null) {
+    if (product.nutrition.sugar === null) failures.push(c("Zuckerwert fehlt; die Obergrenze kann nicht geprüft werden.", "Sugar data is missing, so the maximum cannot be verified."));
+    else if (product.nutrition.sugar > criteria.maxSugar) failures.push(c(`${product.nutrition.sugar} g Zucker liegen über deiner Grenze von ${criteria.maxSugar} g.`, `${product.nutrition.sugar} g of sugar exceeds your ${criteria.maxSugar} g limit.`));
+  }
+  if (criteria.minProtein !== null) {
+    if (product.nutrition.protein === null) failures.push(c("Proteinwert fehlt; die Untergrenze kann nicht geprüft werden.", "Protein data is missing, so the minimum cannot be verified."));
+    else if (product.nutrition.protein < criteria.minProtein) failures.push(c(`${product.nutrition.protein} g Protein liegen unter deinem Minimum von ${criteria.minProtein} g.`, `${product.nutrition.protein} g of protein is below your ${criteria.minProtein} g minimum.`));
+  }
+  if (criteria.maxCalories !== null) {
+    if (product.nutrition.energyKcal === null) failures.push(c("Kalorienwert fehlt; die Obergrenze kann nicht geprüft werden.", "Calorie data is missing, so the maximum cannot be verified."));
+    else if (product.nutrition.energyKcal > criteria.maxCalories) failures.push(c(`${product.nutrition.energyKcal} kcal liegen über deiner Grenze von ${criteria.maxCalories} kcal.`, `${product.nutrition.energyKcal} kcal exceeds your ${criteria.maxCalories} kcal limit.`));
+  }
+  if (criteria.query.trim() && !queryText.includes(normalizeText(criteria.query.trim()))) failures.push(c("Suchbegriff passt nicht zu Produkt, Marke oder Zutaten.", "The search term does not match the product, brand, or ingredients."));
+  const allergenText = normalizeText(product.allergens.join(" "));
+  const detectedAllergens = criteria.excludedAllergens.filter((allergen) => allergenText.includes(normalizeText(allergen)));
+  if (criteria.excludedAllergens.length && !product.allergens.length) failures.push(c("Allergendaten fehlen; deine Ausschlüsse können nicht geprüft werden.", "Allergen data is missing, so your exclusions cannot be verified."));
+  else if (detectedAllergens.length) failures.push(c(`Ausgeschlossene Allergene erkannt: ${detectedAllergens.join(", ")}.`, `Excluded allergens detected: ${detectedAllergens.join(", ")}.`));
   if (
     criteria.minimumConfidence !== "any" &&
     (!goalScore || confidenceRank(goalScore.confidence) < confidenceRank(criteria.minimumConfidence))
-  ) return false;
-  return true;
+  ) failures.push(c("Die Datensicherheit des Ziel-Scores ist zu niedrig.", "The goal score does not meet your minimum confidence level."));
+
+  return { passes: failures.length === 0, failures };
+}
+
+export function productMatchesCriteria(product: Product, criteria: FinderCriteria) {
+  return assessProductCriteria(product, criteria).passes;
 }
 
 export function productMatch(product: Product, criteria: Pick<FinderCriteria, "goal" | "maxSugar" | "minProtein" | "maxCalories" | "veganOnly" | "additiveFree" | "sweetenerFree" | "palmOilFree">): MatchResult {
   const goal = scoreByType(product, criteria.goal);
   const overall = scoreByType(product, "overall_match");
   const traits = productTraits(product);
+  const c = (de: string, en: string) => product.locale === "de-DE" ? de : en;
   let score = (goal?.score ?? 45) * 0.58 + (overall?.score ?? 45) * 0.24 + dataCompleteness(product) * 18;
   const reasons: string[] = [];
 
   if (goal?.positives[0]) reasons.push(goal.positives[0]);
-  if (criteria.maxSugar !== null && product.nutrition.sugar !== null) reasons.push(`${product.nutrition.sugar} g Zucker pro ${product.nutrition.basis}.`);
-  if (criteria.minProtein !== null && product.nutrition.protein !== null) reasons.push(`${product.nutrition.protein} g Protein pro ${product.nutrition.basis}.`);
-  if (criteria.veganOnly && traits.vegan) { score += 3; reasons.push("Als vegan oder pflanzlich erkannt."); }
-  if (criteria.additiveFree && traits.additiveFree) { score += 2; reasons.push("Keine typischen Zusatzstoffe erkannt."); }
-  if (criteria.sweetenerFree && traits.sweetenerFree) { score += 2; reasons.push("Keine typischen Süßungsmittel erkannt."); }
-  if (criteria.palmOilFree && traits.palmOilFree) { score += 2; reasons.push("Kein Palmöl in der Zutatenliste erkannt."); }
-  if (!reasons.length) reasons.push("Nach Ziel-Score und Datenvollständigkeit eingeordnet.");
+  if (criteria.maxSugar !== null && product.nutrition.sugar !== null) reasons.push(c(`${product.nutrition.sugar} g Zucker pro ${product.nutrition.basis}.`, `${product.nutrition.sugar} g sugar per ${product.nutrition.basis}.`));
+  if (criteria.minProtein !== null && product.nutrition.protein !== null) reasons.push(c(`${product.nutrition.protein} g Protein pro ${product.nutrition.basis}.`, `${product.nutrition.protein} g protein per ${product.nutrition.basis}.`));
+  if (criteria.veganOnly && traits.vegan) { score += 3; reasons.push(c("Als vegan oder pflanzlich erkannt.", "Identified as vegan or plant-based.")); }
+  if (criteria.additiveFree && traits.additiveFree) { score += 2; reasons.push(c("Keine typischen Zusatzstoffe erkannt.", "No common additives detected.")); }
+  if (criteria.sweetenerFree && traits.sweetenerFree) { score += 2; reasons.push(c("Keine typischen Süßungsmittel erkannt.", "No common sweeteners detected.")); }
+  if (criteria.palmOilFree && traits.palmOilFree) { score += 2; reasons.push(c("Kein Palmöl in der Zutatenliste erkannt.", "No palm oil detected in the ingredient list.")); }
+  if (!reasons.length) reasons.push(c("Nach Ziel-Score und Datenvollständigkeit eingeordnet.", "Ranked by goal score and data completeness."));
 
   return { score: Math.max(0, Math.min(100, Math.round(score))), reasons: reasons.slice(0, 3) };
 }

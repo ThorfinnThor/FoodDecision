@@ -4,7 +4,10 @@ import { categoryCatalog, defaultRankingPages } from "../lib/catalog.ts";
 import { products } from "../lib/data.ts";
 import {
   alternativeReasons,
+  assessProductCriteria,
+  defaultFinderCriteria,
   finderCriteriaFromSearchParams,
+  finderCriteriaFromStored,
   finderCriteriaToSearchParams,
   productDecisionSummary,
   productMatch,
@@ -87,6 +90,63 @@ test("round-trips complete Finder criteria through a shareable URL", () => {
   const parsed = finderCriteriaFromSearchParams(Object.fromEntries(params), ["muesli", "hafermilch"]);
 
   assert.deepEqual(parsed, criteria);
+});
+
+test("sanitizes saved Finder criteria before restoring browser preferences", () => {
+  const parsed = finderCriteriaFromStored({
+    category: "unknown",
+    goal: "magic",
+    veganOnly: "yes",
+    maxSugar: -4,
+    minProtein: 12,
+    excludedAllergens: ["milk", "milk", 42, ""],
+    includeIngredient: "  oats  ",
+    minimumConfidence: "high",
+  }, ["muesli"]);
+
+  assert.equal(parsed.category, "all");
+  assert.equal(parsed.goal, "overall_match");
+  assert.equal(parsed.veganOnly, false);
+  assert.equal(parsed.maxSugar, null);
+  assert.equal(parsed.minProtein, 12);
+  assert.deepEqual(parsed.excludedAllergens, ["milk"]);
+  assert.equal(parsed.includeIngredient, "oats");
+  assert.equal(parsed.minimumConfidence, "high");
+});
+
+test("explains failed personal criteria and Finder matches in US English", () => {
+  assert.ok(muesli);
+  const englishProduct = {
+    ...muesli,
+    locale: "en-US",
+    ingredients: [],
+    allergens: ["milk"],
+    nutrition: { ...muesli.nutrition, sugar: null },
+    scores: [],
+  };
+  const criteria = {
+    ...defaultFinderCriteria("low_sugar"),
+    additiveFree: true,
+    excludedAllergens: ["milk"],
+    maxSugar: 5,
+  };
+  const assessment = assessProductCriteria(englishProduct, criteria);
+
+  assert.equal(assessment.passes, false);
+  assert.match(assessment.failures.join(" "), /ingredient list is missing/i);
+  assert.match(assessment.failures.join(" "), /Sugar data is missing/i);
+  assert.match(assessment.failures.join(" "), /Excluded allergens detected: milk/i);
+  assert.doesNotMatch(assessment.failures.join(" "), /Zucker|Zutatenliste|Allergene/);
+
+  const missingAllergens = assessProductCriteria({ ...englishProduct, allergens: [] }, criteria);
+  assert.match(missingAllergens.failures.join(" "), /Allergen data is missing/i);
+
+  const match = productMatch(
+    { ...englishProduct, ingredients: ["oats"], nutrition: { ...englishProduct.nutrition, sugar: 4, protein: 12 } },
+    { ...criteria, additiveFree: false, maxSugar: 5, minProtein: 10 },
+  );
+  assert.ok(match.reasons.some((reason) => /4 g sugar per/i.test(reason)));
+  assert.ok(match.reasons.some((reason) => /12 g protein per/i.test(reason)));
 });
 
 test("rejects invalid Finder URL values and explains measurable alternative tradeoffs", () => {
