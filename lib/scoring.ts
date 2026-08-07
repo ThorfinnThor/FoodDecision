@@ -8,8 +8,9 @@ import type {
   ScoreType,
 } from "./types.ts";
 import { categoryScoringProfiles } from "./catalog.ts";
+import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
 
-const RULE_VERSION = "2026.07";
+const RULE_VERSION = "2026.08";
 
 function clamp(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -140,14 +141,15 @@ function ingredientQualityScore(product: Omit<Product, "scores">) {
     return createScore("ingredient_quality", copy(product, "Zutaten-Score", "Ingredient score"), null, [], [], missingData);
   }
 
-  const ingredientCount = product.ingredients.length;
-  const hasAddedSugar = product.ingredients.some((item) =>
-    /zucker|sugar|sirup|syrup|glukose|glucose|fruktose|fructose|suessstoff|sweetener/i.test(item),
+  const analysis = analyzeIngredients(product.ingredients);
+  const ingredientCount = analysis.ingredientCount;
+  const score = clamp(
+    92
+    - Math.max(0, ingredientCount - 5) * 4
+    - (analysis.detected.addedSugar ? 14 : 0)
+    - (analysis.detected.additives ? 10 : 0)
+    - (analysis.detected.sweeteners ? 8 : 0),
   );
-  const hasAdditives = product.ingredients.some((item) =>
-    /emulgator|emulsifier|aroma|flavou?r|stabilisator|stabilizer|verdickungsmittel|thickener|konservierung|preservative/i.test(item),
-  );
-  const score = clamp(92 - Math.max(0, ingredientCount - 5) * 4 - (hasAddedSugar ? 14 : 0) - (hasAdditives ? 10 : 0));
 
   return createScore(
     "ingredient_quality",
@@ -155,11 +157,12 @@ function ingredientQualityScore(product: Omit<Product, "scores">) {
     score,
     [
       ...(ingredientCount <= 5 ? [copy(product, "Kurze Zutatenliste.", "Short ingredient list.")] : []),
-      ...(!hasAddedSugar ? [copy(product, "Kein zugesetzter Zucker in der Zutatenliste erkannt.", "No added sugar detected in the ingredient list.")] : []),
+      ...(!analysis.detected.addedSugar ? [copy(product, "Kein zugesetzter Zucker in der Zutatenliste erkannt.", "No added sugar detected in the ingredient list.")] : []),
     ],
     [
-      ...(hasAddedSugar ? [copy(product, "Zugesetzter Zucker oder Sirup erkannt.", "Added sugar or syrup detected.")] : []),
-      ...(hasAdditives ? [copy(product, "Zusatzstoffe oder Aromen erkannt.", "Additives or flavorings detected.")] : []),
+      ...(analysis.detected.addedSugar ? [copy(product, "Zugesetzter Zucker oder Sirup erkannt.", "Added sugar or syrup detected.")] : []),
+      ...(analysis.detected.sweeteners ? [copy(product, "Süßungsmittel erkannt.", "Sweeteners detected.")] : []),
+      ...(analysis.detected.additives ? [copy(product, "Zusatzstoffe oder Aromen erkannt.", "Additives or flavorings detected.")] : []),
     ],
     missingData,
   );
@@ -192,16 +195,15 @@ function nutritionScore(product: Omit<Product, "scores">) {
 }
 
 function veganScore(product: Omit<Product, "scores">) {
-  const isVegan = product.labels.some((label) => /vegan|pflanzlich|plant-based/i.test(label));
-  const containsMilk = product.allergens.some((item) => /milch|milk|laktose|lactose/i.test(item));
-  const score = isVegan && !containsMilk ? 100 : containsMilk ? 0 : 60;
+  const vegan = analyzeVeganStatus(product.labels, product.allergens);
+  const score = vegan.status === "confirmed" ? 100 : vegan.status === "conflict" ? 0 : 60;
 
   return createScore(
     "vegan",
     copy(product, "Vegan-Score", "Vegan score"),
     score,
-    isVegan ? [copy(product, "Als vegan oder pflanzlich gekennzeichnet.", "Labeled vegan or plant-based.")] : [],
-    containsMilk ? [copy(product, "Enthält Milch oder Laktose laut Produktdaten.", "Product data indicates milk or lactose.")] : [],
+    vegan.status === "confirmed" ? [copy(product, "Als vegan oder pflanzlich gekennzeichnet.", "Labeled vegan or plant-based.")] : [],
+    vegan.status === "conflict" ? [copy(product, "Die vegane Kennzeichnung widerspricht bekannten Milch- oder Ei-Allergendaten.", "The vegan claim conflicts with known milk or egg allergen data.")] : [],
     [],
   );
 }

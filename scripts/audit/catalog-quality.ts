@@ -29,7 +29,7 @@ const lines = [
   `- Mode: ${mode}`,
   `- Export source: ${manifest.source}`,
   "",
-  "| Market | Products | Ranking eligible | Nutrition complete | Licensed images | Unavailable | Thin | Result |",
+  "| Market | Products | Ranking eligible | Decision nutrition | Licensed images | Unavailable | Thin | Result |",
   "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
 ];
 

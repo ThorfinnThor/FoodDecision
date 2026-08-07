@@ -57,7 +57,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "ingredient_quality",
@@ -71,7 +71,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "protein",
@@ -84,7 +84,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "low_sugar",
@@ -95,7 +95,7 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "family",
@@ -110,7 +110,7 @@
         "Allergene prüfen: Hafer."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "vegan",
@@ -123,7 +123,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "overall_match",
@@ -136,7 +136,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     }
   ]
 }

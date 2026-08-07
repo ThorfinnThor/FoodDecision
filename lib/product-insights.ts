@@ -1,4 +1,5 @@
 import { scoreByType } from "./scoring.ts";
+import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
 import type { CategorySlug, Product, ProductScore, ScoreConfidence, ScoreType } from "./types.ts";
 
 export type FinderCriteria = {
@@ -70,10 +71,6 @@ export type AlternativeRecommendation = {
 const finderGoals = new Set<ScoreType>(["overall_match", "protein", "low_sugar", "vegan", "family", "ingredient_quality"]);
 const finderParamNames = new Set(["category", "goal", "vegan", "additives", "sweeteners", "palm", "allergens", "maxSugar", "minProtein", "maxCalories", "include", "exclude", "confidence", "q"]);
 
-const additivePattern = /emulgator|stabilisator|verdickungsmittel|konservierung|farbstoff|geschmacksverstaerker|aroma|e\s?\d{3,4}/i;
-const sweetenerPattern = /suessstoff|süßstoff|erythrit|xylit|stevia|acesulfam|aspartam|sucralose|saccharin|maltit|sorbit/i;
-const palmOilPattern = /palmoel|palmöl|palmfett|palmkern/i;
-const addedSugarPattern = /zucker|sirup|glukose|fruktose|dextrose|maltodextrin|honig|agavendicksaft/i;
 
 export function normalizeText(value: string) {
   return value
@@ -197,15 +194,14 @@ export function entitySlug(value: string) {
 }
 
 export function productTraits(product: Product): ProductTraits {
-  const ingredients = product.ingredients.join(" ");
-  const labels = product.labels.join(" ");
-  const allergens = product.allergens.join(" ");
+  const ingredients = analyzeIngredients(product.ingredients);
+  const vegan = analyzeVeganStatus(product.labels, product.allergens);
   return {
-    vegan: /vegan|pflanzlich/i.test(labels) && !/milch|laktose|ei(er)?/i.test(allergens),
-    additiveFree: Boolean(product.ingredients.length) && !additivePattern.test(ingredients),
-    sweetenerFree: Boolean(product.ingredients.length) && !sweetenerPattern.test(ingredients),
-    palmOilFree: Boolean(product.ingredients.length) && !palmOilPattern.test(ingredients),
-    addedSugarFree: Boolean(product.ingredients.length) && !addedSugarPattern.test(ingredients),
+    vegan: vegan.status === "confirmed",
+    additiveFree: ingredients.hasData && !ingredients.detected.additives,
+    sweetenerFree: ingredients.hasData && !ingredients.detected.sweeteners,
+    palmOilFree: ingredients.hasData && !ingredients.detected.palmOil,
+    addedSugarFree: ingredients.hasData && !ingredients.detected.addedSugar,
   };
 }
 

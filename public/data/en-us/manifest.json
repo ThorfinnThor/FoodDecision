@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T12:29:04.148Z",
+  "generatedAt": "2026-08-07T14:17:44.320Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locale": "en-US",
@@ -168,42 +168,42 @@
     {
       "path": "public/data/en-us/food/products/index-1.json",
       "bytes": 2865,
-      "sha256": "f3379656aae87d05106fb17d741508f0294c9765a18045fa35dcc3b60244a81b"
+      "sha256": "86ea868e9d176f214011043d455882a868f44e4031d408b7b9b126e28fd5025b"
     },
     {
       "path": "public/data/en-us/search-index-1.json",
       "bytes": 2442,
-      "sha256": "cbe8d7b1a4ea5ae8df9bd1669107ecaf39d1c87d38541b45535ee8a288c1c465"
+      "sha256": "7d1c5b4896b5055bd5f97c94ddeab4f879e67ea04c7e930eee40368d9096b4c7"
     },
     {
       "path": "public/data/en-us/food/products/nordhafer-barista-ohne-zucker.json",
       "bytes": 3372,
-      "sha256": "ab9342017854f4bdaa9d11ce265511dc952dfb87f63a299fde7c3e85606463e1"
+      "sha256": "6ded37a7d6c2dad761cd94abb17eabb118ad39779b5f66e131bcafaefd1ebdb8"
     },
     {
       "path": "public/data/en-us/food/products/oatly-style-haferdrink-classic.json",
       "bytes": 3261,
-      "sha256": "559ca55d570bbdf2079d86955f5b5faee7cf6521ad392bce162572c95b628abb"
+      "sha256": "7acd83651b1b2085f340221c737d8c3b208f7c6260f6b78051e77bf145eb467e"
     },
     {
       "path": "public/data/en-us/food/products/kraftkern-proteinriegel-kakao.json",
-      "bytes": 3475,
-      "sha256": "961fde96e8e9325b441989db21702494b64168435a9861f1e9250f0cc45cc263"
+      "bytes": 3441,
+      "sha256": "eccbd7d8bc8776f1c3d3c9b9233f5d60c014fe3b78f2019a096b39671c0a7e1a"
     },
     {
       "path": "public/data/en-us/food/products/morgenfeld-basis-muesli.json",
       "bytes": 3395,
-      "sha256": "6838d061ddf95cc8511ecd15706cbf3fad552f8698ce9d0fbbd645e4c4c712ea"
+      "sha256": "6ea0f185a51adbe951025d04e34ad12c465bc727b605dcbf3f5b1f8b0755b819"
     },
     {
       "path": "public/data/en-us/food/products/fjordgut-skyr-natur.json",
-      "bytes": 3309,
-      "sha256": "130db5a08807014069fdbb1b009ce84251fd77e6d0130f884d8755982dec4b07"
+      "bytes": 3253,
+      "sha256": "cc0e5a0c6c370a2130525f4e263b7a24c64a6d8337609c85407a7178e27307cc"
     },
     {
       "path": "public/data/en-us/food/products/gruenbiss-linsen-cracker.json",
       "bytes": 3405,
-      "sha256": "5b694de34fe3abd92c94369efbd98489010ff91151ad4b4ed3a62c13aec18ffb"
+      "sha256": "2deae2c13ada2006b5ae568b8aa9b034fa1a3c008d8817650d93f26c364a097e"
     },
     {
       "path": "public/data/en-us/food/categories/hafermilch.json",
@@ -213,7 +213,7 @@
     {
       "path": "public/data/en-us/food/categories/proteinriegel.json",
       "bytes": 876,
-      "sha256": "f39d45d596c344278e2b161f8d7e5bcd7b318c8ebd2a0d81db7541f19b219b97"
+      "sha256": "b4e6b5957bc953cf616140a7b5855a14dafca434100e4f822bdfe50b7d61b659"
     },
     {
       "path": "public/data/en-us/food/categories/muesli.json",
@@ -278,12 +278,12 @@
     {
       "path": "public/data/en-us/rankings/proteinreich-proteinriegel.json",
       "bytes": 962,
-      "sha256": "b5ef8e519947c634929e33471471f128e00668839c749e1c10c3023f1fb20c33"
+      "sha256": "8e842fb653ac8782f0dac8a2ba2a448bc18cc921eb08bdc592bd37713fe8037a"
     },
     {
       "path": "public/data/en-us/rankings/wenig-zucker-proteinriegel.json",
       "bytes": 934,
-      "sha256": "b0c167e70cb8241b9cb37e344c2ab854390f198b1e0f59b36bc50f32e9f634d7"
+      "sha256": "5338f5f31a21bd358ed46ed1072cea2dd311154d066f1144f01370336cd37e4f"
     },
     {
       "path": "public/data/en-us/rankings/wenig-zucker-muesli.json",
@@ -393,12 +393,12 @@
     {
       "path": "public/data/en-us/comparisons/kraftkern-proteinriegel-kakao-vs-morgenfeld-basis-muesli.json",
       "bytes": 1188,
-      "sha256": "284b3cc3bc70fc1bbc6433271248d47d95ff4c20e2a0ed6d8a5b053d7d017b11"
+      "sha256": "d5ad2991b1292d8416cc882e7f07c9dcac337f6653cd2d05f3e82f27ff4b141b"
     },
     {
       "path": "public/data/en-us/quality-report.json",
       "bytes": 5641,
-      "sha256": "d25fe6206ccb7594028cd7e013bc6fd48931a26c88b56b53173ee4e41253b8cb"
+      "sha256": "8578016245aaea4795d79de6ab08c90ed8e30022e2d81f8fd1345010ac02b003"
     }
   ]
 }

@@ -60,22 +60,23 @@
         "Gesättigte Fettsäuren belasten den Score."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "ingredient_quality",
       "label": "Zutaten-Score",
-      "score": 78,
+      "score": 70,
       "grade": "good",
       "confidence": "high",
       "positives": [
         "Kein zugesetzter Zucker in der Zutatenliste erkannt."
       ],
       "negatives": [
+        "Süßungsmittel erkannt.",
         "Zusatzstoffe oder Aromen erkannt."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "protein",
@@ -88,7 +89,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "low_sugar",
@@ -101,13 +102,13 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "family",
       "label": "Familien-Score",
-      "score": 88,
-      "grade": "excellent",
+      "score": 84,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
@@ -116,33 +117,31 @@
         "Allergene prüfen: Milch, Mandeln."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "vegan",
       "label": "Vegan-Score",
-      "score": 0,
-      "grade": "weak",
+      "score": 60,
+      "grade": "okay",
       "confidence": "high",
       "positives": [],
-      "negatives": [
-        "Enthält Milch oder Laktose laut Produktdaten."
-      ],
+      "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     },
     {
       "type": "overall_match",
       "label": "Gesamt-Score",
-      "score": 86,
-      "grade": "excellent",
+      "score": 84,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Kombiniert die wichtigsten Teilbewertungen für eine schnelle Entscheidung."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08"
     }
   ]
 }
