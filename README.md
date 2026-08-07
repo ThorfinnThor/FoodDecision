@@ -65,6 +65,19 @@ the anonymous MVP. Newsletter consent and aggregate product events are written
 through server-only Supabase endpoints. Affiliate offers render only when an
 active offer exists in the exported dataset and are always labeled as ads.
 
+Camera frames and recognized barcode values never leave the browser. Optional
+usage analytics is disabled by default, respects Do Not Track, excludes URL
+query parameters, and can be enabled or disabled on `/de/privacy` and
+`/en-us/privacy`. Those pages also let visitors delete all Food Decision Engine
+data stored locally in the current browser. Configure the public privacy contact
+before launch with `NEXT_PUBLIC_OPERATOR_NAME` and
+`NEXT_PUBLIC_PRIVACY_CONTACT`.
+
+Production responses set a Content Security Policy, HSTS, clickjacking and MIME
+protections, and a restrictive Permissions Policy. Camera permission is disabled
+globally and enabled only for the two localized scanner routes. JSON write APIs
+reject cross-origin, oversized, and non-JSON requests.
+
 ## Workspace Auth Headers
 
 OpenAI workspace sites can read the current user's email from

@@ -1,6 +1,6 @@
 # Food Decision Engine - Implementierungsplan
 
-Stand: 2026-08-05
+Stand: 2026-08-07
 
 ## 0. Verbindliche Sprint-Aktualisierung
 
@@ -842,6 +842,11 @@ Die aktuelle Implementierung deckt die technische Vollprodukt-Basis ab:
 - fortgeschrittener Finder mit harten Filtern, Match-Score und Begruendungen
 - Alternativen, Favoriten, lokale Einkaufsliste und lokale Praeferenzen
 - Barcode-Suche per Kamera oder manueller GTIN
+- Kamera- und Barcode-Verarbeitung ausschließlich lokal ohne Bild-, Video- oder
+  GTIN-Übertragung; Kameraerlaubnis nur auf den Scanner-Routen
+- zweisprachige Datenschutzseite mit standardmäßig deaktivierter optionaler
+  Nutzungsstatistik und Kontrolle über alle lokal gespeicherten App-Daten
+- CSP, Permissions Policy, HSTS, Clickjacking-Schutz und abgesicherte JSON-APIs
 - serverseitige Newsletter-Einwilligung und datensparsame Ereignismessung
 - gekennzeichnete Affiliate-Angebote, sofern aktive Angebote vorliegen
 - Supabase-Import, Normalisierung, Publishability, statischer Export und

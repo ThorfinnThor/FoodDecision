@@ -19,6 +19,7 @@ export function SiteFooter({ locale }: { locale: SiteLocale }) {
           <Link href={path("/products")}>{pick(locale, "Produkte", "Products")}</Link>
           <Link href={path("/compare")}>{pick(locale, "Vergleiche", "Compare")}</Link>
           <Link href={path("/methodology")}>{pick(locale, "Methodik", "Methodology")}</Link>
+          <Link href={path("/privacy")}>{pick(locale, "Datenschutz", "Privacy")}</Link>
           <Link href={path("/image-credits")}>{pick(locale, "Bildnachweise", "Photo credits")}</Link>
           <a href="https://world.openfoodfacts.org" rel="noreferrer" target="_blank">{pick(locale, "Datenquelle", "Data source")}</a>
         </nav>

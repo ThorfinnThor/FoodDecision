@@ -15,7 +15,7 @@ export function NewsletterSignup({ locale }: { locale: SiteLocale }) {
     setPending(true);
     setError("");
     const form = new FormData(event.currentTarget);
-    const response = await fetch("/api/newsletter", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: form.get("email"), website: form.get("website"), consent: form.get("consent") === "on", source: `homepage:${locale}` }) });
+    const response = await fetch("/api/newsletter", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: form.get("email"), website: form.get("website"), consent: form.get("consent") === "on", locale, source: `homepage:${locale}` }) });
     setPending(false);
     if (!response.ok) { setError(en ? "We could not save your signup. Try again later." : "Die Anmeldung konnte gerade nicht gespeichert werden. Bitte versuche es später erneut."); return; }
     trackEvent("newsletter_submitted", { entityType: "newsletter" });

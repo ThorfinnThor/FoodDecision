@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
+import { validateJsonRequest } from "@/lib/api-security";
 import { hasSupabaseServerConfig, supabaseServerRequest } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -19,6 +20,8 @@ function clipped(value: unknown, length: number) {
 }
 
 export async function POST(request: Request) {
+  const rejected = validateJsonRequest(request);
+  if (rejected) return rejected;
   if (!hasSupabaseServerConfig()) return new NextResponse(null, { status: 204 });
   let input: Record<string, unknown>;
   try { input = await request.json() as Record<string, unknown>; } catch { return NextResponse.json({ error: "invalid_json" }, { status: 400 }); }
