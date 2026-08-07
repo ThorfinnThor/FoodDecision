@@ -167,6 +167,28 @@ category slugs. Product images are displayed only from the HTTPS Open Food
 Facts image hosts and are attributed as CC BY-SA; unknown or incompatible image
 sources are hidden and reported as quality flags.
 
+Catalog growth is governed by `data-config/catalog/growth-plan.json`. Manual
+GitHub runs offer `core`, `plant-forward`, `everyday`, `all`, and `custom`
+waves. Scheduled runs rotate smaller four-category waves instead of requesting
+the whole catalog at once:
+
+- Monday, Wednesday, Friday: German `core`, `plant-forward`, and `everyday`
+- Tuesday, Thursday, Saturday: US `core`, `plant-forward`, and `everyday`
+
+This keeps Open Food Facts request pressure bounded and refreshes both markets.
+Resolve a plan locally without contacting Open Food Facts:
+
+```bash
+CATALOG_MARKET=US CATALOG_PRESET=plant-forward npm run resolve:catalog-plan
+```
+
+Every production ingestion runs `npm run audit:catalog-quality` after the
+Supabase export. Structural inconsistencies always fail. Production mode also
+blocks deployment if product volume, ranking eligibility, nutrition coverage,
+licensed images, or category availability fall below the conservative floors
+in the growth plan. Category targets are reported as priorities and do not fail
+the workflow.
+
 `SUPABASE_SECRET_KEY` is the preferred server-only credential. The scripts
 temporarily accept the legacy `SUPABASE_SERVICE_ROLE_KEY` during migration, but
 only one admin credential is required.
@@ -238,6 +260,8 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 - `npm run build`: verify the vinext build output
 - `npm run seo:validate`: produce the SEO publication report
 - `npm run review:product-data`: review the private product-data report queue
+- `npm run resolve:catalog-plan`: validate a scheduled or manual growth wave
+- `npm run audit:catalog-quality`: verify catalog structure and growth targets
 - `npm test`: build the app and run normalization, rendering, export and SEO tests
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 

@@ -28,6 +28,9 @@ jobs:
       - name: Export static data
         run: npm run export:static-data
 
+      - name: Audit catalog data structure
+        run: npm run audit:catalog-quality
+
       - name: Validate SEO publication gates
         run: npm run seo:validate
 

@@ -19,10 +19,21 @@ on:
         options:
           - "DE"
           - "US"
+      category_preset:
+        description: "Catalog growth wave"
+        type: choice
+        required: true
+        default: "core"
+        options:
+          - "core"
+          - "plant-forward"
+          - "everyday"
+          - "all"
+          - "custom"
       categories:
-        description: "Category slugs separated by commas, or all"
+        description: "Category slugs separated by commas; used only for custom"
         type: string
-        default: "all"
+        default: ""
       max_pages:
         description: "Pages per category"
         type: string
@@ -32,7 +43,12 @@ on:
         type: string
         default: "50"
   schedule:
-    - cron: "17 3 * * *"
+    - cron: "17 3 * * 1"
+    - cron: "17 3 * * 3"
+    - cron: "17 3 * * 5"
+    - cron: "47 3 * * 2"
+    - cron: "47 3 * * 4"
+    - cron: "47 3 * * 6"
 
 concurrency:
   group: ingest-open-food-facts
@@ -54,16 +70,27 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
 
+      - name: Resolve catalog growth plan
+        id: plan
+        env:
+          CATALOG_SCHEDULE: ${{ github.event.schedule }}
+          CATALOG_MARKET: ${{ inputs.market || 'DE' }}
+          CATALOG_PRESET: ${{ inputs.category_preset || 'core' }}
+          CATALOG_CUSTOM_CATEGORIES: ${{ inputs.categories || '' }}
+          CATALOG_MAX_PAGES: ${{ inputs.max_pages || '1' }}
+          CATALOG_PAGE_SIZE: ${{ inputs.page_size || '50' }}
+        run: npm run resolve:catalog-plan
+
       - name: Ingest raw products
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           OFF_USER_AGENT: ${{ secrets.OFF_USER_AGENT }}
-          OFF_MARKET: ${{ inputs.market || 'DE' }}
-          OFF_CATEGORY_SLUGS: ${{ inputs.categories || 'all' }}
-          OFF_MAX_PAGES: ${{ inputs.max_pages || '1' }}
-          OFF_PAGE_SIZE: ${{ inputs.page_size || '50' }}
+          OFF_MARKET: ${{ steps.plan.outputs.market }}
+          OFF_CATEGORY_SLUGS: ${{ steps.plan.outputs.categories }}
+          OFF_MAX_PAGES: ${{ steps.plan.outputs.max_pages }}
+          OFF_PAGE_SIZE: ${{ steps.plan.outputs.page_size }}
           OFF_REQUEST_DELAY_MS: "7000"
           OFF_CONTINUE_ON_CATEGORY_ERROR: "true"
           OFF_UPSERT_BATCH_SIZE: "100"
@@ -84,7 +111,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          CATALOG_MARKET: ${{ inputs.market || 'DE' }}
+          CATALOG_MARKET: ${{ steps.plan.outputs.market }}
         run: npm run normalize:off
 
       - name: Export static JSON from Supabase
@@ -95,6 +122,12 @@ jobs:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run export:static-data
+
+      - name: Audit production catalog quality
+        if: ${{ inputs.import_mode != 'dry-run' }}
+        env:
+          CATALOG_AUDIT_MODE: production
+        run: npm run audit:catalog-quality
 
       - name: Validate SEO publication gates
         run: npm run seo:validate

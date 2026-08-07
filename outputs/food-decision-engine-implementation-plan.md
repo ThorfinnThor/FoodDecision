@@ -855,6 +855,10 @@ Die aktuelle Implementierung deckt die technische Vollprodukt-Basis ab:
   Ranking-, Nährwert-, Zutaten-, Bild- und Aktualitätskennzahlen
 - privater terminalbasierter Prüfprozess für Produktdaten-Meldungen ohne
   öffentliche Admin-Oberfläche oder Browserzugriff auf die Warteschlange
+- versionierte DE-/US-Wachstumswellen mit kleinen, API-schonenden
+  Kategoriegruppen und alternierendem Wochenplan
+- automatischer Katalogaudit mit strukturellen Prüfungen, konservativen
+  Produktions-Untergrenzen und nicht blockierenden Ausbauprioritäten
 - serverseitige Newsletter-Einwilligung und datensparsame Ereignismessung
 - gekennzeichnete Affiliate-Angebote, sofern aktive Angebote vorliegen
 - Supabase-Import, Normalisierung, Publishability, statischer Export und

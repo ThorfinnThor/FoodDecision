@@ -1,0 +1,47 @@
+{
+  "version": "2026.08.1",
+  "presets": {
+    "core": ["hafermilch", "proteinriegel", "muesli", "joghurt-skyr"],
+    "plant-forward": ["vegane-snacks", "pflanzliche-joghurts", "brotaufstriche", "nussmuse"],
+    "everyday": ["fruehstueckscerealien", "fertiggerichte", "erfrischungsgetraenke", "kinder-snacks"],
+    "all": ["hafermilch", "proteinriegel", "muesli", "joghurt-skyr", "vegane-snacks", "fruehstueckscerealien", "pflanzliche-joghurts", "brotaufstriche", "nussmuse", "fertiggerichte", "erfrischungsgetraenke", "kinder-snacks"]
+  },
+  "schedules": {
+    "17 3 * * 1": { "market": "DE", "preset": "core", "maxPages": 1, "pageSize": 50 },
+    "17 3 * * 3": { "market": "DE", "preset": "plant-forward", "maxPages": 1, "pageSize": 50 },
+    "17 3 * * 5": { "market": "DE", "preset": "everyday", "maxPages": 1, "pageSize": 50 },
+    "47 3 * * 2": { "market": "US", "preset": "core", "maxPages": 1, "pageSize": 50 },
+    "47 3 * * 4": { "market": "US", "preset": "plant-forward", "maxPages": 1, "pageSize": 50 },
+    "47 3 * * 6": { "market": "US", "preset": "everyday", "maxPages": 1, "pageSize": 50 }
+  },
+  "markets": {
+    "DE": {
+      "regressionFloor": {
+        "products": 900,
+        "rankingEligiblePercent": 75,
+        "completeNutritionPercent": 80,
+        "licensedImagesPercent": 75,
+        "maxUnavailableCategories": 2,
+        "maxThinCategories": 4
+      },
+      "categoryProductTargets": {
+        "default": 50,
+        "kinder-snacks": 20
+      }
+    },
+    "US": {
+      "regressionFloor": {
+        "products": 300,
+        "rankingEligiblePercent": 70,
+        "completeNutritionPercent": 80,
+        "licensedImagesPercent": 75,
+        "maxUnavailableCategories": 3,
+        "maxThinCategories": 5
+      },
+      "categoryProductTargets": {
+        "default": 50,
+        "kinder-snacks": 20
+      }
+    }
+  }
+}
