@@ -83,6 +83,12 @@ export default async function PrivacyPage({ params }: Props) {
 
         <article>
           <p className="eyebrow">07</p>
+          <h2>{c("Hinweise zu Produktdaten", "Product data reports")}</h2>
+          <p>{c("Wenn du freiwillig ein Datenproblem meldest, speichern wir die Produktreferenz, Markt und Sprache, die ausgewählte Problemart, deinen optionalen Hinweis und den Zeitpunkt der Meldung in Supabase. Das Formular fragt weder Namen noch E-Mail-Adresse ab und überträgt keine Barcode- oder Kameradaten. Bitte trage keine persönlichen oder medizinischen Informationen ein. Meldungen bleiben bis zur Prüfung und anschließenden Erledigung oder Ablehnung gespeichert.", "If you voluntarily report a data issue, we store the product reference, market and language, selected issue type, optional note, and report time in Supabase. The form does not ask for a name or email address and does not send barcode or camera data. Do not enter personal or medical information. Reports remain stored until they are reviewed and then resolved or dismissed.")}</p>
+        </article>
+
+        <article>
+          <p className="eyebrow">08</p>
           <h2>{c("Kontakt und Rechte", "Contact and rights")}</h2>
           <p>{c("Du kannst Auskunft, Berichtigung oder Löschung der von uns gespeicherten personenbezogenen Daten verlangen und eine erteilte Einwilligung widerrufen. Lokal gespeicherte Daten kannst nur du über dieses Gerät löschen, weil wir keinen Zugriff darauf haben.", "You may request access, correction, or deletion of personal data stored by us and withdraw consent. Only you can delete locally stored data through this device because we cannot access it.")}</p>
           {operatorName && contact

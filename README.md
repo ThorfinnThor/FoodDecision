@@ -73,6 +73,13 @@ data stored locally in the current browser. Configure the public privacy contact
 before launch with `NEXT_PUBLIC_OPERATOR_NAME` and
 `NEXT_PUBLIC_PRIVACY_CONTACT`.
 
+Product pages show separate source-update and catalog-import dates, a
+deterministic freshness classification, and the scoring rule versions used for
+the decision. Visitors can submit a bounded product-data correction without an
+account or contact details. Reports are validated against the current catalog
+and written through a server-only endpoint to the RLS-protected
+`product_data_reports` review queue.
+
 Production responses set a Content Security Policy, HSTS, clickjacking and MIME
 protections, and a restrictive Permissions Policy. Camera permission is disabled
 globally and enabled only for the two localized scanner routes. JSON write APIs

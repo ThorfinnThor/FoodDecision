@@ -847,6 +847,10 @@ Die aktuelle Implementierung deckt die technische Vollprodukt-Basis ab:
 - zweisprachige Datenschutzseite mit standardmäßig deaktivierter optionaler
   Nutzungsstatistik und Kontrolle über alle lokal gespeicherten App-Daten
 - CSP, Permissions Policy, HSTS, Clickjacking-Schutz und abgesicherte JSON-APIs
+- sichtbarer Quellenstand, Katalogimport, Datenfrische und verwendete
+  Score-Regelversionen auf jeder Produktseite
+- datensparsame Produktdaten-Meldungen ohne Konto oder Kontaktdaten mit
+  geschützter Supabase-Prüfwarteschlange
 - serverseitige Newsletter-Einwilligung und datensparsame Ereignismessung
 - gekennzeichnete Affiliate-Angebote, sofern aktive Angebote vorliegen
 - Supabase-Import, Normalisierung, Publishability, statischer Export und
