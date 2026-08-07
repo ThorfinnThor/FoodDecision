@@ -9,7 +9,7 @@ import { licensedProductImage } from "../../lib/image-license.ts";
 import { hasDecisionReadyNutrition } from "../../lib/nutrition-quality.ts";
 import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
 import { assessDataFreshness } from "../../lib/data-freshness.ts";
-import { scoreByType } from "../../lib/scoring.ts";
+import { calculateScores, scoreByType } from "../../lib/scoring.ts";
 import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
 type ExportSource = "fixtures" | "supabase";
@@ -206,7 +206,7 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
     throw new Error(`Product ${row.slug} is missing ${missing} data and cannot be exported.`);
   }
 
-  return {
+  const product: Omit<Product, "scores"> = {
     id: row.id,
     gtin: row.gtin,
     slug: row.slug,
@@ -258,19 +258,9 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
         })) ?? [],
     publishability: row.publishability,
     qualityFlags: row.data_quality_flags?.map((flag) => flag.flag) ?? [],
-    scores:
-      row.product_scores?.map((score) => ({
-        type: score.score_type,
-        label: score.label,
-        score: score.score,
-        grade: score.grade,
-        confidence: score.confidence,
-        positives: score.positives,
-        negatives: score.negatives,
-        missingData: score.missing_data,
-        ruleVersion: score.rule_version,
-      })) ?? [],
   };
+
+  return { ...product, scores: calculateScores(product) };
 }
 
 async function loadSupabaseData() {

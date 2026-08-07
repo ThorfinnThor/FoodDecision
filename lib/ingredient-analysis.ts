@@ -16,7 +16,7 @@ export type VeganStatus = {
 const signalPatterns: Record<IngredientSignal, RegExp> = {
   addedSugar: /\b(?:zucker|rohrzucker|traubenzucker|invertzucker(?:sirup)?|sirup|glukose(?:sirup)?|fruktose(?:sirup)?|dextrose|maltodextrin|honig|agavendicksaft|sugar|cane sugar|brown sugar|invert sugar|syrup|glucose(?: syrup)?|fructose(?: syrup)?|honey|agave nectar|fruit juice concentrate)\b/i,
   additives: /\b(?:emulgator|stabilisator|verdickungsmittel|konservierungsstoff|konservierung|farbstoff|geschmacksverstaerker|arom(?:a|en)|trennmittel|saeureregulator|modifizierte staerke|emulsifier|stabilizer|thickener|preservative|colou?r(?:ing)?s?|flavou?r(?:ing)?s?|flavou?r enhancer|anti-caking agent|acidity regulator|modified starch|e\s?\d{3,4}[a-z]?)\b/i,
-  sweeteners: /\b(?:suessstoff|erythrit(?:ol)?|xylit(?:ol)?|stevia|acesulfam(?:e)?(?: k)?|aspartam(?:e)?|sucralose|saccharin|maltit(?:ol)?|sorbit(?:ol)?|allulose|monk fruit|sweetener)\b/i,
+  sweeteners: /\b(?:suessstoff|suessungsmittel|erythrit(?:ol)?|xylit(?:ol)?|stevia|acesulfam(?:e)?(?: k)?|aspartam(?:e)?|sucralose|saccharin|maltit(?:ol)?|sorbit(?:ol)?|allulose|monk fruit|sweetener)\b/i,
   palmOil: /\b(?:palmoel|palmfett|palmkern(?:oel|fett)?|palm oil|palm fat|palm kernel(?: oil| fat)?)\b/i,
 };
 

@@ -16,6 +16,10 @@ test("detects German and US ingredient signals with evidence", () => {
 
   const plain = analyzeIngredients(["whole grain oats", "almonds", "sea salt"]);
   assert.deepEqual(plain.detected, { addedSugar: false, additives: false, sweeteners: false, palmOil: false });
+
+  const genericGermanSweetener = analyzeIngredients(["Vollkornhaferflocken", "Süßungsmittel", "Kakaomasse"]);
+  assert.equal(genericGermanSweetener.detected.sweeteners, true);
+  assert.deepEqual(genericGermanSweetener.evidence.sweeteners, ["Süßungsmittel"]);
 });
 
 test("treats vegan labels conservatively when allergen data conflicts", () => {
