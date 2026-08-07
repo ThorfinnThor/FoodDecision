@@ -15,6 +15,41 @@ export type CategorySlug =
 export type MarketCode = "DE" | "US";
 export type SiteLocale = "de-DE" | "en-US";
 
+export type CatalogQualityStatus = "solid" | "developing" | "thin" | "unavailable";
+
+export type CatalogCategoryQuality = {
+  slug: CategorySlug;
+  label: string;
+  products: number;
+  rankingEligible: number;
+  licensedImages: number;
+  completeNutrition: number;
+  withIngredients: number;
+  recentlyUpdated: number;
+  rankingCoveragePercent: number;
+  nutritionCoveragePercent: number;
+  ingredientCoveragePercent: number;
+  imageCoveragePercent: number;
+  recentCoveragePercent: number;
+  status: CatalogQualityStatus;
+};
+
+export type CatalogQualityReport = {
+  generatedAt: string;
+  locale: SiteLocale;
+  market: MarketCode;
+  totals: {
+    products: number;
+    rankingEligible: number;
+    licensedImages: number;
+    completeNutrition: number;
+    withIngredients: number;
+    withKnownBrand: number;
+    recentlyUpdated: number;
+  };
+  categories: CatalogCategoryQuality[];
+};
+
 export type AffiliateOffer = {
   id: string;
   merchant: string;

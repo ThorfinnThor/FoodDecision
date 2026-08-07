@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-06T12:52:56.069Z",
+  "generatedAt": "2026-08-07T11:14:12.785Z",
   "locale": "de-DE",
   "market": "DE",
   "totals": {
@@ -8,7 +8,8 @@
     "licensedImages": 0,
     "completeNutrition": 6,
     "withIngredients": 6,
-    "withKnownBrand": 6
+    "withKnownBrand": 6,
+    "recentlyUpdated": 6
   },
   "categories": [
     {
@@ -17,6 +18,14 @@
       "products": 2,
       "rankingEligible": 1,
       "licensedImages": 0,
+      "completeNutrition": 2,
+      "withIngredients": 2,
+      "recentlyUpdated": 2,
+      "rankingCoveragePercent": 50,
+      "nutritionCoveragePercent": 100,
+      "ingredientCoveragePercent": 100,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 100,
       "status": "thin"
     },
     {
@@ -25,6 +34,14 @@
       "products": 1,
       "rankingEligible": 1,
       "licensedImages": 0,
+      "completeNutrition": 1,
+      "withIngredients": 1,
+      "recentlyUpdated": 1,
+      "rankingCoveragePercent": 100,
+      "nutritionCoveragePercent": 100,
+      "ingredientCoveragePercent": 100,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 100,
       "status": "thin"
     },
     {
@@ -33,6 +50,14 @@
       "products": 1,
       "rankingEligible": 1,
       "licensedImages": 0,
+      "completeNutrition": 1,
+      "withIngredients": 1,
+      "recentlyUpdated": 1,
+      "rankingCoveragePercent": 100,
+      "nutritionCoveragePercent": 100,
+      "ingredientCoveragePercent": 100,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 100,
       "status": "thin"
     },
     {
@@ -41,6 +66,14 @@
       "products": 1,
       "rankingEligible": 1,
       "licensedImages": 0,
+      "completeNutrition": 1,
+      "withIngredients": 1,
+      "recentlyUpdated": 1,
+      "rankingCoveragePercent": 100,
+      "nutritionCoveragePercent": 100,
+      "ingredientCoveragePercent": 100,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 100,
       "status": "thin"
     },
     {
@@ -49,6 +82,14 @@
       "products": 1,
       "rankingEligible": 1,
       "licensedImages": 0,
+      "completeNutrition": 1,
+      "withIngredients": 1,
+      "recentlyUpdated": 1,
+      "rankingCoveragePercent": 100,
+      "nutritionCoveragePercent": 100,
+      "ingredientCoveragePercent": 100,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 100,
       "status": "thin"
     },
     {
@@ -57,7 +98,15 @@
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
-      "status": "thin"
+      "completeNutrition": 0,
+      "withIngredients": 0,
+      "recentlyUpdated": 0,
+      "rankingCoveragePercent": 0,
+      "nutritionCoveragePercent": 0,
+      "ingredientCoveragePercent": 0,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 0,
+      "status": "unavailable"
     },
     {
       "slug": "pflanzliche-joghurts",
@@ -65,7 +114,15 @@
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
-      "status": "thin"
+      "completeNutrition": 0,
+      "withIngredients": 0,
+      "recentlyUpdated": 0,
+      "rankingCoveragePercent": 0,
+      "nutritionCoveragePercent": 0,
+      "ingredientCoveragePercent": 0,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 0,
+      "status": "unavailable"
     },
     {
       "slug": "brotaufstriche",
@@ -73,7 +130,15 @@
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
-      "status": "thin"
+      "completeNutrition": 0,
+      "withIngredients": 0,
+      "recentlyUpdated": 0,
+      "rankingCoveragePercent": 0,
+      "nutritionCoveragePercent": 0,
+      "ingredientCoveragePercent": 0,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 0,
+      "status": "unavailable"
     },
     {
       "slug": "nussmuse",
@@ -81,7 +146,15 @@
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
-      "status": "thin"
+      "completeNutrition": 0,
+      "withIngredients": 0,
+      "recentlyUpdated": 0,
+      "rankingCoveragePercent": 0,
+      "nutritionCoveragePercent": 0,
+      "ingredientCoveragePercent": 0,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 0,
+      "status": "unavailable"
     },
     {
       "slug": "fertiggerichte",
@@ -89,7 +162,15 @@
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
-      "status": "thin"
+      "completeNutrition": 0,
+      "withIngredients": 0,
+      "recentlyUpdated": 0,
+      "rankingCoveragePercent": 0,
+      "nutritionCoveragePercent": 0,
+      "ingredientCoveragePercent": 0,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 0,
+      "status": "unavailable"
     },
     {
       "slug": "erfrischungsgetraenke",
@@ -97,7 +178,15 @@
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
-      "status": "thin"
+      "completeNutrition": 0,
+      "withIngredients": 0,
+      "recentlyUpdated": 0,
+      "rankingCoveragePercent": 0,
+      "nutritionCoveragePercent": 0,
+      "ingredientCoveragePercent": 0,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 0,
+      "status": "unavailable"
     },
     {
       "slug": "kinder-snacks",
@@ -105,7 +194,15 @@
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
-      "status": "thin"
+      "completeNutrition": 0,
+      "withIngredients": 0,
+      "recentlyUpdated": 0,
+      "rankingCoveragePercent": 0,
+      "nutritionCoveragePercent": 0,
+      "ingredientCoveragePercent": 0,
+      "imageCoveragePercent": 0,
+      "recentCoveragePercent": 0,
+      "status": "unavailable"
     }
   ]
 }

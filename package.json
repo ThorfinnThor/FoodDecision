@@ -19,7 +19,8 @@
     "seo:validate": "node --experimental-strip-types scripts/seo/validate-seo.ts",
     "ingest:off": "node scripts/ingest/open-food-facts.mjs",
     "ingest:off:dry": "node scripts/ingest/open-food-facts.mjs --dry-run",
-    "normalize:off": "node --experimental-strip-types scripts/normalize/open-food-facts.ts"
+    "normalize:off": "node --experimental-strip-types scripts/normalize/open-food-facts.ts",
+    "review:product-data": "node --experimental-strip-types scripts/review/product-data-reports.ts"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

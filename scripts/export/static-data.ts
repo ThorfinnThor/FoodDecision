@@ -7,8 +7,9 @@ import { products as fixtureProducts } from "../../lib/data.ts";
 import { localizedCategoryCatalog, localizedCategoryLabel, localizedRankingPages } from "../../lib/catalog.ts";
 import { licensedProductImage } from "../../lib/image-license.ts";
 import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
+import { assessDataFreshness } from "../../lib/data-freshness.ts";
 import { scoreByType } from "../../lib/scoring.ts";
-import type { CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
+import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
 type ExportSource = "fixtures" | "supabase";
 
@@ -321,15 +322,36 @@ function productSummary(product: Product) {
 function qualityReport(locale: SiteLocale, products: Product[]) {
   const eligible = products.filter((product) => product.publishability === "ranking_eligible");
   const countWith = (predicate: (product: Product) => boolean) => products.filter(predicate).length;
+  const percent = (count: number, total: number) => total ? Math.round((count / total) * 100) : 0;
+  const hasCompleteNutrition = (product: Product) => product.qualityFlags.every((flag) => flag !== "incomplete_nutrition" && flag !== "missing_nutrition");
+  const hasRecentSource = (product: Product) => {
+    const status = assessDataFreshness(product.sourceUpdatedAt, product.importedAt).status;
+    return status === "recent" || status === "established";
+  };
   const categories = localizedCategoryCatalog(locale).map((category) => {
     const categoryProducts = products.filter((product) => product.category === category.slug);
+    const productCount = categoryProducts.length;
+    const rankingEligible = categoryProducts.filter((product) => product.publishability === "ranking_eligible").length;
+    const licensedImages = categoryProducts.filter((product) => Boolean(product.imageUrl && product.imageLicense)).length;
+    const completeNutrition = categoryProducts.filter(hasCompleteNutrition).length;
+    const withIngredients = categoryProducts.filter((product) => product.ingredients.length > 0).length;
+    const recentlyUpdated = categoryProducts.filter(hasRecentSource).length;
+    const status: CatalogQualityStatus = productCount === 0 ? "unavailable" : productCount >= 50 ? "solid" : productCount >= 20 ? "developing" : "thin";
     return {
       slug: category.slug,
       label: category.label,
-      products: categoryProducts.length,
-      rankingEligible: categoryProducts.filter((product) => product.publishability === "ranking_eligible").length,
-      licensedImages: categoryProducts.filter((product) => Boolean(product.imageUrl && product.imageLicense)).length,
-      status: categoryProducts.length >= 50 ? "solid" : categoryProducts.length >= 20 ? "developing" : "thin",
+      products: productCount,
+      rankingEligible,
+      licensedImages,
+      completeNutrition,
+      withIngredients,
+      recentlyUpdated,
+      rankingCoveragePercent: percent(rankingEligible, productCount),
+      nutritionCoveragePercent: percent(completeNutrition, productCount),
+      ingredientCoveragePercent: percent(withIngredients, productCount),
+      imageCoveragePercent: percent(licensedImages, productCount),
+      recentCoveragePercent: percent(recentlyUpdated, productCount),
+      status,
     };
   });
   return {
@@ -340,9 +362,10 @@ function qualityReport(locale: SiteLocale, products: Product[]) {
       products: products.length,
       rankingEligible: eligible.length,
       licensedImages: countWith((product) => Boolean(product.imageUrl && product.imageLicense)),
-      completeNutrition: countWith((product) => product.qualityFlags.every((flag) => flag !== "incomplete_nutrition" && flag !== "missing_nutrition")),
+      completeNutrition: countWith(hasCompleteNutrition),
       withIngredients: countWith((product) => product.ingredients.length > 0),
       withKnownBrand: countWith((product) => !/unbekannte marke|unknown brand/i.test(product.brand)),
+      recentlyUpdated: countWith(hasRecentSource),
     },
     categories,
   };

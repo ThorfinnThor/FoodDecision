@@ -182,6 +182,29 @@ which triggers the protected `VERCEL_DEPLOY_HOOK_URL` GitHub secret. Vercel
 then rebuilds the latest `main` commit from the updated Supabase snapshot. Dry
 runs never deploy.
 
+## Product Data Review
+
+Product-data reports are intentionally not exposed through a public admin page.
+Review them from a trusted terminal with the server-only Supabase credential:
+
+```bash
+SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... npm run review:product-data
+```
+
+The default command lists up to 25 new reports. Other supported commands are:
+
+```bash
+npm run review:product-data -- list --status reviewing --limit 50
+npm run review:product-data -- start REPORT_UUID
+npm run review:product-data -- resolve REPORT_UUID --note "Checked against current package"
+npm run review:product-data -- dismiss REPORT_UUID --note "Could not reproduce"
+```
+
+Only `new`, `reviewing`, `resolved`, and `dismissed` transitions are accepted.
+Report UUIDs and optional internal notes are validated and bounded before any
+Supabase update. Never expose the secret key in a browser or public environment
+variable.
+
 ## Optional Dispatch-Owned ChatGPT Sign-In
 
 Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
@@ -214,6 +237,7 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 - `npm run dev`: start local development
 - `npm run build`: verify the vinext build output
 - `npm run seo:validate`: produce the SEO publication report
+- `npm run review:product-data`: review the private product-data report queue
 - `npm test`: build the app and run normalization, rendering, export and SEO tests
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 

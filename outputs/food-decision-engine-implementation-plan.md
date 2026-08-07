@@ -851,6 +851,10 @@ Die aktuelle Implementierung deckt die technische Vollprodukt-Basis ab:
   Score-Regelversionen auf jeder Produktseite
 - datensparsame Produktdaten-Meldungen ohne Konto oder Kontaktdaten mit
   geschützter Supabase-Prüfwarteschlange
+- zweisprachige öffentliche Katalogtransparenz mit echten Abdeckungs-,
+  Ranking-, Nährwert-, Zutaten-, Bild- und Aktualitätskennzahlen
+- privater terminalbasierter Prüfprozess für Produktdaten-Meldungen ohne
+  öffentliche Admin-Oberfläche oder Browserzugriff auf die Warteschlange
 - serverseitige Newsletter-Einwilligung und datensparsame Ereignismessung
 - gekennzeichnete Affiliate-Angebote, sofern aktive Angebote vorliegen
 - Supabase-Import, Normalisierung, Publishability, statischer Export und

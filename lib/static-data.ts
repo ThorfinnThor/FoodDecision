@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { localeSegment } from "./i18n.ts";
 import { scoreByType } from "./scoring.ts";
 import { alternativeReasons, entitySlug, productMatch } from "./product-insights.ts";
-import type { Category, CategorySlug, Product, RankingPage, ScoreType, SiteLocale } from "./types.ts";
+import type { CatalogQualityReport, Category, CategorySlug, Product, RankingPage, ScoreType, SiteLocale } from "./types.ts";
 
 type StaticManifest = {
   generatedAt: string;
@@ -32,6 +32,7 @@ function createCatalog(locale: SiteLocale) {
   const categories = manifest.categorySlugs.map((slug) =>
     readJson<Category>(`${prefix}/food/categories/${slug}.json`),
   );
+  const qualityReport = readJson<CatalogQualityReport>(`${prefix}/quality-report.json`);
 
   const getCategories = () => categories;
   const getCategory = (slug: string) => categories.find((category) => category.slug === slug);
@@ -108,6 +109,7 @@ function createCatalog(locale: SiteLocale) {
     manifest,
     products,
     rankingPages,
+    qualityReport,
     comparisonPairs: manifest.comparisonPairs,
     getCategories,
     getAvailableCategories,
