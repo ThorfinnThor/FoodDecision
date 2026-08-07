@@ -12,69 +12,61 @@ const SOURCE_LICENSE = "ODbL database; DbCL contents; CC BY-SA product images";
 export const categoryJobs = [
   {
     slug: "hafermilch",
-    offCategory: "oat-milks",
-    extraParams: {},
+    sources: [{ id: "oat-milks", offCategory: "oat-milks" }],
   },
   {
     slug: "proteinriegel",
-    offCategory: "protein-bars",
-    extraParams: {},
+    sources: [{ id: "protein-bars", offCategory: "protein-bars" }],
   },
   {
     slug: "muesli",
-    offCategory: "mueslis",
-    extraParams: {},
+    sources: [{ id: "mueslis", offCategory: "mueslis" }],
   },
   {
     slug: "joghurt-skyr",
-    offCategory: "yogurts",
-    extraParams: {},
+    sources: [{ id: "yogurts", offCategory: "yogurts" }],
   },
   {
     slug: "vegane-snacks",
-    offCategory: "snacks",
-    extraParams: {
-      labels_tags_en: "Vegan",
-    },
+    sources: [
+      {
+        id: "vegan-snacks",
+        offCategory: "snacks",
+        extraParams: { labels_tags_en: "Vegan" },
+      },
+    ],
   },
   {
     slug: "fruehstueckscerealien",
-    offCategory: "breakfast-cereals",
-    extraParams: {},
+    sources: [{ id: "breakfast-cereals", offCategory: "breakfast-cereals" }],
   },
   {
     slug: "pflanzliche-joghurts",
-    offCategory: "yogurts",
-    extraParams: {
-      labels_tags_en: "Vegan",
-    },
+    sources: [{ id: "non-dairy-yogurts", offCategory: "non-dairy-yogurts" }],
   },
   {
     slug: "brotaufstriche",
-    offCategory: "spreads",
-    extraParams: {},
+    sources: [{ id: "spreads", offCategory: "spreads" }],
   },
   {
     slug: "nussmuse",
-    offCategory: "nut-butters",
-    extraParams: {},
+    sources: [{ id: "nut-butters", offCategory: "nut-butters" }],
   },
   {
     slug: "fertiggerichte",
-    offCategory: "prepared-meals",
-    extraParams: {},
+    sources: [{ id: "prepared-meals", offCategory: "prepared-meals" }],
   },
   {
     slug: "erfrischungsgetraenke",
-    offCategory: "soft-drinks",
-    extraParams: {},
+    sources: [{ id: "soft-drinks", offCategory: "soft-drinks" }],
   },
   {
     slug: "kinder-snacks",
-    offCategory: "snacks",
-    extraParams: {
-      labels_tags_en: "For children",
-    },
+    sources: [
+      { id: "cereal-bars", offCategory: "cereal-bars", weight: 2 },
+      { id: "applesauces", offCategory: "applesauces" },
+      { id: "wheat-crackers", offCategory: "wheat-crackers" },
+    ],
   },
 ];
 
@@ -109,6 +101,18 @@ const requestDelayMs = Number(process.env.OFF_REQUEST_DELAY_MS ?? "7000");
 const fetchRetries = Number(process.env.OFF_FETCH_RETRIES ?? "4");
 const fetchRetryBaseMs = Number(process.env.OFF_FETCH_RETRY_BASE_MS ?? "10000");
 const allowEmptyDryRun = process.env.OFF_ALLOW_EMPTY_DRY_RUN === "true";
+if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) {
+  throw new Error("OFF_PAGE_SIZE must be an integer between 1 and 100.");
+}
+if (!Number.isInteger(maxPages) || maxPages < 1 || maxPages > 10) {
+  throw new Error("OFF_MAX_PAGES must be an integer between 1 and 10.");
+}
+if (!Number.isFinite(requestDelayMs) || requestDelayMs < 0) {
+  throw new Error("OFF_REQUEST_DELAY_MS must be a non-negative number.");
+}
+if (!Number.isInteger(fetchRetries) || fetchRetries < 1 || fetchRetries > 10) {
+  throw new Error("OFF_FETCH_RETRIES must be an integer between 1 and 10.");
+}
 export function shouldContinueOnCategoryError(value = process.env.OFF_CONTINUE_ON_CATEGORY_ERROR) {
   return value !== "false";
 }
@@ -144,6 +148,7 @@ if (!selectedCategoryJobs.length) throw new Error("OFF_CATEGORY_SLUGS selected n
 const userAgent =
   process.env.OFF_USER_AGENT ??
   "food-decision-engine/0.1 (configure OFF_USER_AGENT with a contact URL or email)";
+let lastOffRequestAt = 0;
 
 function requireEnv(name) {
   const value = process.env[name];
@@ -155,6 +160,17 @@ function requireEnv(name) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function minimumRequestWaitMs(lastRequestTimestamp, nowTimestamp, minimumDelayMs) {
+  if (!lastRequestTimestamp) return 0;
+  return Math.max(0, minimumDelayMs - (nowTimestamp - lastRequestTimestamp));
+}
+
+async function waitForOffRequestSlot() {
+  const waitMs = minimumRequestWaitMs(lastOffRequestAt, Date.now(), requestDelayMs);
+  if (waitMs > 0) await sleep(waitMs);
+  lastOffRequestAt = Date.now();
 }
 
 function hashPayload(value) {
@@ -189,6 +205,17 @@ export function summaryFailureMessage(value) {
   return clippedMessage(value, 180).replace(/\s+/g, " ").trim();
 }
 
+export function sourceCoverageTable(sourceStats) {
+  return [
+    "| Category | OFF source | Page budget | Completed pages | Fetched | Unique accepted |",
+    "| --- | --- | ---: | ---: | ---: | ---: |",
+    ...sourceStats.map(
+      (source) =>
+        `| ${source.category} | ${source.source} | ${source.pageSize} | ${source.completedPages} | ${source.fetchedProducts} | ${source.acceptedProducts} |`,
+    ),
+  ];
+}
+
 function modifiedAt(product) {
   if (!product.last_modified_t) return null;
   return new Date(Number(product.last_modified_t) * 1000).toISOString();
@@ -221,21 +248,46 @@ function mapProduct(product, categorySlug, importRunId) {
   };
 }
 
-async function fetchOffPage(job, page) {
+export function allocateSourcePageSizes(totalPageSize, sources) {
+  if (!Number.isInteger(totalPageSize) || totalPageSize < 1) {
+    throw new Error("OFF_PAGE_SIZE must be a positive integer.");
+  }
+  if (!Array.isArray(sources) || !sources.length) {
+    throw new Error("Every ingestion category must define at least one source.");
+  }
+
+  const weightedSources = sources.map((source, index) => ({
+    index,
+    weight: Number.isFinite(source.weight) && source.weight > 0 ? source.weight : 1,
+  }));
+  const totalWeight = weightedSources.reduce((sum, source) => sum + source.weight, 0);
+  const allocations = weightedSources.map((source) => {
+    const exact = (totalPageSize * source.weight) / totalWeight;
+    return { ...source, size: Math.floor(exact), remainder: exact - Math.floor(exact) };
+  });
+  let remaining = totalPageSize - allocations.reduce((sum, source) => sum + source.size, 0);
+  allocations.sort((a, b) => b.remainder - a.remainder || a.index - b.index);
+  for (let index = 0; index < remaining; index += 1) allocations[index].size += 1;
+  allocations.sort((a, b) => a.index - b.index);
+  return allocations.map((source) => source.size);
+}
+
+async function fetchOffPage(job, source, page, sourcePageSize) {
   const url = new URL(OFF_SEARCH_URL);
   url.searchParams.set("json", "1");
   url.searchParams.set("page", String(page));
-  url.searchParams.set("page_size", String(pageSize));
+  url.searchParams.set("page_size", String(sourcePageSize));
   url.searchParams.set("fields", fields);
   url.searchParams.set("countries_tags_en", country);
-  url.searchParams.set("categories_tags_en", job.offCategory);
+  url.searchParams.set("categories_tags_en", source.offCategory);
 
-  for (const [key, value] of Object.entries(job.extraParams)) {
+  for (const [key, value] of Object.entries(source.extraParams ?? {})) {
     url.searchParams.set(key, value);
   }
 
   for (let attempt = 1; attempt <= fetchRetries; attempt += 1) {
     try {
+      await waitForOffRequestSlot();
       const response = await fetch(url, {
         headers: {
           "User-Agent": userAgent,
@@ -258,7 +310,7 @@ async function fetchOffPage(job, page) {
 
       const delayMs = retryDelayMs(response, attempt);
       console.warn(
-        `Open Food Facts returned ${response.status} for ${job.slug} page ${page}; retrying in ${Math.round(
+        `Open Food Facts returned ${response.status} for ${job.slug}/${source.id} page ${page}; retrying in ${Math.round(
           delayMs / 1000,
         )}s (${attempt}/${fetchRetries})`,
       );
@@ -269,7 +321,7 @@ async function fetchOffPage(job, page) {
 
       const delayMs = fetchRetryBaseMs * 2 ** (attempt - 1);
       console.warn(
-        `Open Food Facts fetch failed for ${job.slug} page ${page}: ${clippedMessage(
+        `Open Food Facts fetch failed for ${job.slug}/${source.id} page ${page}: ${clippedMessage(
           error instanceof Error ? error.message : error,
           240,
         )}; retrying in ${Math.round(delayMs / 1000)}s (${attempt}/${fetchRetries})`,
@@ -385,38 +437,69 @@ async function finishImportRun(id, status, counts, errorMessage = null) {
 async function collectProducts(importRunId) {
   const rows = [];
   const failures = [];
+  const sourceWarnings = [];
+  const sourceStats = [];
 
   for (const job of selectedCategoryJobs) {
-    let completedPages = 0;
     const initialRowCount = rows.length;
-    try {
-      for (let page = 1; page <= maxPages; page += 1) {
-        const data = await fetchOffPage(job, page);
-        const products = Array.isArray(data.products) ? data.products : [];
-        for (const product of products) {
-          const row = mapProduct(product, job.slug, importRunId);
-          if (row) rows.push(row);
+    const seenExternalIds = new Set();
+    const allocations = allocateSourcePageSizes(pageSize, job.sources);
+
+    for (const [sourceIndex, source] of job.sources.entries()) {
+      const sourcePageSize = allocations[sourceIndex];
+      if (sourcePageSize === 0) continue;
+      let completedPages = 0;
+      let fetchedProducts = 0;
+      let acceptedProducts = 0;
+
+      try {
+        for (let page = 1; page <= maxPages; page += 1) {
+          const data = await fetchOffPage(job, source, page, sourcePageSize);
+          const products = Array.isArray(data.products) ? data.products : [];
+          fetchedProducts += products.length;
+          for (const product of products) {
+            const row = mapProduct(product, job.slug, importRunId);
+            if (!row || seenExternalIds.has(row.external_id)) continue;
+            seenExternalIds.add(row.external_id);
+            rows.push(row);
+            acceptedProducts += 1;
+          }
+          console.log(
+            `${job.slug}/${source.id}: page ${page}, ${products.length} fetched, ${acceptedProducts} unique accepted`,
+          );
+          completedPages = page;
+
+          if (products.length < sourcePageSize) break;
         }
-        console.log(`${job.slug}: page ${page}, ${products.length} products`);
-        completedPages = page;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        sourceWarnings.push({
+          category: job.slug,
+          source: source.id,
+          completedPages,
+          message: clippedMessage(message),
+        });
+        console.warn(
+          `Stopping ${job.slug}/${source.id} after ${completedPages} successful page(s) because Open Food Facts remained unavailable: ${clippedMessage(message)}`,
+        );
 
-        if (products.length < pageSize) break;
-        if (requestDelayMs > 0) await sleep(requestDelayMs);
+        if (!continueOnCategoryError) throw error;
       }
 
-      if (rows.length === initialRowCount) {
-        const message = "Open Food Facts returned no usable products for this category.";
-        failures.push({ category: job.slug, completedPages, message });
-        console.warn(`Stopping ${job.slug} after ${completedPages} successful page(s): ${message}`);
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      failures.push({ category: job.slug, completedPages, message: clippedMessage(message) });
-      console.warn(
-        `Stopping ${job.slug} after ${completedPages} successful page(s) because Open Food Facts remained unavailable: ${clippedMessage(message)}`,
-      );
+      sourceStats.push({
+        category: job.slug,
+        source: source.id,
+        pageSize: sourcePageSize,
+        completedPages,
+        fetchedProducts,
+        acceptedProducts,
+      });
+    }
 
-      if (!continueOnCategoryError) throw error;
+    if (rows.length === initialRowCount) {
+      const message = "Open Food Facts returned no usable products from any configured source.";
+      failures.push({ category: job.slug, completedPages: 0, message });
+      console.warn(`Stopping ${job.slug}: ${message}`);
     }
   }
 
@@ -424,13 +507,17 @@ async function collectProducts(importRunId) {
     throw new Error(`Open Food Facts returned no usable products. Failures: ${JSON.stringify(failures)}`);
   }
 
-  return { rows, failures };
+  return { rows, failures, sourceWarnings, sourceStats };
 }
 
-async function writeStepSummary({ counts, failures }) {
+async function writeStepSummary({ counts, failures, sourceWarnings, sourceStats }) {
   const path = process.env.GITHUB_STEP_SUMMARY;
   if (!path) return;
-  const status = failures.length ? `Partial (${failures.length} category failures)` : "Complete";
+  const status = failures.length
+    ? `Partial (${failures.length} category failures)`
+    : sourceWarnings.length
+      ? `Partial (${sourceWarnings.length} source warnings)`
+      : "Complete";
   const lines = [
     "## Open Food Facts ingestion",
     "",
@@ -441,6 +528,10 @@ async function writeStepSummary({ counts, failures }) {
     `- Products per page: ${pageSize}`,
     `- Collected rows: ${counts.imported}`,
     `- Result: ${status}`,
+    "",
+    "### Source coverage",
+    "",
+    ...sourceCoverageTable(sourceStats),
     "",
   ];
   if (failures.length) {
@@ -454,6 +545,17 @@ async function writeStepSummary({ counts, failures }) {
       "",
     );
   }
+  if (sourceWarnings.length) {
+    lines.push(
+      "### Source warnings",
+      "",
+      ...sourceWarnings.map(
+        (warning) =>
+          `- ${warning.category}/${warning.source}: ${warning.completedPages} successful page(s) - ${summaryFailureMessage(warning.message)}`,
+      ),
+      "",
+    );
+  }
   await appendFile(path, `${lines.join("\n")}\n`, "utf8");
 }
 
@@ -462,27 +564,33 @@ async function main() {
   const counts = { imported: 0, updated: 0, blocked: 0 };
 
   try {
-    const { rows, failures } = await collectProducts(importRunId);
+    const { rows, failures, sourceWarnings, sourceStats } = await collectProducts(importRunId);
     counts.imported = rows.length;
 
     if (dryRun) {
       console.log(
-        JSON.stringify({ dryRun: true, collected: rows.length, failures, sample: rows.slice(0, 3) }, null, 2),
+        JSON.stringify(
+          { dryRun: true, collected: rows.length, failures, sourceWarnings, sourceStats, sample: rows.slice(0, 3) },
+          null,
+          2,
+        ),
       );
-      await writeStepSummary({ counts, failures });
+      await writeStepSummary({ counts, failures, sourceWarnings, sourceStats });
       return;
     }
 
     await upsertRows("raw_open_food_facts_products", rows, "external_id,category_slug,market");
-    const partialFailureMessage = failures.length
-      ? clippedMessage(`Partial Open Food Facts import: ${JSON.stringify(failures)}`, 4000)
+    const partialFailureMessage = failures.length || sourceWarnings.length
+      ? clippedMessage(`Partial Open Food Facts import: ${JSON.stringify({ failures, sourceWarnings })}`, 4000)
       : null;
     await finishImportRun(importRunId, "success", counts, partialFailureMessage);
     console.log(`Imported ${rows.length} raw Open Food Facts products.`);
-    if (failures.length) {
-      console.warn(`Import completed with ${failures.length} partial category failure(s).`);
+    if (failures.length || sourceWarnings.length) {
+      console.warn(
+        `Import completed with ${failures.length} category failure(s) and ${sourceWarnings.length} source warning(s).`,
+      );
     }
-    await writeStepSummary({ counts, failures });
+    await writeStepSummary({ counts, failures, sourceWarnings, sourceStats });
   } catch (error) {
     if (!dryRun) {
       await finishImportRun(importRunId, "failed", counts, error instanceof Error ? error.message : String(error));

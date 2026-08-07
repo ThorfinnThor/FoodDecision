@@ -167,6 +167,14 @@ category slugs. Product images are displayed only from the HTTPS Open Food
 Facts image hosts and are attributed as CC BY-SA; unknown or incompatible image
 sources are hidden and reported as quality flags.
 
+Each internal category uses one or more explicit Open Food Facts taxonomy
+sources. Multi-source categories split `OFF_PAGE_SIZE` across their sources, so
+the configured product budget remains bounded. The GitHub job summary reports
+fetched and uniquely accepted products for every source. `kinder-snacks` is an
+editorial family-snack comparison sourced from cereal bars, applesauces, and
+wheat crackers; it does not claim that Open Food Facts labels those products as
+made for children.
+
 Catalog growth is governed by `data-config/catalog/growth-plan.json`. Manual
 GitHub runs offer `core`, `plant-forward`, `everyday`, `all`, and `custom`
 waves. Scheduled runs rotate smaller four-category waves instead of requesting

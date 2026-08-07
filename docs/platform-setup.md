@@ -99,10 +99,12 @@ Run the first ingestion safely:
 4. Click **Run workflow**.
 5. Set **Import mode** to `dry-run`.
 6. Set **Catalog market** to `DE` or `US`.
-7. Set **Category slugs** to `all` or a comma-separated targeted list such as
+7. Set **Catalog growth wave** to `core`, `plant-forward`, `everyday`, or `all`.
+8. For a targeted recovery, choose `custom` and enter comma-separated slugs in
+   **Category slugs separated by commas**, for example
    `pflanzliche-joghurts,kinder-snacks`.
-8. Keep **Pages per category** at `1` and **Products per page** at `50`.
-9. Click **Run workflow**.
+9. Keep **Pages per category** at `1` and **Products per page** at `50`.
+10. Click **Run workflow**.
 
 After the dry run passes:
 
@@ -110,7 +112,7 @@ After the dry run passes:
 2. Click **Ingest Open Food Facts**.
 3. Click **Run workflow**.
 4. Set **Import mode** to `write-to-supabase`.
-5. Select the same market and category list used by the successful dry run.
+5. Select the same market and growth wave used by the successful dry run.
 6. Keep **Pages per category** at `1` for the first real import.
 7. Keep **Products per page** at `50`.
 8. Click **Run workflow**.
@@ -121,6 +123,12 @@ pipeline while limiting load on Open Food Facts. After that succeeds, use
 `max_pages` `3` and `page_size` `50` for the first catalog expansion. The daily
 scheduled workflow continues from the same upsert-based process; repeated runs
 update existing products instead of creating duplicates.
+
+The product budget applies to each internal category. If a category combines
+several explicit Open Food Facts sources, the workflow divides the configured
+page size among them. The job summary lists the source budget, fetched products,
+and uniquely accepted products, so a green run can still be checked for useful
+coverage.
 
 The real ingestion workflow fills the market-scoped Open Food Facts landing table, then
 normalizes products, applies publishability checks, calculates scores, rebuilds

@@ -65,3 +65,21 @@ test("wires all growth waves and the production audit into GitHub ingestion", as
   assert.match(workflow, /CATALOG_AUDIT_MODE: production/);
   assert.match(workflow, /Audit production catalog quality/);
 });
+
+test("pins Node 24 compatible workflow actions to verified release commits", async () => {
+  const workflowUrls = [
+    "../.github/workflows/ci.yml",
+    "../.github/workflows/ingest-open-food-facts.yml",
+    "../.github/workflows/supabase-migrations.yml",
+  ];
+  const workflows = await Promise.all(
+    workflowUrls.map((url) => readFile(new URL(url, import.meta.url), "utf8")),
+  );
+  for (const workflow of workflows) {
+    assert.doesNotMatch(workflow, /actions\/checkout@v4/);
+    assert.match(workflow, /actions\/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd/);
+  }
+  assert.match(workflows.join("\n"), /actions\/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e/);
+  assert.match(workflows[2], /supabase\/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf/);
+  assert.match(workflows[2], /version: 2\.112\.0/);
+});

@@ -2,7 +2,7 @@
   "slug": "kinder-snacks",
   "label": "Kids' snacks",
   "intent": "Family snacks assessed conservatively for sugar, sodium, and ingredients.",
-  "description": "Kids' snacks use stricter sugar, sodium, ingredient, and allergen checks.",
+  "description": "The comparison covers cereal bars, applesauce, and wheat crackers often packed for school or travel. Sugar, sodium, ingredients, and known allergens are assessed conservatively.",
   "rankingAttributes": [
     "familie",
     "wenig-zucker"

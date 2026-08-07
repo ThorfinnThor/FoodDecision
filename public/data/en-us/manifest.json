@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T11:14:12.793Z",
+  "generatedAt": "2026-08-07T12:29:04.148Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locale": "en-US",
@@ -262,8 +262,8 @@
     },
     {
       "path": "public/data/en-us/food/categories/kinder-snacks.json",
-      "bytes": 322,
-      "sha256": "2985ca6b8f3d482122487908f0349a53ca1960f479188ea28da07c61f7e812dc"
+      "bytes": 426,
+      "sha256": "bf289f8280945b9522acca0a806014e3a14d49f2237fd26ac75e3682edf8d7b7"
     },
     {
       "path": "public/data/en-us/rankings/wenig-zucker-hafermilch.json",
@@ -398,7 +398,7 @@
     {
       "path": "public/data/en-us/quality-report.json",
       "bytes": 5641,
-      "sha256": "31dc250610400ca5638249bc2a150d863bce6b1bc3a564bcf34a2fb2df625b19"
+      "sha256": "d25fe6206ccb7594028cd7e013bc6fd48931a26c88b56b53173ee4e41253b8cb"
     }
   ]
 }
