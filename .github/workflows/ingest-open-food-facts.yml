@@ -138,6 +138,7 @@ jobs:
         if: ${{ inputs.import_mode != 'dry-run' }}
         env:
           CATALOG_AUDIT_MODE: production
+          CATALOG_AUDIT_MARKET: ${{ steps.plan.outputs.market }}
         run: npm run audit:catalog-quality
 
       - name: Validate SEO publication gates

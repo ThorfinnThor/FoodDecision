@@ -7,6 +7,8 @@ import type { CatalogQualityReport, MarketCode } from "../../lib/types.ts";
 
 const root = process.cwd();
 const mode = process.env.CATALOG_AUDIT_MODE === "production" ? "production" : "preview";
+const requestedMarket = process.env.CATALOG_AUDIT_MARKET?.toUpperCase();
+const targetMarket: MarketCode | null = requestedMarket === "DE" || requestedMarket === "US" ? requestedMarket : null;
 const config = JSON.parse(await readFile(join(root, "data-config/catalog/growth-plan.json"), "utf8")) as CatalogGrowthConfig;
 const manifest = JSON.parse(await readFile(join(root, "public/data/manifest.json"), "utf8")) as { source: string };
 const reportPaths: Record<MarketCode, string> = { DE: "de/quality-report.json", US: "en-us/quality-report.json" };
@@ -14,12 +16,14 @@ const results: Array<{ report: CatalogQualityReport; failures: string[]; warning
 
 for (const market of ["DE", "US"] as const) {
   const report = JSON.parse(await readFile(join(root, "public/data", reportPaths[market]), "utf8")) as CatalogQualityReport;
-  const result = auditCatalogReport(report, config.markets[market], mode === "production");
+  const strict = mode === "production" && (!targetMarket || market === targetMarket);
+  const result = auditCatalogReport(report, config.markets[market], strict);
   results.push({ report, ...result });
 }
 
 if (mode === "production" && manifest.source !== "supabase") {
-  results[0].failures.push("production_audit_requires_supabase_export");
+  const targetIndex = targetMarket === "US" ? 1 : 0;
+  results[targetIndex].failures.push("production_audit_requires_supabase_export");
 }
 
 const lines = [
@@ -27,6 +31,7 @@ const lines = [
   "",
   `- Growth plan: ${config.version}`,
   `- Mode: ${mode}`,
+  `- Blocking market: ${targetMarket ?? "all"}`,
   `- Export source: ${manifest.source}`,
   "",
   "| Market | Products | Ranking eligible | Decision nutrition | Licensed images | Unavailable | Thin | Result |",
