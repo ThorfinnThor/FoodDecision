@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { localeSegment } from "./i18n.ts";
+import { compareRankedProducts } from "./ranking-order.ts";
 import { scoreByType } from "./scoring.ts";
 import { alternativeReasons, entitySlug, productMatch } from "./product-insights.ts";
 import type { CatalogQualityReport, Category, CategorySlug, Product, RankingPage, ScoreType, SiteLocale } from "./types.ts";
@@ -46,7 +47,7 @@ function createCatalog(locale: SiteLocale) {
   const rankedProducts = (category: CategorySlug, scoreType: ScoreType) =>
     getProductsByCategory(category)
       .filter((product) => product.publishability === "ranking_eligible")
-      .sort((a, b) => (scoreByType(b, scoreType)?.score ?? -1) - (scoreByType(a, scoreType)?.score ?? -1));
+      .sort((a, b) => compareRankedProducts(a, b, scoreType));
   const getAlternative = (product: Product) =>
     rankedProducts(product.category, "overall_match").find((item) => item.slug !== product.slug) ?? null;
   const getAlternatives = (product: Product, goal: ScoreType = "overall_match", limit = 3) =>

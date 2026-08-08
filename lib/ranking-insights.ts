@@ -136,6 +136,15 @@ function runnerUpSentence(locale: SiteLocale, ranking: RankingPage, topPick: Pro
   const secondScore = scoreByType(runnerUp, ranking.sortScore)?.score;
   if (topScore === null || topScore === undefined || secondScore === null || secondScore === undefined) return "";
   if (topScore === secondScore) {
+    const topMetric = rankingMetric(topPick, ranking.sortScore);
+    const secondMetric = rankingMetric(runnerUp, ranking.sortScore);
+    if (topMetric.rawValue !== null && secondMetric.rawValue !== null && topMetric.rawValue !== secondMetric.rawValue) {
+      return pick(
+        locale,
+        `${topPick.name} und ${runnerUp.name} erreichen beide ${topScore}/100. Der exakte Wert löst den Gleichstand: ${topMetric.value} gegenüber ${secondMetric.value}.`,
+        `${topPick.name} and ${runnerUp.name} both score ${topScore}/100. The exact value breaks the tie: ${topMetric.value} versus ${secondMetric.value}.`,
+      );
+    }
     return pick(
       locale,
       `${topPick.name} und ${runnerUp.name} erreichen beide ${topScore}/100. Die Detailwerte entscheiden, welches Produkt besser zu dir passt.`,
@@ -144,7 +153,7 @@ function runnerUpSentence(locale: SiteLocale, ranking: RankingPage, topPick: Pro
   }
   return pick(
     locale,
-    `${topPick.name} liegt beim Ranking-Score ${topScore - secondScore} Punkte vor ${runnerUp.name}.`,
+    `${topPick.name} liegt beim Rankingwert ${topScore - secondScore} Punkte vor ${runnerUp.name}.`,
     `${topPick.name} leads ${runnerUp.name} by ${topScore - secondScore} points on the ranking score.`,
   );
 }
@@ -152,12 +161,12 @@ function runnerUpSentence(locale: SiteLocale, ranking: RankingPage, topPick: Pro
 function methodCopy(locale: SiteLocale, ranking: RankingPage) {
   const scoreSpecific: Record<ScoreType, [string, string]> = {
     low_sugar: [
-      "Der Zuckerwert pro 100 g oder 100 ml wird mit kategoriespezifischen Schwellen verglichen. Weniger Zucker verbessert den Score.",
-      "Sugar per 100 g or 100 ml is compared with thresholds suited to the category. Less sugar improves the score.",
+      "Der Zuckerwert pro 100 g oder 100 ml wird mit passenden Schwellen für die Kategorie verglichen. Weniger Zucker verbessert den Score und löst Gleichstände.",
+      "Sugar per 100 g or 100 ml is compared with thresholds suited to the category. Less sugar improves the score and breaks ties.",
     ],
     protein: [
-      "Der Proteingehalt pro 100 g oder 100 ml wird relativ zur Produktgruppe bewertet. Mehr Protein verbessert den Score.",
-      "Protein per 100 g or 100 ml is assessed relative to the product category. More protein improves the score.",
+      "Der Proteingehalt pro 100 g oder 100 ml wird relativ zur Produktgruppe bewertet. Mehr Protein verbessert den Score und löst Gleichstände.",
+      "Protein per 100 g or 100 ml is assessed relative to the product category. More protein improves the score and breaks ties.",
     ],
     ingredient_quality: [
       "Zutatenlänge, erkannter zugesetzter Zucker und erkannte Zusatzstoffe fließen in die Zutatenbewertung ein.",
