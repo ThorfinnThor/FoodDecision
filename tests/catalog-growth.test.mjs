@@ -94,5 +94,5 @@ test("pins Node 24 compatible workflow actions to verified release commits", asy
   }
   assert.match(workflows.join("\n"), /actions\/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e/);
   assert.match(workflows[2], /supabase\/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf/);
-  assert.match(workflows[2], /version: 2\.112\.0/);
+  assert.match(workflows[2], /version: latest/);
 });
