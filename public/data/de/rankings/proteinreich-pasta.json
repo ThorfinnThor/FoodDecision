@@ -1,0 +1,12 @@
+{
+  "attribute": "proteinreich",
+  "category": "pasta",
+  "title": "Proteinreiche Pasta",
+  "sortScore": "protein",
+  "intro": "Proteinreiche Pasta: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

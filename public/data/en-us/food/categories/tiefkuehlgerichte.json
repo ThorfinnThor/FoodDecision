@@ -1,0 +1,11 @@
+{
+  "slug": "tiefkuehlgerichte",
+  "label": "Frozen meals",
+  "intent": "Convenient frozen meals with transparent strengths and limitations.",
+  "description": "Frozen meals are compared by sugar, protein, sodium, saturated fat, and ingredient quality.",
+  "rankingAttributes": [
+    "beste-wahl",
+    "familie"
+  ],
+  "products": []
+}

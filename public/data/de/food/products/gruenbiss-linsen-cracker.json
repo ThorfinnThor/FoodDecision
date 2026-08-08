@@ -47,22 +47,22 @@
   "scores": [
     {
       "type": "nutrition",
-      "label": "Nährwert-Score",
-      "score": 82,
-      "grade": "good",
+      "label": "Nährwertbewertung",
+      "score": 89,
+      "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren."
+        "Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren mit passenden Zielwerten für die Kategorie."
       ],
       "negatives": [
         "Salzgehalt ist für diese Kategorie auffällig."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "ingredient_quality",
-      "label": "Zutaten-Score",
+      "label": "Zutatenbewertung",
       "score": 92,
       "grade": "excellent",
       "confidence": "high",
@@ -72,11 +72,11 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "protein",
-      "label": "Protein-Score",
+      "label": "Proteinbewertung",
       "score": 100,
       "grade": "excellent",
       "confidence": "high",
@@ -85,11 +85,11 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "low_sugar",
-      "label": "Zucker-Score",
+      "label": "Zuckerbewertung",
       "score": 100,
       "grade": "excellent",
       "confidence": "high",
@@ -98,11 +98,11 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "family",
-      "label": "Familien-Score",
+      "label": "Bewertung für Familien",
       "score": 88,
       "grade": "excellent",
       "confidence": "high",
@@ -111,11 +111,11 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "vegan",
-      "label": "Vegan-Score",
+      "label": "Veganbewertung",
       "score": 100,
       "grade": "excellent",
       "confidence": "high",
@@ -124,12 +124,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "overall_match",
-      "label": "Gesamt-Score",
-      "score": 91,
+      "label": "Gesamtbewertung",
+      "score": 94,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -137,7 +137,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     }
   ]
 }

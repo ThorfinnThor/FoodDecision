@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/SiteFooter";
 import { localeConfigs, localeFromSegment, pick, supportedLocales } from "@/lib/i18n";
 import { siteUrl } from "@/lib/seo";
+import { BRAND_NAME } from "@/lib/brand";
 import "../globals.css";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -15,15 +16,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   );
   return {
     metadataBase: new URL(siteUrl),
-    title: "Food Decision Engine",
+    title: BRAND_NAME,
     description,
     icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
     openGraph: {
-      title: "Food Decision Engine",
+      title: BRAND_NAME,
       description,
       type: "website",
       locale: locale === "de-DE" ? "de_DE" : "en_US",
-      siteName: "Food Decision Engine",
+      siteName: BRAND_NAME,
     },
   };
 }

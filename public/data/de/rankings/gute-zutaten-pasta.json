@@ -1,0 +1,12 @@
+{
+  "attribute": "gute-zutaten",
+  "category": "pasta",
+  "title": "Pasta mit verständlichen Zutaten",
+  "sortScore": "ingredient_quality",
+  "intro": "Pasta mit verständlichen Zutaten: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

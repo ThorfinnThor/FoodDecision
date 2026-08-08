@@ -3,7 +3,7 @@
   "category": "fertiggerichte",
   "title": "Best prepared meals overall",
   "sortScore": "overall_match",
-  "intro": "Best prepared meals overall: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "intro": "Best prepared meals overall: products are compared using the same transparent rule for their category, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "US",

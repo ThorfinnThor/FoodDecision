@@ -368,16 +368,19 @@ function chunks<T>(values: T[], size: number) {
   return result;
 }
 
-function comparisonPairs(products: Product[]) {
-  const sameCategoryPair = products
-    .filter((product) => product.category === "hafermilch")
-    .slice(0, 2)
-    .map((product) => product.slug);
-  const crossCategoryPair = products.slice(2, 4).map((product) => product.slug);
-
-  return [sameCategoryPair, crossCategoryPair]
-    .filter((pair) => pair.length === 2)
-    .map(([a, b]) => `${a}-vs-${b}`);
+export function comparisonPairs(products: Product[]) {
+  const pairs: string[] = [];
+  for (const category of localizedCategoryCatalog(products[0]?.locale ?? "de-DE")) {
+    const candidates = products
+      .filter((product) => product.category === category.slug && (product.publishability === "ranking_eligible" || product.publishability === "published"))
+      .filter((product) => typeof scoreByType(product, "overall_match")?.score === "number")
+      .sort((a, b) => (scoreByType(b, "overall_match")?.score ?? -1) - (scoreByType(a, "overall_match")?.score ?? -1))
+      .slice(0, 3);
+    if (candidates.length < 2) continue;
+    pairs.push(`${candidates[0].slug}-vs-${candidates[1].slug}`);
+    if (candidates.length >= 3) pairs.push(`${candidates[0].slug}-vs-${candidates[2].slug}`);
+  }
+  return pairs;
 }
 
 async function exportStaticData() {

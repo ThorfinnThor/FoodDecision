@@ -1,0 +1,12 @@
+{
+  "attribute": "gute-zutaten",
+  "category": "pasta",
+  "title": "Pasta with understandable ingredients",
+  "sortScore": "ingredient_quality",
+  "intro": "Pasta with understandable ingredients: products are compared using the same transparent rule for their category, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "US",
+  "locale": "en-US",
+  "items": []
+}

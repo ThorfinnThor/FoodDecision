@@ -12,7 +12,6 @@ const allowedEvents = new Set([
   "favorite_toggled",
   "shopping_list_toggled",
   "affiliate_clicked",
-  "newsletter_submitted",
 ]);
 
 function clipped(value: unknown, length: number) {

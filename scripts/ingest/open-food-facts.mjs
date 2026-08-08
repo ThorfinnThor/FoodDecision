@@ -77,6 +77,30 @@ export const categoryJobs = [
       { id: "wheat-crackers", offCategory: "wheat-crackers" },
     ],
   },
+  {
+    slug: "brot",
+    sources: [{ id: "breads", offCategory: "breads" }],
+  },
+  {
+    slug: "pasta",
+    sources: [{ id: "pastas", offCategory: "pastas" }],
+  },
+  {
+    slug: "pastasaucen",
+    sources: [{ id: "pasta-sauces", offCategory: "pasta-sauces" }],
+  },
+  {
+    slug: "suppen",
+    sources: [{ id: "soups", offCategory: "soups" }],
+  },
+  {
+    slug: "tiefkuehlgerichte",
+    sources: [{ id: "frozen-meals", offCategory: "frozen-meals" }],
+  },
+  {
+    slug: "cracker",
+    sources: [{ id: "crackers", offCategory: "crackers" }],
+  },
 ];
 
 const fields = [
@@ -160,7 +184,7 @@ if (unknownCategories.length) throw new Error(`Unknown OFF_CATEGORY_SLUGS: ${unk
 if (!selectedCategoryJobs.length) throw new Error("OFF_CATEGORY_SLUGS selected no categories.");
 const userAgent =
   process.env.OFF_USER_AGENT ??
-  "food-decision-engine/0.1 (configure OFF_USER_AGENT with a contact URL or email)";
+  "compareyourfood.com/0.1 (configure OFF_USER_AGENT with a contact URL or email)";
 let lastOffRequestAt = 0;
 
 function requireEnv(name) {

@@ -1,9 +1,9 @@
 {
   "attribute": "familie",
   "category": "fruehstueckscerealien",
-  "title": "Family-friendly breakfast cereal",
+  "title": "Breakfast cereal suitable for families",
   "sortScore": "family",
-  "intro": "Family-friendly breakfast cereal: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "intro": "Breakfast cereal suitable for families: products are compared using the same transparent rule for their category, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "US",

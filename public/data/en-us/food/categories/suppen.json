@@ -1,0 +1,11 @@
+{
+  "slug": "suppen",
+  "label": "Soups",
+  "intent": "Soups with balanced nutrition and clearly disclosed ingredients.",
+  "description": "Soups are compared by sugar, protein, sodium, saturated fat, and ingredient quality.",
+  "rankingAttributes": [
+    "beste-wahl",
+    "familie"
+  ],
+  "products": []
+}

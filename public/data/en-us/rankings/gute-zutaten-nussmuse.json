@@ -3,7 +3,7 @@
   "category": "nussmuse",
   "title": "Nut butters with simpler ingredients",
   "sortScore": "ingredient_quality",
-  "intro": "Nut butters with simpler ingredients: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "intro": "Nut butters with simpler ingredients: products are compared using the same transparent rule for their category, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "US",

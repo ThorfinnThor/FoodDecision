@@ -40,5 +40,5 @@ test("keeps product reports behind the server API and private Supabase table", a
   assert.match(migration, /alter table product_data_reports enable row level security/i);
   assert.match(migration, /revoke all privileges on table product_data_reports from anon, authenticated/i);
   assert.doesNotMatch(form, /name=["']email|type=["']email/i);
-  assert.match(form, /keine Barcode- oder Kameradaten/);
+  assert.match(form, /keine Daten von Barcode oder Kamera/);
 });

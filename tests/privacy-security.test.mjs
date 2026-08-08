@@ -76,11 +76,12 @@ test("rejects oversized, non-JSON, and cross-origin API requests", () => {
 });
 
 test("publishes bilingual privacy disclosures and local controls", async () => {
-  const [page, controls, footer, newsletter] = await Promise.all([
+  const [page, controls, footer, newsletter, migration] = await Promise.all([
     readFile(new URL("../app/[locale]/privacy/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/PrivacyControls.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/SiteFooter.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/newsletter/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../supabase/migrations/0010_remove_inactive_newsletter.sql", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /Weder Kamerabilder noch Video, Ton oder die erkannte Barcodenummer/);
@@ -91,5 +92,9 @@ test("publishes bilingual privacy disclosures and local controls", async () => {
   assert.match(footer, /\/privacy/);
   assert.match(page, /NEXT_PUBLIC_OPERATOR_NAME/);
   assert.match(page, /NEXT_PUBLIC_PRIVACY_CONTACT/);
-  assert.match(newsletter, /locale, source/);
+  assert.match(page, /Wir bieten derzeit keinen Newsletter an/);
+  assert.match(page, /We currently do not offer a newsletter/);
+  assert.match(newsletter, /signup_not_available/);
+  assert.doesNotMatch(newsletter, /newsletter_subscribers|email_normalized/);
+  assert.match(migration, /drop table if exists newsletter_subscribers/);
 });

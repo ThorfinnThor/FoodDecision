@@ -48,6 +48,12 @@ const categoryRouteSlugs: Record<SiteLocale, Record<CategorySlug, string>> = {
     fertiggerichte: "fertiggerichte",
     erfrischungsgetraenke: "erfrischungsgetraenke",
     "kinder-snacks": "kinder-snacks",
+    brot: "brot",
+    pasta: "pasta",
+    pastasaucen: "pastasaucen",
+    suppen: "suppen",
+    tiefkuehlgerichte: "tiefkuehlgerichte",
+    cracker: "cracker",
   },
   "en-US": {
     hafermilch: "oat-milk",
@@ -62,6 +68,12 @@ const categoryRouteSlugs: Record<SiteLocale, Record<CategorySlug, string>> = {
     fertiggerichte: "prepared-meals",
     erfrischungsgetraenke: "soft-drinks",
     "kinder-snacks": "kids-snacks",
+    brot: "bread",
+    pasta: "pasta",
+    pastasaucen: "pasta-sauces",
+    suppen: "soups",
+    tiefkuehlgerichte: "frozen-meals",
+    cracker: "crackers",
   },
 };
 
@@ -100,4 +112,3 @@ export function rankingRouteSlug(attribute: string, locale: SiteLocale) {
 export function rankingFromRouteSlug(routeSlug: string, locale: SiteLocale) {
   return Object.entries(rankingRouteSlugs[locale]).find(([, localized]) => localized === routeSlug)?.[0] ?? null;
 }
-

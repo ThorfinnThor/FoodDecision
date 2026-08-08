@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { localizedPath, pick } from "@/lib/i18n";
 import type { SiteLocale } from "@/lib/types";
+import { BRAND_MARK, BRAND_NAME } from "@/lib/brand";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 export function SiteHeader({ locale }: { locale: SiteLocale }) {
@@ -8,9 +9,9 @@ export function SiteHeader({ locale }: { locale: SiteLocale }) {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <Link href={path()} className="brand" aria-label={pick(locale, "Food Decision Engine Startseite", "Food Decision Engine home")}>
-          <span className="brand-mark" aria-hidden="true">FD</span>
-          <span>Food Decision Engine</span>
+        <Link href={path()} className="brand" aria-label={pick(locale, `${BRAND_NAME} Startseite`, `${BRAND_NAME} home`)}>
+          <span className="brand-mark" aria-hidden="true">{BRAND_MARK}</span>
+          <span>{BRAND_NAME}</span>
         </Link>
         <nav className="desktop-nav" aria-label={pick(locale, "Hauptnavigation", "Main navigation")}>
           <Link href={path("/products")}>{pick(locale, "Produkte", "Products")}</Link>

@@ -1,6 +1,6 @@
 import type { CategorySlug, MarketCode } from "./types.ts";
 
-export type CatalogPreset = "core" | "plant-forward" | "everyday" | "recovery" | "all" | "custom";
+export type CatalogPreset = "core" | "plant-forward" | "everyday" | "everyday-basics" | "recovery" | "all" | "custom";
 
 export type CatalogGrowthConfig = {
   version: string;
@@ -47,7 +47,7 @@ export function resolveCatalogIngestionPlan(config: CatalogGrowthConfig, options
   const market = String(scheduled?.market ?? options.market ?? "DE").toUpperCase();
   if (market !== "DE" && market !== "US") return null;
   const preset = String(scheduled?.preset ?? options.preset ?? "core") as CatalogPreset;
-  if (!["core", "plant-forward", "everyday", "recovery", "all", "custom"].includes(preset)) return null;
+  if (!["core", "plant-forward", "everyday", "everyday-basics", "recovery", "all", "custom"].includes(preset)) return null;
 
   const knownCategories = new Set(config.presets.all);
   const customCategories = String(options.customCategories ?? "").split(",").map((value) => value.trim()).filter(Boolean);

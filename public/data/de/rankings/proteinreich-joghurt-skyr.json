@@ -3,7 +3,7 @@
   "category": "joghurt-skyr",
   "title": "Proteinreichste Joghurts und Skyr",
   "sortScore": "protein",
-  "intro": "Proteinreichste Joghurts und Skyr: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "intro": "Proteinreichste Joghurts und Skyr: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "DE",

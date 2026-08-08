@@ -143,7 +143,7 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
     if (startingRef.current || streamRef.current) return;
     const Detector = (window as unknown as { BarcodeDetector?: new (options: { formats: string[] }) => BarcodeDetectorLike }).BarcodeDetector;
     if (!Detector || !navigator.mediaDevices?.getUserMedia) {
-      setCameraStatus(c("Kamera-Scanning wird in diesem Browser nicht unterstützt. Nutze die manuelle Eingabe.", "Camera scanning is not supported in this browser. Use manual entry."));
+      setCameraStatus(c("Das Scannen mit der Kamera wird in diesem Browser nicht unterstützt. Nutze die manuelle Eingabe.", "Camera scanning is not supported in this browser. Use manual entry."));
       return;
     }
     const requestId = cameraRequestRef.current + 1;
@@ -215,9 +215,9 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
 
   return (
     <div className="barcode-experience">
-      <section className="barcode-tool" aria-label={c("Barcode-Suche", "Barcode lookup")}>
+      <section className="barcode-tool" aria-label={c("Barcodesuche", "Barcode lookup")}>
         <div className={scanning ? "barcode-camera is-active" : "barcode-camera"}>
-          <video aria-label={c("Kamerabild für Barcode-Scan", "Camera view for barcode scan")} muted playsInline ref={videoRef} />
+          <video aria-label={c("Kamerabild für den Barcodescan", "Camera view for barcode scan")} muted playsInline ref={videoRef} />
           <span aria-hidden="true" />
           {!scanning ? <div className="barcode-camera-placeholder"><strong>{c("Barcode in den Rahmen halten", "Hold barcode inside the frame")}</strong><small>{c("Die Verarbeitung erfolgt nur auf deinem Gerät.", "Processing stays on your device.")}</small></div> : null}
         </div>
@@ -225,7 +225,7 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
           <div>
             <p className="eyebrow">{c("Kamera oder Nummer", "Camera or number")}</p>
             <h2>{c("Produkt sofort prüfen", "Check a product instantly")}</h2>
-            <p>{c("EAN-8, EAN-13, UPC-A und GTIN-14 werden unterstützt.", "EAN-8, EAN-13, UPC-A, and GTIN-14 are supported.")}</p>
+            <p>{c("Unterstützt werden EAN 8, EAN 13, UPC A und GTIN 14.", "Supported formats are EAN 8, EAN 13, UPC A, and GTIN 14.")}</p>
           </div>
           <button className="primary-button" disabled={starting} onClick={scanning ? stop : start} type="button">{scanning ? c("Kamera stoppen", "Stop camera") : starting ? c("Kamera wird geöffnet …", "Opening camera …") : c("Barcode mit Kamera scannen", "Scan barcode with camera")}</button>
           <p className="scanner-privacy-note">{c("Kamerabild und Barcodenummer verlassen dein Gerät nicht.", "Camera images and barcode numbers never leave your device.")} <Link href={`${path("/privacy")}#camera`}>{c("Datenschutzdetails", "Privacy details")}</Link></p>

@@ -1,8 +1,8 @@
 {
   "slug": "kinder-snacks",
-  "label": "Kinder-Snacks",
-  "intent": "Snacks für Familien mit konservativer Zucker-, Salz- und Zutatenbewertung.",
-  "description": "Verglichen werden Müsliriegel, Apfelmus und Weizencracker, die häufig für Schule und unterwegs gekauft werden. Zucker, Salz, Zutaten und bekannte Allergene werden bewusst streng eingeordnet.",
+  "label": "Kinder Snacks",
+  "intent": "Snacks für Familien mit konservativer Bewertung von Zucker, Salz und Zutaten.",
+  "description": "Verglichen werden Müsliriegel, Fruchtsnacks, Apfelmus und Weizencracker, die häufig für Schule und unterwegs gekauft werden. Zucker, Salz, Zutaten und bekannte Allergene werden bewusst streng eingeordnet.",
   "rankingAttributes": [
     "familie",
     "wenig-zucker"

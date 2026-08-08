@@ -1,8 +1,8 @@
 {
   "slug": "pflanzliche-joghurts",
-  "label": "Plant-based yogurt",
-  "intent": "Dairy-free yogurt alternatives with a balanced nutrition profile.",
-  "description": "Plant-based yogurt is compared by sugar, protein, ingredients, and vegan labeling.",
+  "label": "Plant based yogurt",
+  "intent": "Yogurt alternatives without dairy with a balanced nutrition profile.",
+  "description": "Plant based yogurt is compared by sugar, protein, ingredients, and vegan labeling.",
   "rankingAttributes": [
     "wenig-zucker",
     "beste-wahl"

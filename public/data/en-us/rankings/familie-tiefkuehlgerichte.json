@@ -1,0 +1,12 @@
+{
+  "attribute": "familie",
+  "category": "tiefkuehlgerichte",
+  "title": "Frozen meals suitable for families",
+  "sortScore": "family",
+  "intro": "Frozen meals suitable for families: products are compared using the same transparent rule for their category, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "US",
+  "locale": "en-US",
+  "items": []
+}

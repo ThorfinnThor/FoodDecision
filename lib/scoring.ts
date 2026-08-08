@@ -10,7 +10,7 @@ import type {
 import { categoryScoringProfiles } from "./catalog.ts";
 import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
 
-const RULE_VERSION = "2026.08";
+const RULE_VERSION = "2026.08.1";
 
 function clamp(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -91,10 +91,14 @@ function proteinTarget(category: CategorySlug) {
   return categoryScoringProfiles[category].protein;
 }
 
+function lowerIsBetterScore(value: number, excellent: number, weak: number) {
+  return clamp(100 - ((value - excellent) / (weak - excellent)) * 60);
+}
+
 function lowSugarScore(product: Omit<Product, "scores">) {
   const missingData = missingNutrition(product.nutrition, ["sugar"]);
   if (product.nutrition.sugar === null) {
-    return createScore("low_sugar", copy(product, "Zucker-Score", "Sugar score"), null, [], [], missingData);
+    return createScore("low_sugar", copy(product, "Zuckerbewertung", "Sugar score"), null, [], [], missingData);
   }
 
   const target = sugarTarget(product.category);
@@ -110,13 +114,13 @@ function lowSugarScore(product: Omit<Product, "scores">) {
       ? [copy(product, `Relativ hoher Zuckerwert für diese Kategorie: ${product.nutrition.sugar} g pro ${target.unit}.`, `Relatively high sugar for this category: ${product.nutrition.sugar} g per ${target.unit}.`)]
       : [];
 
-  return createScore("low_sugar", copy(product, "Zucker-Score", "Sugar score"), score, positives, negatives, missingData);
+  return createScore("low_sugar", copy(product, "Zuckerbewertung", "Sugar score"), score, positives, negatives, missingData);
 }
 
 function proteinScore(product: Omit<Product, "scores">) {
   const missingData = missingNutrition(product.nutrition, ["protein"]);
   if (product.nutrition.protein === null) {
-    return createScore("protein", copy(product, "Protein-Score", "Protein score"), null, [], [], missingData);
+    return createScore("protein", copy(product, "Proteinbewertung", "Protein score"), null, [], [], missingData);
   }
 
   const target = proteinTarget(product.category);
@@ -132,13 +136,13 @@ function proteinScore(product: Omit<Product, "scores">) {
       ? [copy(product, `Eher niedriger Proteinwert für diese Nutzung: ${product.nutrition.protein} g.`, `Relatively low protein for this use: ${product.nutrition.protein} g.`)]
       : [];
 
-  return createScore("protein", copy(product, "Protein-Score", "Protein score"), score, positives, negatives, missingData);
+  return createScore("protein", copy(product, "Proteinbewertung", "Protein score"), score, positives, negatives, missingData);
 }
 
 function ingredientQualityScore(product: Omit<Product, "scores">) {
   const missingData = product.ingredients.length === 0 ? ["ingredients"] : [];
   if (missingData.length) {
-    return createScore("ingredient_quality", copy(product, "Zutaten-Score", "Ingredient score"), null, [], [], missingData);
+    return createScore("ingredient_quality", copy(product, "Zutatenbewertung", "Ingredient score"), null, [], [], missingData);
   }
 
   const analysis = analyzeIngredients(product.ingredients);
@@ -153,7 +157,7 @@ function ingredientQualityScore(product: Omit<Product, "scores">) {
 
   return createScore(
     "ingredient_quality",
-    copy(product, "Zutaten-Score", "Ingredient score"),
+    copy(product, "Zutatenbewertung", "Ingredient score"),
     score,
     [
       ...(ingredientCount <= 5 ? [copy(product, "Kurze Zutatenliste.", "Short ingredient list.")] : []),
@@ -172,23 +176,24 @@ function nutritionScore(product: Omit<Product, "scores">) {
   const missingData = missingNutrition(product.nutrition, ["sugar", "protein", "saturatedFat", "salt"]);
   const { sugar, protein: proteinValue, saturatedFat, salt } = product.nutrition;
   if ([sugar, proteinValue, saturatedFat, salt].some((value) => value === null)) {
-    return createScore("nutrition", copy(product, "Nährwert-Score", "Nutrition score"), null, [], [], missingData);
+    return createScore("nutrition", copy(product, "Nährwertbewertung", "Nutrition score"), null, [], [], missingData);
   }
 
   const lowSugar = lowSugarScore(product).score ?? 50;
   const proteinComponent = proteinScore(product).score ?? 50;
-  const satFatPenalty = Math.min((saturatedFat ?? 0) * 8, 24);
-  const saltPenalty = Math.min((salt ?? 0) * 10, 18);
-  const score = clamp(lowSugar * 0.46 + proteinComponent * 0.32 + 30 - satFatPenalty - saltPenalty);
+  const profile = categoryScoringProfiles[product.category];
+  const saturatedFatComponent = lowerIsBetterScore(saturatedFat ?? 0, profile.saturatedFat.excellent, profile.saturatedFat.weak);
+  const saltComponent = lowerIsBetterScore(salt ?? 0, profile.salt.excellent, profile.salt.weak);
+  const score = clamp(lowSugar * 0.4 + proteinComponent * 0.25 + saturatedFatComponent * 0.175 + saltComponent * 0.175);
 
   return createScore(
     "nutrition",
-    copy(product, "Nährwert-Score", "Nutrition score"),
+    copy(product, "Nährwertbewertung", "Nutrition score"),
     score,
-    [copy(product, "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren.", "Category-specific assessment based on sugar, protein, salt, and saturated fat.")],
+    [copy(product, "Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren mit passenden Zielwerten für die Kategorie.", "Assessment based on sugar, protein, salt, and saturated fat with reference values suited to the category.")],
     [
-      ...((saturatedFat ?? 0) > 3 ? [copy(product, "Gesättigte Fettsäuren belasten den Score.", "Saturated fat lowers the score.")] : []),
-      ...((salt ?? 0) > 1 ? [copy(product, "Salzgehalt ist für diese Kategorie auffällig.", "Salt is relatively high for this category.")] : []),
+      ...((saturatedFat ?? 0) >= profile.saturatedFat.weak ? [copy(product, "Gesättigte Fettsäuren sind für diese Kategorie relativ hoch.", "Saturated fat is relatively high for this category.")] : []),
+      ...((salt ?? 0) >= profile.salt.weak ? [copy(product, "Salzgehalt ist für diese Kategorie auffällig.", "Salt is relatively high for this category.")] : []),
     ],
     missingData,
   );
@@ -200,10 +205,10 @@ function veganScore(product: Omit<Product, "scores">) {
 
   return createScore(
     "vegan",
-    copy(product, "Vegan-Score", "Vegan score"),
+    copy(product, "Veganbewertung", "Vegan score"),
     score,
-    vegan.status === "confirmed" ? [copy(product, "Als vegan oder pflanzlich gekennzeichnet.", "Labeled vegan or plant-based.")] : [],
-    vegan.status === "conflict" ? [copy(product, "Die vegane Kennzeichnung widerspricht bekannten Milch- oder Ei-Allergendaten.", "The vegan claim conflicts with known milk or egg allergen data.")] : [],
+    vegan.status === "confirmed" ? [copy(product, "Als vegan oder pflanzlich gekennzeichnet.", "Labeled vegan or plant based.")] : [],
+    vegan.status === "conflict" ? [copy(product, "Die vegane Kennzeichnung widerspricht bekannten Angaben zu Milch oder Ei.", "The vegan claim conflicts with known milk or egg allergen data.")] : [],
     [],
   );
 }
@@ -216,7 +221,7 @@ function familyScore(product: Omit<Product, "scores">) {
 
   return createScore(
     "family",
-    copy(product, "Familien-Score", "Family score"),
+    copy(product, "Bewertung für Familien", "Family score"),
     score,
     [copy(product, "Konservative Bewertung aus Zucker, Zutatenliste und Salz.", "Conservative assessment based on sugar, ingredients, and salt.")],
     product.allergens.length ? [copy(product, `Allergene prüfen: ${product.allergens.join(", ")}.`, `Check allergens: ${product.allergens.join(", ")}.`)] : [],
@@ -234,7 +239,7 @@ function overallMatchScore(product: Omit<Product, "scores">, scores: ProductScor
   ];
   const usable = weighted.filter(([score]) => score?.score !== null) as Array<[ProductScore, number]>;
   if (!usable.length) {
-    return createScore("overall_match", copy(product, "Gesamt-Score", "Overall score"), null, [], [], ["scores"]);
+    return createScore("overall_match", copy(product, "Gesamtbewertung", "Overall score"), null, [], [], ["scores"]);
   }
 
   const totalWeight = usable.reduce((sum, [, weight]) => sum + weight, 0);
@@ -242,7 +247,7 @@ function overallMatchScore(product: Omit<Product, "scores">, scores: ProductScor
 
   return createScore(
     "overall_match",
-    copy(product, "Gesamt-Score", "Overall score"),
+    copy(product, "Gesamtbewertung", "Overall score"),
     score,
     [copy(product, "Kombiniert die wichtigsten Teilbewertungen für eine schnelle Entscheidung.", "Combines the most important sub-scores for a quick decision.")],
     [],

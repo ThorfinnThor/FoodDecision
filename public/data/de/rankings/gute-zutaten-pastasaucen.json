@@ -1,0 +1,12 @@
+{
+  "attribute": "gute-zutaten",
+  "category": "pastasaucen",
+  "title": "Pastasaucen mit verständlichen Zutaten",
+  "sortScore": "ingredient_quality",
+  "intro": "Pastasaucen mit verständlichen Zutaten: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

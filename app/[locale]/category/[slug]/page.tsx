@@ -11,6 +11,7 @@ import { requireLocale } from "@/lib/locale-page";
 import { absoluteUrl } from "@/lib/seo";
 import { getCatalog } from "@/lib/static-data";
 import { categoryImage, categoryImageAlt } from "@/lib/category-images";
+import { BRAND_NAME } from "@/lib/brand";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = internalSlug ? catalog.getCategory(internalSlug) : null;
   if (!category || catalog.getCategoryProductCount(category.slug) === 0) return { robots: { index: false, follow: false } };
   return {
-    title: `${category.label} - Food Decision Engine`,
+    title: `${category.label} | ${BRAND_NAME}`,
     description: category.description,
     alternates: {
       canonical: localizedPath(locale, `/category/${categoryRouteSlug(category.slug, locale)}`),

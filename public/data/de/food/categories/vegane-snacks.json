@@ -1,7 +1,7 @@
 {
   "slug": "vegane-snacks",
   "label": "Vegane Snacks",
-  "intent": "Pflanzliche Snacks mit besserer Nährwert-Balance.",
+  "intent": "Pflanzliche Snacks mit besserer Nährwertbalance.",
   "description": "Vegan ist ein Filter, kein Gesundheitsversprechen. Entscheidend bleiben Zucker, Salz, Fett und Zutaten.",
   "rankingAttributes": [
     "vegan",
@@ -17,7 +17,7 @@
       "categoryLabel": "Vegane Snacks",
       "market": "DE",
       "locale": "de-DE",
-      "overallScore": 91,
+      "overallScore": 94,
       "lowSugarScore": 100,
       "proteinScore": 100,
       "publishability": "ranking_eligible",

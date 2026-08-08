@@ -1,0 +1,11 @@
+{
+  "slug": "pastasaucen",
+  "label": "Pasta sauces",
+  "intent": "Pasta sauces with less sugar, sodium, and unnecessary additives.",
+  "description": "Pasta sauces are compared by sugar, sodium, saturated fat, protein, and ingredient quality.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "gute-zutaten"
+  ],
+  "products": []
+}

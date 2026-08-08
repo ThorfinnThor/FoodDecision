@@ -1,9 +1,9 @@
 {
   "attribute": "wenig-zucker",
   "category": "kinder-snacks",
-  "title": "Kinder-Snacks mit wenig Zucker",
+  "title": "Kinder Snacks mit wenig Zucker",
   "sortScore": "low_sugar",
-  "intro": "Kinder-Snacks mit wenig Zucker: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "intro": "Kinder Snacks mit wenig Zucker: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "DE",

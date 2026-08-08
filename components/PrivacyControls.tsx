@@ -52,7 +52,7 @@ export function PrivacyControls({ locale }: { locale: SiteLocale }) {
         <p className="eyebrow">{c("Deine Kontrolle", "Your control")}</p>
         <h2 id="privacy-controls-title">{c("Datenschutzeinstellungen auf diesem Gerät", "Privacy settings on this device")}</h2>
         <p>{c(
-          "Ohne deine Zustimmung senden wir keine optionalen Nutzungsereignisse. Favoriten, Einkaufsliste, Finder-Präferenzen und Scanverlauf bleiben lokal in diesem Browser.",
+          "Ohne deine Zustimmung senden wir keine optionalen Nutzungsereignisse. Favoriten, Einkaufsliste, Einstellungen im Finder und Scanverlauf bleiben lokal in diesem Browser.",
           "Without your consent, we do not send optional usage events. Favorites, shopping lists, Finder preferences, and scan history stay locally in this browser.",
         )}</p>
       </div>

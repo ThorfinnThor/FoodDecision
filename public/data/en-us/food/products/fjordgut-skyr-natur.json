@@ -49,11 +49,11 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+        "Assessment based on sugar, protein, salt, and saturated fat with reference values suited to the category."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "ingredient_quality",
@@ -67,7 +67,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "protein",
@@ -80,7 +80,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "low_sugar",
@@ -93,7 +93,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "family",
@@ -108,7 +108,7 @@
         "Check allergens: Milk."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "vegan",
@@ -119,7 +119,7 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "overall_match",
@@ -132,7 +132,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     }
   ]
 }

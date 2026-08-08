@@ -75,7 +75,7 @@ export function FinderExperience({
     { value: "protein" as const, label: "Higher protein", description: "More protein within the relevant category." },
     { value: "low_sugar" as const, label: "Lower sugar", description: "Less sugar compared with similar products." },
     { value: "ingredient_quality" as const, label: "Simpler ingredients", description: "Prefer shorter, understandable ingredient lists." },
-    { value: "family" as const, label: "Family-friendly", description: "Conservative assessment of sugar, ingredients, and salt." },
+    { value: "family" as const, label: "Suitable for families", description: "Conservative assessment of sugar, ingredients, and salt." },
     { value: "vegan" as const, label: "Vegan", description: "Consider vegan labels and known allergens." },
   ];
   const update = <K extends keyof FinderCriteria>(key: K, value: FinderCriteria[K]) => {

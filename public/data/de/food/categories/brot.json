@@ -1,0 +1,11 @@
+{
+  "slug": "brot",
+  "label": "Brot",
+  "intent": "Brote mit guter Nährwertbasis und verständlichen Zutaten.",
+  "description": "Brot wird nach Zucker, Protein, Salz, gesättigten Fettsäuren und Zutatenqualität verglichen.",
+  "rankingAttributes": [
+    "beste-wahl",
+    "gute-zutaten"
+  ],
+  "products": []
+}

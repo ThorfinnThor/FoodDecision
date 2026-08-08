@@ -3,7 +3,7 @@
   "category": "brotaufstriche",
   "title": "Brotaufstriche mit den besten Zutaten",
   "sortScore": "ingredient_quality",
-  "intro": "Brotaufstriche mit den besten Zutaten: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "intro": "Brotaufstriche mit den besten Zutaten: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "DE",

@@ -1,9 +1,8 @@
-# Food Decision Engine
+# Compare Your Food
 
 An explainable food decision engine with category-specific scoring, transparent
 data quality, guided product discovery, comparisons, and governed static SEO
-routes. The implementation plan lives in
-`outputs/food-decision-engine-implementation-plan.md`.
+routes. The implementation plan documents the complete product scope and delivery sequence.
 
 The public app has two explicit market routes:
 
@@ -68,7 +67,7 @@ active offer exists in the exported dataset and are always labeled as ads.
 Camera frames and recognized barcode values never leave the browser. Optional
 usage analytics is disabled by default, respects Do Not Track, excludes URL
 query parameters, and can be enabled or disabled on `/de/privacy` and
-`/en-us/privacy`. Those pages also let visitors delete all Food Decision Engine
+`/en-us/privacy`. Those pages also let visitors delete all Compare Your Food
 data stored locally in the current browser. Configure the public privacy contact
 before launch with `NEXT_PUBLIC_OPERATOR_NAME` and
 `NEXT_PUBLIC_PRIVACY_CONTACT`.
@@ -152,7 +151,7 @@ STATIC_EXPORT_SOURCE=supabase SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_...
 Targeted German write:
 
 ```bash
-SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... OFF_MARKET=DE OFF_CATEGORY_SLUGS="pflanzliche-joghurts,kinder-snacks" OFF_USER_AGENT="food-decision-engine/0.1 (contact: you@example.com)" npm run ingest:off
+SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... OFF_MARKET=DE OFF_CATEGORY_SLUGS="pflanzliche-joghurts,kinder-snacks" OFF_USER_AGENT="compareyourfood.com/0.1 (contact: you@example.com)" npm run ingest:off
 ```
 
 Normalize the latest successful import:

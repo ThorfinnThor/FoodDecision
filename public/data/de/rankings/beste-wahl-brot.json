@@ -1,0 +1,12 @@
+{
+  "attribute": "beste-wahl",
+  "category": "brot",
+  "title": "Bestes Brot im Gesamtvergleich",
+  "sortScore": "overall_match",
+  "intro": "Bestes Brot im Gesamtvergleich: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

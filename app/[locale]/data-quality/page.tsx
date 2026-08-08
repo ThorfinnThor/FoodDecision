@@ -5,13 +5,14 @@ import { categoryRouteSlug, localizedPath, pick } from "@/lib/i18n";
 import { localeAlternates, requireLocale } from "@/lib/locale-page";
 import { getCatalog } from "@/lib/static-data";
 import type { CatalogQualityStatus } from "@/lib/types";
+import { BRAND_NAME } from "@/lib/brand";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = requireLocale((await params).locale);
   return {
-    title: pick(locale, "Datenabdeckung - Food Decision Engine", "Data coverage - Food Decision Engine"),
+    title: pick(locale, `Datenabdeckung | ${BRAND_NAME}`, `Data coverage | ${BRAND_NAME}`),
     description: pick(locale, "Aktuelle Abdeckung und Datenqualität des veröffentlichten Lebensmittelkatalogs.", "Current coverage and data quality of the published food catalog."),
     alternates: localeAlternates(locale, "/data-quality"),
   };

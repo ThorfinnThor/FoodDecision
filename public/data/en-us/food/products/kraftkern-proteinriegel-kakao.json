@@ -7,7 +7,7 @@
   "category": "proteinriegel",
   "categoryLabel": "Protein bars",
   "imageTone": "cocoa",
-  "description": "High-protein cocoa bar with a moderate sugar level.",
+  "description": "Cocoa protein bar with a moderate sugar level.",
   "labels": [
     "high protein",
     "vegetarian"
@@ -50,17 +50,15 @@
     {
       "type": "nutrition",
       "label": "Nutrition score",
-      "score": 78,
-      "grade": "good",
+      "score": 93,
+      "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+        "Assessment based on sugar, protein, salt, and saturated fat with reference values suited to the category."
       ],
-      "negatives": [
-        "Saturated fat lowers the score."
-      ],
+      "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "ingredient_quality",
@@ -76,7 +74,7 @@
         "Additives or flavorings detected."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "protein",
@@ -89,7 +87,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "low_sugar",
@@ -102,7 +100,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "family",
@@ -117,7 +115,7 @@
         "Check allergens: Milk, Almonds."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "vegan",
@@ -128,20 +126,20 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "overall_match",
       "label": "Overall score",
-      "score": 84,
-      "grade": "good",
+      "score": 89,
+      "grade": "excellent",
       "confidence": "high",
       "positives": [
         "Combines the most important sub-scores for a quick decision."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08"
+      "ruleVersion": "2026.08.1"
     }
   ]
 }

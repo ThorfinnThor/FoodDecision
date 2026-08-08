@@ -1,7 +1,7 @@
 {
   "slug": "proteinriegel",
   "label": "Protein bars",
-  "intent": "Protein-focused snacks with a transparent macro balance.",
+  "intent": "Protein rich snacks with a transparent macro balance.",
   "description": "Protein bars are compared by protein, sugar, ingredient complexity, and disclosed sweeteners.",
   "rankingAttributes": [
     "proteinreich",
@@ -17,7 +17,7 @@
       "categoryLabel": "Protein bars",
       "market": "US",
       "locale": "en-US",
-      "overallScore": 84,
+      "overallScore": 89,
       "lowSugarScore": 100,
       "proteinScore": 100,
       "publishability": "ranking_eligible",

@@ -1,0 +1,12 @@
+{
+  "attribute": "gute-zutaten",
+  "category": "cracker",
+  "title": "Cracker mit verständlichen Zutaten",
+  "sortScore": "ingredient_quality",
+  "intro": "Cracker mit verständlichen Zutaten: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

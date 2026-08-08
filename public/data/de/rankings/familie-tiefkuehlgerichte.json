@@ -1,0 +1,12 @@
+{
+  "attribute": "familie",
+  "category": "tiefkuehlgerichte",
+  "title": "Geeignete Tiefkühlgerichte für Familien",
+  "sortScore": "family",
+  "intro": "Geeignete Tiefkühlgerichte für Familien: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

@@ -47,7 +47,7 @@ export function IngredientCheck({ product }: { product: Product }) {
       key: "vegan",
       label: c("Vegane Kennzeichnung", "Vegan claim"),
       status: c("Bestätigt", "Confirmed"),
-      detail: c("Als vegan oder pflanzlich gekennzeichnet; keine widersprechenden Milch- oder Ei-Allergendaten erkannt.", "Labeled vegan or plant-based, with no conflicting milk or egg allergen data detected."),
+      detail: c("Als vegan oder pflanzlich gekennzeichnet. Die Quelldaten enthalten keine widersprechenden Angaben zu Milch oder Ei.", "Labeled vegan or plant based. The source data contains no conflicting milk or egg allergen information."),
       tone: "clear",
     } : vegan.status === "conflict" ? {
       key: "vegan",
@@ -59,7 +59,7 @@ export function IngredientCheck({ product }: { product: Product }) {
       key: "vegan",
       label: c("Vegane Kennzeichnung", "Vegan claim"),
       status: c("Nicht bestätigt", "Not confirmed"),
-      detail: c("Keine verlässliche vegane oder pflanzliche Kennzeichnung in den Quelldaten.", "No reliable vegan or plant-based claim in the source data."),
+      detail: c("Keine verlässliche vegane oder pflanzliche Kennzeichnung in den Quelldaten.", "No reliable vegan or plant based claim in the source data."),
       tone: "unknown",
     },
   ];

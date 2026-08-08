@@ -1,0 +1,11 @@
+{
+  "slug": "pasta",
+  "label": "Pasta",
+  "intent": "Pasta mit guter Nährwertbasis für alltägliche Gerichte.",
+  "description": "Pasta wird nach Protein, Zucker, Salz, gesättigten Fettsäuren und Zutatenqualität verglichen.",
+  "rankingAttributes": [
+    "proteinreich",
+    "gute-zutaten"
+  ],
+  "products": []
+}

@@ -1,0 +1,12 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "pastasaucen",
+  "title": "Pastasaucen mit wenig Zucker",
+  "sortScore": "low_sugar",
+  "intro": "Pastasaucen mit wenig Zucker: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

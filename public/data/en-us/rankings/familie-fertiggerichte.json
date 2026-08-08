@@ -1,9 +1,9 @@
 {
   "attribute": "familie",
   "category": "fertiggerichte",
-  "title": "Family-friendly prepared meals",
+  "title": "Prepared meals suitable for families",
   "sortScore": "family",
-  "intro": "Family-friendly prepared meals: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "intro": "Prepared meals suitable for families: products are compared using the same transparent rule for their category, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "US",

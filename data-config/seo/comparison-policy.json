@@ -1,0 +1,10 @@
+{
+  "version": "2026.08.1",
+  "maximumPreparedPairsPerCategory": 2,
+  "minimumProductsPerPair": 2,
+  "sameCategoryRequired": true,
+  "sameNutritionBasisRequired": true,
+  "allowedProductStatuses": ["ranking_eligible", "published"],
+  "selection": "highest overall score with at most the first three assessed and published products",
+  "indexing": "Only pairs listed in the generated locale manifest are indexable. User created pairs remain outside the search index."
+}

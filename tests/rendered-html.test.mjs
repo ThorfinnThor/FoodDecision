@@ -23,14 +23,15 @@ async function render() {
   );
 }
 
-test("server-renders the Food Decision Engine experience", async () => {
+test("server-renders the Compare Your Food experience", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Lebensmittel besser auswählen - Food Decision Engine<\/title>/i);
-  assert.match(html, /Food Decision Engine/);
+  assert.match(html, /<title>Lebensmittel besser auswählen \| Compare Your Food<\/title>/i);
+  assert.match(html, /Compare Your Food/);
+  assert.doesNotMatch(html, /Food Decision Engine/);
   assert.match(html, /Finde Lebensmittel/);
   assert.match(html, /Vergleiche Produkte im richtigen Kontext/);
   assert.match(html, /Hafermilch/);
@@ -38,14 +39,17 @@ test("server-renders the Food Decision Engine experience", async () => {
 });
 
 test("removes starter metadata and preview dependencies", async () => {
-  const [page, layout, packageJson] = await Promise.all([
+  const [page, layout, packageJson, header, footer] = await Promise.all([
     readFile(new URL("../app/[locale]/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/[locale]/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../components/SiteHeader.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/SiteFooter.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /generateMetadata/);
-  assert.match(layout, /Food Decision Engine/);
-  assert.match(packageJson, /"name": "food-decision-engine"/);
-  assert.doesNotMatch(`${page}\n${layout}\n${packageJson}`, /codex-preview|_sites-preview|react-loading-skeleton/);
+  assert.match(layout, /BRAND_NAME/);
+  assert.match(packageJson, /"name": "compare-your-food"/);
+  assert.doesNotMatch(`${page}\n${layout}\n${packageJson}\n${header}\n${footer}`, /Food Decision Engine|codex-preview|_sites-preview|react-loading-skeleton/);
+  assert.doesNotMatch(page, /Eine Zahl reicht nicht|One number is not enough|NewsletterSignup/);
 });

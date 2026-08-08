@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T14:17:44.320Z",
+  "generatedAt": "2026-08-08T11:33:07.443Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locales": [
@@ -9,9 +9,9 @@
       "path": "de/manifest.json",
       "counts": {
         "products": 6,
-        "categories": 12,
-        "rankings": 24,
-        "comparisons": 2
+        "categories": 18,
+        "rankings": 36,
+        "comparisons": 1
       }
     },
     {
@@ -20,9 +20,9 @@
       "path": "en-us/manifest.json",
       "counts": {
         "products": 6,
-        "categories": 12,
-        "rankings": 24,
-        "comparisons": 2
+        "categories": 18,
+        "rankings": 36,
+        "comparisons": 1
       }
     }
   ]
