@@ -169,21 +169,27 @@ sources are hidden and reported as quality flags.
 
 Each internal category uses one or more explicit Open Food Facts taxonomy
 sources. Multi-source categories split `OFF_PAGE_SIZE` across their sources, so
-the configured product budget remains bounded. The GitHub job summary reports
-fetched and uniquely accepted products for every source. `kinder-snacks` is an
-editorial family-snack comparison sourced from cereal bars, applesauces, and
-wheat crackers; it does not claim that Open Food Facts labels those products as
-made for children.
+the configured product budget remains bounded. Narrow fallback taxonomies make
+plant-based yogurt, nut butter, and family-snack imports more resilient when a
+broader Open Food Facts endpoint is temporarily unavailable. Products are
+deduplicated by source product ID. The GitHub job summary reports fetched and
+uniquely accepted products for every source. `kinder-snacks` is an editorial
+family-snack comparison sourced from cereal bars, fruit snacks, applesauces,
+and wheat crackers; it does not claim that Open Food Facts labels those products
+as made for children.
 
 Catalog growth is governed by `data-config/catalog/growth-plan.json`. Manual
-GitHub runs offer `core`, `plant-forward`, `everyday`, `all`, and `custom`
-waves. Scheduled runs rotate smaller four-category waves instead of requesting
-the whole catalog at once:
+GitHub runs offer `core`, `plant-forward`, `everyday`, `recovery`, `all`, and
+`custom` waves. `recovery` targets the categories that most often need focused
+backfilling. Manual runs can select `start_page`; scheduled runs rotate through
+four bounded page windows automatically. They also rotate smaller four-category
+waves instead of requesting the whole catalog at once:
 
 - Monday, Wednesday, Friday: German `core`, `plant-forward`, and `everyday`
 - Tuesday, Thursday, Saturday: US `core`, `plant-forward`, and `everyday`
 
-This keeps Open Food Facts request pressure bounded and refreshes both markets.
+This keeps Open Food Facts request pressure bounded, grows beyond the first
+result page, and refreshes both markets.
 Resolve a plan locally without contacting Open Food Facts:
 
 ```bash

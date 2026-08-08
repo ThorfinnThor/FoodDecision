@@ -42,7 +42,11 @@ export const categoryJobs = [
   },
   {
     slug: "pflanzliche-joghurts",
-    sources: [{ id: "non-dairy-yogurts", offCategory: "non-dairy-yogurts" }],
+    sources: [
+      { id: "non-dairy-yogurts", offCategory: "non-dairy-yogurts", weight: 3 },
+      { id: "soy-yogurts", offCategory: "soy-yogurts" },
+      { id: "coconut-yogurts", offCategory: "coconut-yogurts" },
+    ],
   },
   {
     slug: "brotaufstriche",
@@ -50,7 +54,11 @@ export const categoryJobs = [
   },
   {
     slug: "nussmuse",
-    sources: [{ id: "nut-butters", offCategory: "nut-butters" }],
+    sources: [
+      { id: "nut-butters", offCategory: "nut-butters", weight: 2 },
+      { id: "peanut-butters", offCategory: "peanut-butters", weight: 2 },
+      { id: "almond-butters", offCategory: "almond-butters" },
+    ],
   },
   {
     slug: "fertiggerichte",
@@ -63,7 +71,8 @@ export const categoryJobs = [
   {
     slug: "kinder-snacks",
     sources: [
-      { id: "cereal-bars", offCategory: "cereal-bars", weight: 2 },
+      { id: "cereal-bars", offCategory: "cereal-bars", weight: 3 },
+      { id: "fruit-snacks", offCategory: "fruit-snacks" },
       { id: "applesauces", offCategory: "applesauces" },
       { id: "wheat-crackers", offCategory: "wheat-crackers" },
     ],
@@ -97,6 +106,7 @@ const args = new Set(process.argv.slice(2));
 const dryRun = args.has("--dry-run");
 const pageSize = Number(process.env.OFF_PAGE_SIZE ?? "50");
 const maxPages = Number(process.env.OFF_MAX_PAGES ?? "1");
+const startPage = Number(process.env.OFF_START_PAGE ?? "1");
 const requestDelayMs = Number(process.env.OFF_REQUEST_DELAY_MS ?? "7000");
 const fetchRetries = Number(process.env.OFF_FETCH_RETRIES ?? "4");
 const fetchRetryBaseMs = Number(process.env.OFF_FETCH_RETRY_BASE_MS ?? "10000");
@@ -106,6 +116,9 @@ if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) {
 }
 if (!Number.isInteger(maxPages) || maxPages < 1 || maxPages > 10) {
   throw new Error("OFF_MAX_PAGES must be an integer between 1 and 10.");
+}
+if (!Number.isInteger(startPage) || startPage < 1 || startPage > 50 || startPage + maxPages - 1 > 50) {
+  throw new Error("OFF_START_PAGE must select a page window between 1 and 50.");
 }
 if (!Number.isFinite(requestDelayMs) || requestDelayMs < 0) {
   throw new Error("OFF_REQUEST_DELAY_MS must be a non-negative number.");
@@ -207,11 +220,11 @@ export function summaryFailureMessage(value) {
 
 export function sourceCoverageTable(sourceStats) {
   return [
-    "| Category | OFF source | Page budget | Completed pages | Fetched | Unique accepted |",
-    "| --- | --- | ---: | ---: | ---: | ---: |",
+    "| Category | OFF source | Page window | Products/page | Completed pages | Fetched | Unique accepted |",
+    "| --- | --- | --- | ---: | ---: | ---: | ---: |",
     ...sourceStats.map(
       (source) =>
-        `| ${source.category} | ${source.source} | ${source.pageSize} | ${source.completedPages} | ${source.fetchedProducts} | ${source.acceptedProducts} |`,
+        `| ${source.category} | ${source.source} | ${source.startPage}-${source.endPage} | ${source.pageSize} | ${source.completedPages} | ${source.fetchedProducts} | ${source.acceptedProducts} |`,
     ),
   ];
 }
@@ -453,7 +466,8 @@ async function collectProducts(importRunId) {
       let acceptedProducts = 0;
 
       try {
-        for (let page = 1; page <= maxPages; page += 1) {
+        const endPage = startPage + maxPages - 1;
+        for (let page = startPage; page <= endPage; page += 1) {
           const data = await fetchOffPage(job, source, page, sourcePageSize);
           const products = Array.isArray(data.products) ? data.products : [];
           fetchedProducts += products.length;
@@ -467,7 +481,7 @@ async function collectProducts(importRunId) {
           console.log(
             `${job.slug}/${source.id}: page ${page}, ${products.length} fetched, ${acceptedProducts} unique accepted`,
           );
-          completedPages = page;
+          completedPages += 1;
 
           if (products.length < sourcePageSize) break;
         }
@@ -489,6 +503,8 @@ async function collectProducts(importRunId) {
       sourceStats.push({
         category: job.slug,
         source: source.id,
+        startPage,
+        endPage: startPage + maxPages - 1,
         pageSize: sourcePageSize,
         completedPages,
         fetchedProducts,
@@ -524,6 +540,7 @@ async function writeStepSummary({ counts, failures, sourceWarnings, sourceStats 
     `- Market: ${market} (${locale})`,
     `- Country filter: ${country}`,
     `- Categories: ${selectedCategoryJobs.map((job) => job.slug).join(", ")}`,
+    `- Page window: ${startPage}-${startPage + maxPages - 1}`,
     `- Pages per category: ${maxPages}`,
     `- Products per page: ${pageSize}`,
     `- Collected rows: ${counts.imported}`,

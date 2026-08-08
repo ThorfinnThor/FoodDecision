@@ -89,7 +89,7 @@ export const categoryCatalog: Category[] = [
     slug: "kinder-snacks",
     label: "Kinder-Snacks",
     intent: "Snacks für Familien mit konservativer Zucker-, Salz- und Zutatenbewertung.",
-    description: "Verglichen werden Müsliriegel, Apfelmus und Weizencracker, die häufig für Schule und unterwegs gekauft werden. Zucker, Salz, Zutaten und bekannte Allergene werden bewusst streng eingeordnet.",
+    description: "Verglichen werden Müsliriegel, Fruchtsnacks, Apfelmus und Weizencracker, die häufig für Schule und unterwegs gekauft werden. Zucker, Salz, Zutaten und bekannte Allergene werden bewusst streng eingeordnet.",
     rankingAttributes: ["familie", "wenig-zucker"],
   },
 ];
@@ -168,7 +168,7 @@ const englishCategories: Record<CategorySlug, Pick<Category, "label" | "intent" 
   nussmuse: { label: "Nut butters", intent: "Nut butters with short ingredient lists and a useful nutrition profile.", description: "Nut butters are compared by protein, sugar, sodium, and ingredient-list simplicity." },
   fertiggerichte: { label: "Prepared meals", intent: "Convenient meals with transparent nutrition and ingredient tradeoffs.", description: "Prepared meals are compared by sodium, saturated fat, protein, and ingredients." },
   erfrischungsgetraenke: { label: "Soft drinks", intent: "Drinks with less sugar and clearly disclosed ingredients.", description: "Soft drinks are compared primarily by sugar and ingredients; sweeteners remain visible." },
-  "kinder-snacks": { label: "Kids' snacks", intent: "Family snacks assessed conservatively for sugar, sodium, and ingredients.", description: "The comparison covers cereal bars, applesauce, and wheat crackers often packed for school or travel. Sugar, sodium, ingredients, and known allergens are assessed conservatively." },
+  "kinder-snacks": { label: "Kids' snacks", intent: "Family snacks assessed conservatively for sugar, sodium, and ingredients.", description: "The comparison covers cereal bars, fruit snacks, applesauce, and wheat crackers often packed for school or travel. Sugar, sodium, ingredients, and known allergens are assessed conservatively." },
 };
 
 export function localizedCategoryCatalog(locale: SiteLocale): Category[] {
