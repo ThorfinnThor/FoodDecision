@@ -112,7 +112,7 @@ export const categoryImages = {
   },
   "kinder-snacks": {
     src: "/images/categories/kids-snacks.jpg",
-    alt: { "de-DE": "Kinder-Lunchbox mit Obst, Möhren, Hummus und Brot", "en-US": "Kids lunch box with fruit, carrots, hummus, and bread" },
+    alt: { "de-DE": "Lunchbox für Kinder mit Obst, Möhren, Hummus und Brot", "en-US": "Lunch box for kids with fruit, carrots, hummus, and bread" },
     creator: "Cindyparnell",
     sourceUrl: "https://commons.wikimedia.org/wiki/File:Healthy_kids_lunch_packed.jpg",
     license: "CC BY 4.0",
