@@ -99,7 +99,10 @@ export const categoryJobs = [
   },
   {
     slug: "cracker",
-    sources: [{ id: "crackers", offCategory: "crackers" }],
+    sources: [
+      { id: "crackers", offCategory: "crackers" },
+      { id: "wheat-crackers", offCategory: "wheat-crackers" },
+    ],
   },
 ];
 

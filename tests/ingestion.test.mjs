@@ -21,6 +21,7 @@ test("uses canonical Open Food Facts taxonomy sources for narrow categories", ()
   const plantYogurts = categoryJobs.find((job) => job.slug === "pflanzliche-joghurts");
   const nutButters = categoryJobs.find((job) => job.slug === "nussmuse");
   const kidsSnacks = categoryJobs.find((job) => job.slug === "kinder-snacks");
+  const crackers = categoryJobs.find((job) => job.slug === "cracker");
 
   assert.deepEqual(veganSnacks?.sources[0].extraParams, { labels_tags_en: "Vegan" });
   assert.deepEqual(
@@ -35,13 +36,19 @@ test("uses canonical Open Food Facts taxonomy sources for narrow categories", ()
     kidsSnacks?.sources.map((source) => source.offCategory),
     ["cereal-bars", "fruit-snacks", "applesauces", "wheat-crackers"],
   );
+  assert.deepEqual(
+    crackers?.sources.map((source) => source.offCategory),
+    ["crackers", "wheat-crackers"],
+  );
 });
 
 test("keeps a multi-source category within its configured page budget", () => {
   const kidsSnacks = categoryJobs.find((job) => job.slug === "kinder-snacks");
+  const crackers = categoryJobs.find((job) => job.slug === "cracker");
   assert.deepEqual(allocateSourcePageSizes(50, kidsSnacks.sources), [25, 9, 8, 8]);
   assert.equal(allocateSourcePageSizes(50, kidsSnacks.sources).reduce((sum, value) => sum + value, 0), 50);
   assert.deepEqual(allocateSourcePageSizes(2, kidsSnacks.sources), [1, 1, 0, 0]);
+  assert.deepEqual(allocateSourcePageSizes(50, crackers.sources), [25, 25]);
 });
 
 test("enforces request spacing across pages, sources, and categories", () => {

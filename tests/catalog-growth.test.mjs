@@ -10,7 +10,7 @@ const config = JSON.parse(await readFile(new URL("../data-config/catalog/growth-
 test("resolves balanced scheduled growth waves for both markets", () => {
   const german = resolveCatalogIngestionPlan(config, { schedule: "17 3 * * 1" });
   const american = resolveCatalogIngestionPlan(config, { schedule: "47 3 * * 4" });
-  assert.deepEqual(german, { version: "2026.08.3", market: "DE", preset: "core", categories: ["hafermilch", "proteinriegel", "muesli", "joghurt-skyr"], maxPages: 1, pageSize: 50, startPage: 1, scheduled: true });
+  assert.deepEqual(german, { version: "2026.08.4", market: "DE", preset: "core", categories: ["hafermilch", "proteinriegel", "muesli", "joghurt-skyr"], maxPages: 1, pageSize: 50, startPage: 1, scheduled: true });
   assert.equal(american?.market, "US");
   assert.equal(american?.preset, "plant-forward");
   assert.equal(resolveCatalogIngestionPlan(config, { schedule: "unknown" }), null);
