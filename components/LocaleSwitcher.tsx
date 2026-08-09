@@ -21,9 +21,19 @@ function LocaleSwitcherLink({ locale }: { locale: SiteLocale }) {
   const alternatePrefix = `/${localeSegment(alternate)}`;
   const rest = pathname.startsWith(currentPrefix) ? pathname.slice(currentPrefix.length) || "/" : "/";
   const parts = rest.split("/").filter(Boolean);
-  let translated = ["products", "finder", "compare", "favorites", "shopping-list", "scan", "preferences", "methodology", "privacy", "data-quality", "image-credits"].includes(parts[0]) && parts.length === 1 ? rest : "/";
+  let translated = ["products", "brands", "ingredients", "nutrition", "finder", "compare", "favorites", "shopping-list", "scan", "preferences", "methodology", "privacy", "data-quality", "image-credits"].includes(parts[0]) && parts.length === 1 ? rest : "/";
   if (parts[0] === "compare" && parts.length > 1) translated = "/compare";
   if (parts[0] === "product" && parts.length > 1) translated = "/products";
+  if (parts[0] === "brand" && parts.length > 1) translated = "/brands";
+  if (parts[0] === "ingredient" && parts.length > 1) translated = "/ingredients";
+  if (parts[0] === "nutrition" && parts[1]) {
+    const routes: Record<string, Record<string, string>> = {
+      "de-DE": { zucker: "sugar", protein: "protein", kalorien: "calories", ballaststoffe: "fiber", salz: "salt" },
+      "en-US": { sugar: "zucker", protein: "protein", calories: "kalorien", fiber: "ballaststoffe", salt: "salz" },
+    };
+    const attribute = routes[locale][parts[1]];
+    translated = attribute ? `/nutrition/${attribute}` : "/nutrition";
+  }
   if (parts[0] === "category" && parts[1]) {
     const category = categoryFromRouteSlug(parts[1], locale);
     if (category) translated = `/category/${categoryRouteSlug(category, alternate)}`;
