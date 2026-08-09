@@ -1,1 +1,11 @@
-şë+ı¸§ı¶¬{®%ŠwµßŸİzÿìµÚ.´ê^­«b¢yè¶—«š+my
+{
+  "slug": "cracker",
+  "label": "Cracker und KnÃ¤ckebrot",
+  "intent": "Cracker und KnÃ¤ckebrot mit weniger Zucker, Salz und verstÃ¤ndlichen Zutaten.",
+  "description": "Cracker und KnÃ¤ckebrot werden nach Zucker, Protein, Salz, gesÃ¤ttigten FettsÃ¤uren und ZutatenqualitÃ¤t verglichen.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "gute-zutaten"
+  ],
+  "products": []
+}
