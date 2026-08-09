@@ -3,6 +3,7 @@ import { localizedPath, pick } from "@/lib/i18n";
 import type { SiteLocale } from "@/lib/types";
 import { BRAND_MARK, BRAND_NAME } from "@/lib/brand";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { MobileMenu } from "./MobileMenu";
 
 export function SiteHeader({ locale }: { locale: SiteLocale }) {
   const path = (value = "/") => localizedPath(locale, value);
@@ -26,21 +27,7 @@ export function SiteHeader({ locale }: { locale: SiteLocale }) {
           <Link className="search-link" href={path("/scan")}>{pick(locale, "Barcode", "Barcode")}</Link>
           <Link className="primary-link" href={path("/finder")}>{pick(locale, "Finder starten", "Start finder")}</Link>
         </div>
-        <details className="mobile-menu">
-          <summary>{pick(locale, "Menü", "Menu")}</summary>
-          <nav aria-label={pick(locale, "Mobile Navigation", "Mobile navigation")}>
-            <LocaleSwitcher locale={locale} />
-            <Link href={path("/products")}>{pick(locale, "Produkte", "Products")}</Link>
-            <Link href={`${path()}#categories`}>{pick(locale, "Kategorien", "Categories")}</Link>
-            <Link href={path("/compare")}>{pick(locale, "Vergleiche", "Compare")}</Link>
-            <Link href={path("/favorites")}>{pick(locale, "Favoriten", "Favorites")}</Link>
-            <Link href={path("/shopping-list")}>{pick(locale, "Einkaufsliste", "Shopping list")}</Link>
-            <Link href={path("/scan")}>{pick(locale, "Barcode prüfen", "Check barcode")}</Link>
-            <Link href={path("/preferences")}>{pick(locale, "Präferenzen", "Preferences")}</Link>
-            <Link href={path("/methodology")}>{pick(locale, "So funktioniert's", "Methodology")}</Link>
-            <Link href={path("/finder")}>{pick(locale, "Finder starten", "Start finder")}</Link>
-          </nav>
-        </details>
+        <MobileMenu locale={locale} />
       </div>
     </header>
   );

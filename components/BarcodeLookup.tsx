@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { barcodeCheckDigitIsValid, barcodeFormatLabel, findBarcodeItem, normalizeBarcode } from "@/lib/barcode";
+import { barcodeCheckDigitIsValid, barcodeFormatLabel, barcodeValidationReason, findBarcodeItem, normalizeBarcode, type BarcodeValidationReason } from "@/lib/barcode";
 import { localizedPath, pick } from "@/lib/i18n";
 import { SCAN_HISTORY_KEY } from "@/lib/storage-keys";
 import type { ScoreConfidence, ScoreGrade, SiteLocale } from "@/lib/types";
@@ -30,7 +30,7 @@ export type BarcodeProduct = {
   basis: "100g" | "100ml";
 };
 
-type LookupResult = { type: "idle" } | { type: "match"; product: BarcodeProduct; code: string } | { type: "missing"; code: string; reason: "format" | "checksum" | "unknown" };
+type LookupResult = { type: "idle" } | { type: "match"; product: BarcodeProduct; code: string } | { type: "missing"; code: string; reason: BarcodeValidationReason | "unknown" };
 type HistoryEntry = { code: string; label: string; slug: string | null };
 
 function scoreLabel(grade: ScoreGrade, locale: SiteLocale) {
@@ -91,12 +91,13 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
   }
 
   function lookup(value = code) {
+    const validationReason = barcodeValidationReason(value);
     const normalized = normalizeBarcode(value);
-    setCode(normalized);
-    if (!normalized) {
-      setResult({ type: "missing", code: "", reason: "format" });
+    if (validationReason) {
+      setResult({ type: "missing", code: value.trim().slice(0, 32), reason: validationReason });
       return;
     }
+    setCode(normalized);
 
     const product = findBarcodeItem(products, normalized);
     if (product) {
@@ -105,8 +106,7 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
       return;
     }
 
-    const format = barcodeFormatLabel(normalized);
-    const reason = !format ? "format" : barcodeCheckDigitIsValid(normalized) ? "unknown" : "checksum";
+    const reason: BarcodeValidationReason | "unknown" = "unknown";
     setResult({ type: "missing", code: normalized, reason });
     if (reason === "unknown") remember({ code: normalized, label: c("Nicht im Katalog", "Not in catalog"), slug: null });
   }
@@ -168,10 +168,14 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
         <section className="scanner-result is-missing" aria-live="polite">
           <div>
             <p className="eyebrow">{result.reason === "unknown" ? c("Noch nicht im Katalog", "Not in the catalog yet") : c("Nummer prüfen", "Check the number")}</p>
-            <h2>{result.reason === "format" ? c("Barcode ist zu kurz oder zu lang", "Barcode has the wrong length") : result.reason === "checksum" ? c("Prüfziffer stimmt nicht", "Check digit does not match") : c("Produkt noch nicht gefunden", "Product not found yet")}</h2>
+            <h2>{result.reason === "characters" ? c("Nur Ziffern verwenden", "Use digits only") : result.reason === "length" ? c("Barcode ist zu kurz oder zu lang", "Barcode has the wrong length") : result.reason === "checksum" ? c("Prüfziffer stimmt nicht", "Check digit does not match") : c("Produkt noch nicht gefunden", "Product not found yet")}</h2>
             <p>{result.reason === "unknown"
               ? c("Der Barcode ist formal gültig, gehört aber noch nicht zu unserem geprüften Katalog. Du kannst das Produkt stattdessen über Name oder Kategorie suchen.", "The barcode is valid but is not yet in our reviewed catalog. Search by product name or category instead.")
-              : c("Vergleiche die eingegebene Nummer noch einmal mit der Verpackung. Übliche Barcodes haben 8, 12, 13 oder 14 Ziffern.", "Check the entered number against the package. Standard barcodes contain 8, 12, 13, or 14 digits.")}</p>
+              : result.reason === "characters"
+                ? c("Ein Barcode besteht nur aus Ziffern. Entferne Buchstaben und andere Zeichen.", "A barcode contains digits only. Remove letters and other characters.")
+                : result.reason === "length"
+                  ? c("Vergleiche die eingegebene Nummer noch einmal mit der Verpackung. Übliche Barcodes haben 8, 12, 13 oder 14 Ziffern.", "Check the entered number against the package. Standard barcodes contain 8, 12, 13, or 14 digits.")
+                  : c("Vergleiche die Nummer mit der Verpackung. Die Prüfziffer passt nicht zu den übrigen Ziffern.", "Check the number against the package. The check digit does not match the other digits.")}</p>
             {result.code ? <code>{result.code}</code> : null}
           </div>
           <div className="scanner-missing-actions">

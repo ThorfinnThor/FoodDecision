@@ -97,6 +97,20 @@ test("cleans stored packaging copy and derives nutrition conflicts during export
   assert.equal(product.scores.find((score) => score.type === "low_sugar")?.confidence, "medium");
 });
 
+test("repairs legacy retail titles and invalid brands during export", () => {
+  const row = productRow(nutrition);
+  row.name = "Rossmann Alnatura Bio Haferflocken Großblatt Bioland 500 g 1,29 € (1 kg = 2,58 €)";
+  row.brands = { name: "58 €)" };
+  const product = mapSupabaseProduct(row);
+
+  assert.equal(product.name, "Alnatura Bio Haferflocken Großblatt Bioland");
+  assert.equal(product.brand, "Alnatura");
+  assert.equal(product.slug, "alnatura-bio-haferflocken-grossblatt-bioland-00000099");
+  assert.deepEqual(product.legacySlugs, ["test-muesli-00000099"]);
+  assert.ok(product.qualityFlags.includes("retail_listing_text_removed"));
+  assert.ok(product.qualityFlags.includes("invalid_brand_removed"));
+});
+
 test("rejects fixture exports in Vercel deployments", () => {
   assert.throws(
     () => assertDeploymentExportPolicy({ isVercel: true, exportSource: "fixtures" }),

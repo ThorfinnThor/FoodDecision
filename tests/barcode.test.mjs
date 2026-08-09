@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   barcodeCheckDigitIsValid,
   barcodeFormatLabel,
+  barcodeValidationReason,
   barcodeVariants,
   findBarcodeItem,
   normalizeBarcode,
@@ -15,6 +16,13 @@ test("normalizes and validates standard retail barcodes", () => {
   assert.equal(barcodeCheckDigitIsValid("036000291452"), true);
   assert.equal(barcodeCheckDigitIsValid("123"), false);
   assert.equal(barcodeFormatLabel("4006381333931"), "EAN-13");
+});
+
+test("explains invalid barcode characters before checking length", () => {
+  assert.equal(barcodeValidationReason("400638133393A"), "characters");
+  assert.equal(barcodeValidationReason("123"), "length");
+  assert.equal(barcodeValidationReason("4006381333932"), "checksum");
+  assert.equal(barcodeValidationReason("4006 3813-3393 1"), null);
 });
 
 test("matches equivalent UPC-A and EAN-13 representations", () => {

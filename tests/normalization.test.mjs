@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { normalizeOpenFoodFactsRow, slugify, splitIngredientText } from "../lib/normalization.ts";
+import { inferBrandFromProductName, normalizeBrandName, normalizeListingName, normalizeOpenFoodFactsRow, slugify, splitIngredientText } from "../lib/normalization.ts";
 
 function rawRow(overrides = {}) {
   return {
@@ -89,4 +89,19 @@ test("uses US English source text and hides images from unapproved hosts", () =>
   assert.equal(product.imageUrl, null);
   assert.ok(product.qualityFlags.some((flag) => flag.flag === "unlicensed_image_source"));
   assert.equal(product.scores.find((score) => score.type === "low_sugar")?.label, "Sugar score");
+});
+
+test("removes retail price text and recovers a trustworthy brand", () => {
+  const product = normalizeOpenFoodFactsRow(rawRow({
+    product_name: "Rossmann Alnatura Bio Haferflocken Großblatt Bioland 500 g 1,29 € (1 kg = 2,58 €)",
+    brand_names: "58 €)",
+  }));
+
+  assert.equal(normalizeListingName("Rossmann Alnatura Bio Haferflocken Großblatt Bioland 500 g 1,29 € (1 kg = 2,58 €)"), "Alnatura Bio Haferflocken Großblatt Bioland");
+  assert.equal(normalizeBrandName("58 €)"), null);
+  assert.equal(inferBrandFromProductName("Alnatura Bio Haferflocken Großblatt Bioland"), "Alnatura");
+  assert.equal(product.name, "Alnatura Bio Haferflocken Großblatt Bioland");
+  assert.equal(product.brandName, "Alnatura");
+  assert.ok(product.qualityFlags.some((flag) => flag.flag === "retail_listing_text_removed"));
+  assert.ok(product.qualityFlags.some((flag) => flag.flag === "invalid_brand_removed"));
 });

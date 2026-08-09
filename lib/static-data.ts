@@ -37,7 +37,7 @@ function createCatalog(locale: SiteLocale) {
 
   const getCategories = () => categories;
   const getCategory = (slug: string) => categories.find((category) => category.slug === slug);
-  const getProduct = (slug: string) => products.find((product) => product.slug === slug);
+  const getProduct = (slug: string) => products.find((product) => product.slug === slug || product.legacySlugs?.includes(slug));
   const getProductByGtin = (gtin: string) => products.find((product) => product.gtin === gtin);
   const getProductsByCategory = (category: CategorySlug) => products.filter((product) => product.category === category);
   const getAvailableCategories = () => categories.filter((category) => getProductsByCategory(category.slug).length > 0);
