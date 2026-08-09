@@ -47,7 +47,7 @@ export function AlternativeExplorer({
         <p className="eyebrow">{c("Bessere Alternative", "Better alternative")}</p>
         <h2>{c("Was möchtest du konkret verbessern?", "What would you like to improve?")}</h2>
         <p>{c(
-          "Wir zeigen nur Produkte derselben Kategorie und Bezugsbasis, deren Ziel-Score um mindestens drei Punkte höher ist und deren Datensicherheit nicht niedrig ist.",
+          "Wir zeigen nur Produkte derselben Kategorie und Bezugsbasis, deren Bewertung für dein Ziel um mindestens drei Punkte höher ist und deren Datensicherheit nicht niedrig ist.",
           "We only show products from the same category and serving basis whose goal score is at least three points higher and whose data confidence is not low.",
         )}</p>
       </div>

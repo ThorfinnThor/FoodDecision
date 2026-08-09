@@ -1,0 +1,12 @@
+{
+  "attribute": "wenig-zucker",
+  "category": "pastasaucen",
+  "title": "Pasta sauces with less sugar",
+  "sortScore": "low_sugar",
+  "intro": "Pasta sauces with less sugar: products are compared using the same transparent rule for their category, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "US",
+  "locale": "en-US",
+  "items": []
+}

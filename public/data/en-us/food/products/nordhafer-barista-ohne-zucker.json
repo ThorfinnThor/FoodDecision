@@ -53,11 +53,11 @@
       "grade": "good",
       "confidence": "high",
       "positives": [
-        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+        "Assessment based on sugar, protein, salt, and saturated fat with reference values suited to the category."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "ingredient_quality",
@@ -71,7 +71,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "protein",
@@ -84,7 +84,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "low_sugar",
@@ -97,7 +97,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "family",
@@ -112,7 +112,7 @@
         "Check allergens: Oats."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "vegan",
@@ -121,11 +121,11 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Labeled vegan or plant-based."
+        "Labeled vegan or plant based."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "overall_match",
@@ -138,7 +138,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     }
   ]
 }

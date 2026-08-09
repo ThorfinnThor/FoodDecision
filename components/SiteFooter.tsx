@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { localizedPath, pick } from "@/lib/i18n";
 import type { SiteLocale } from "@/lib/types";
+import { BRAND_MARK, BRAND_NAME } from "@/lib/brand";
 
 export function SiteFooter({ locale }: { locale: SiteLocale }) {
   const path = (value = "/") => localizedPath(locale, value);
@@ -9,8 +10,8 @@ export function SiteFooter({ locale }: { locale: SiteLocale }) {
       <div className="footer-inner">
         <div>
           <Link href={path()} className="brand footer-brand">
-            <span className="brand-mark" aria-hidden="true">FD</span>
-            <span>Food Decision Engine</span>
+            <span className="brand-mark" aria-hidden="true">{BRAND_MARK}</span>
+            <span>{BRAND_NAME}</span>
           </Link>
           <p>{pick(locale, "Unabhängige, verständliche Entscheidungshilfe für Lebensmittel im Alltag.", "Independent, understandable food guidance for everyday decisions.")}</p>
         </div>

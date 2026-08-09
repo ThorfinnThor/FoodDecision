@@ -1,4 +1,5 @@
 import { scoreByType } from "./scoring.ts";
+import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
 import type { CategorySlug, Product, ProductScore, ScoreConfidence, ScoreType } from "./types.ts";
 
 export type FinderCriteria = {
@@ -70,10 +71,6 @@ export type AlternativeRecommendation = {
 const finderGoals = new Set<ScoreType>(["overall_match", "protein", "low_sugar", "vegan", "family", "ingredient_quality"]);
 const finderParamNames = new Set(["category", "goal", "vegan", "additives", "sweeteners", "palm", "allergens", "maxSugar", "minProtein", "maxCalories", "include", "exclude", "confidence", "q"]);
 
-const additivePattern = /emulgator|stabilisator|verdickungsmittel|konservierung|farbstoff|geschmacksverstaerker|aroma|e\s?\d{3,4}/i;
-const sweetenerPattern = /suessstoff|süßstoff|erythrit|xylit|stevia|acesulfam|aspartam|sucralose|saccharin|maltit|sorbit/i;
-const palmOilPattern = /palmoel|palmöl|palmfett|palmkern/i;
-const addedSugarPattern = /zucker|sirup|glukose|fruktose|dextrose|maltodextrin|honig|agavendicksaft/i;
 
 export function normalizeText(value: string) {
   return value
@@ -197,15 +194,14 @@ export function entitySlug(value: string) {
 }
 
 export function productTraits(product: Product): ProductTraits {
-  const ingredients = product.ingredients.join(" ");
-  const labels = product.labels.join(" ");
-  const allergens = product.allergens.join(" ");
+  const ingredients = analyzeIngredients(product.ingredients);
+  const vegan = analyzeVeganStatus(product.labels, product.allergens);
   return {
-    vegan: /vegan|pflanzlich/i.test(labels) && !/milch|laktose|ei(er)?/i.test(allergens),
-    additiveFree: Boolean(product.ingredients.length) && !additivePattern.test(ingredients),
-    sweetenerFree: Boolean(product.ingredients.length) && !sweetenerPattern.test(ingredients),
-    palmOilFree: Boolean(product.ingredients.length) && !palmOilPattern.test(ingredients),
-    addedSugarFree: Boolean(product.ingredients.length) && !addedSugarPattern.test(ingredients),
+    vegan: vegan.status === "confirmed",
+    additiveFree: ingredients.hasData && !ingredients.detected.additives,
+    sweetenerFree: ingredients.hasData && !ingredients.detected.sweeteners,
+    palmOilFree: ingredients.hasData && !ingredients.detected.palmOil,
+    addedSugarFree: ingredients.hasData && !ingredients.detected.addedSugar,
   };
 }
 
@@ -302,9 +298,9 @@ export function assessProductCriteria(product: Product, criteria: FinderCriteria
   const ingredientChecksActive = criteria.additiveFree || criteria.sweetenerFree || criteria.palmOilFree || Boolean(criteria.includeIngredient.trim()) || Boolean(criteria.excludeIngredient.trim());
 
   if (criteria.category !== "all" && product.category !== criteria.category) failures.push(c("Andere Produktkategorie als ausgewählt.", "Different product category than selected."));
-  if (criteria.veganOnly && !traits.vegan) failures.push(c("Nicht verlässlich als vegan oder pflanzlich erkannt.", "Not reliably identified as vegan or plant-based."));
+  if (criteria.veganOnly && !traits.vegan) failures.push(c("Nicht verlässlich als vegan oder pflanzlich erkannt.", "Not reliably identified as vegan or plant based."));
   if (ingredientChecksActive && !product.ingredients.length) {
-    failures.push(c("Zutatenliste fehlt; Zutaten-Ausschlüsse können nicht geprüft werden.", "The ingredient list is missing, so ingredient exclusions cannot be verified."));
+    failures.push(c("Die Zutatenliste fehlt. Ausschlüsse anhand von Zutaten können deshalb nicht geprüft werden.", "The ingredient list is missing, so ingredient exclusions cannot be verified."));
   } else {
     if (criteria.additiveFree && !traits.additiveFree) failures.push(c("Typische Zusatzstoffe in der Zutatenliste erkannt.", "Common additives were detected in the ingredient list."));
     if (criteria.sweetenerFree && !traits.sweetenerFree) failures.push(c("Süßungsmittel in der Zutatenliste erkannt.", "Sweeteners were detected in the ingredient list."));
@@ -332,7 +328,7 @@ export function assessProductCriteria(product: Product, criteria: FinderCriteria
   if (
     criteria.minimumConfidence !== "any" &&
     (!goalScore || confidenceRank(goalScore.confidence) < confidenceRank(criteria.minimumConfidence))
-  ) failures.push(c("Die Datensicherheit des Ziel-Scores ist zu niedrig.", "The goal score does not meet your minimum confidence level."));
+  ) failures.push(c("Die Datensicherheit der Bewertung für dein Ziel ist zu niedrig.", "The score for your goal does not meet your minimum confidence level."));
 
   return { passes: failures.length === 0, failures };
 }
@@ -352,11 +348,11 @@ export function productMatch(product: Product, criteria: Pick<FinderCriteria, "g
   if (goal?.positives[0]) reasons.push(goal.positives[0]);
   if (criteria.maxSugar !== null && product.nutrition.sugar !== null) reasons.push(c(`${product.nutrition.sugar} g Zucker pro ${product.nutrition.basis}.`, `${product.nutrition.sugar} g sugar per ${product.nutrition.basis}.`));
   if (criteria.minProtein !== null && product.nutrition.protein !== null) reasons.push(c(`${product.nutrition.protein} g Protein pro ${product.nutrition.basis}.`, `${product.nutrition.protein} g protein per ${product.nutrition.basis}.`));
-  if (criteria.veganOnly && traits.vegan) { score += 3; reasons.push(c("Als vegan oder pflanzlich erkannt.", "Identified as vegan or plant-based.")); }
+  if (criteria.veganOnly && traits.vegan) { score += 3; reasons.push(c("Als vegan oder pflanzlich erkannt.", "Identified as vegan or plant based.")); }
   if (criteria.additiveFree && traits.additiveFree) { score += 2; reasons.push(c("Keine typischen Zusatzstoffe erkannt.", "No common additives detected.")); }
   if (criteria.sweetenerFree && traits.sweetenerFree) { score += 2; reasons.push(c("Keine typischen Süßungsmittel erkannt.", "No common sweeteners detected.")); }
   if (criteria.palmOilFree && traits.palmOilFree) { score += 2; reasons.push(c("Kein Palmöl in der Zutatenliste erkannt.", "No palm oil detected in the ingredient list.")); }
-  if (!reasons.length) reasons.push(c("Nach Ziel-Score und Datenvollständigkeit eingeordnet.", "Ranked by goal score and data completeness."));
+  if (!reasons.length) reasons.push(c("Nach der Bewertung für dein Ziel und der Datenvollständigkeit eingeordnet.", "Ranked by the score for your goal and data completeness."));
 
   return { score: Math.max(0, Math.min(100, Math.round(score))), reasons: reasons.slice(0, 3) };
 }

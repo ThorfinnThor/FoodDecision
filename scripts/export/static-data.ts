@@ -6,9 +6,10 @@ import { createHash } from "node:crypto";
 import { products as fixtureProducts } from "../../lib/data.ts";
 import { localizedCategoryCatalog, localizedCategoryLabel, localizedRankingPages } from "../../lib/catalog.ts";
 import { licensedProductImage } from "../../lib/image-license.ts";
+import { hasDecisionReadyNutrition } from "../../lib/nutrition-quality.ts";
 import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
 import { assessDataFreshness } from "../../lib/data-freshness.ts";
-import { scoreByType } from "../../lib/scoring.ts";
+import { calculateScores, scoreByType } from "../../lib/scoring.ts";
 import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
 type ExportSource = "fixtures" | "supabase";
@@ -205,7 +206,7 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
     throw new Error(`Product ${row.slug} is missing ${missing} data and cannot be exported.`);
   }
 
-  return {
+  const product: Omit<Product, "scores"> = {
     id: row.id,
     gtin: row.gtin,
     slug: row.slug,
@@ -257,19 +258,9 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
         })) ?? [],
     publishability: row.publishability,
     qualityFlags: row.data_quality_flags?.map((flag) => flag.flag) ?? [],
-    scores:
-      row.product_scores?.map((score) => ({
-        type: score.score_type,
-        label: score.label,
-        score: score.score,
-        grade: score.grade,
-        confidence: score.confidence,
-        positives: score.positives,
-        negatives: score.negatives,
-        missingData: score.missing_data,
-        ruleVersion: score.rule_version,
-      })) ?? [],
   };
+
+  return { ...product, scores: calculateScores(product) };
 }
 
 async function loadSupabaseData() {
@@ -323,7 +314,7 @@ function qualityReport(locale: SiteLocale, products: Product[]) {
   const eligible = products.filter((product) => product.publishability === "ranking_eligible");
   const countWith = (predicate: (product: Product) => boolean) => products.filter(predicate).length;
   const percent = (count: number, total: number) => total ? Math.round((count / total) * 100) : 0;
-  const hasCompleteNutrition = (product: Product) => product.qualityFlags.every((flag) => flag !== "incomplete_nutrition" && flag !== "missing_nutrition");
+  const hasCompleteNutrition = (product: Product) => hasDecisionReadyNutrition(product);
   const hasRecentSource = (product: Product) => {
     const status = assessDataFreshness(product.sourceUpdatedAt, product.importedAt).status;
     return status === "recent" || status === "established";
@@ -377,16 +368,19 @@ function chunks<T>(values: T[], size: number) {
   return result;
 }
 
-function comparisonPairs(products: Product[]) {
-  const sameCategoryPair = products
-    .filter((product) => product.category === "hafermilch")
-    .slice(0, 2)
-    .map((product) => product.slug);
-  const crossCategoryPair = products.slice(2, 4).map((product) => product.slug);
-
-  return [sameCategoryPair, crossCategoryPair]
-    .filter((pair) => pair.length === 2)
-    .map(([a, b]) => `${a}-vs-${b}`);
+export function comparisonPairs(products: Product[]) {
+  const pairs: string[] = [];
+  for (const category of localizedCategoryCatalog(products[0]?.locale ?? "de-DE")) {
+    const candidates = products
+      .filter((product) => product.category === category.slug && (product.publishability === "ranking_eligible" || product.publishability === "published"))
+      .filter((product) => typeof scoreByType(product, "overall_match")?.score === "number")
+      .sort((a, b) => (scoreByType(b, "overall_match")?.score ?? -1) - (scoreByType(a, "overall_match")?.score ?? -1))
+      .slice(0, 3);
+    if (candidates.length < 2) continue;
+    pairs.push(`${candidates[0].slug}-vs-${candidates[1].slug}`);
+    if (candidates.length >= 3) pairs.push(`${candidates[0].slug}-vs-${candidates[2].slug}`);
+  }
+  return pairs;
 }
 
 async function exportStaticData() {

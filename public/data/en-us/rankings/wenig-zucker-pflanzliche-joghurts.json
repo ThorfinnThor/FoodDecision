@@ -1,9 +1,9 @@
 {
   "attribute": "wenig-zucker",
   "category": "pflanzliche-joghurts",
-  "title": "Plant-based yogurt with less sugar",
+  "title": "Plant based yogurt with less sugar",
   "sortScore": "low_sugar",
-  "intro": "Plant-based yogurt with less sugar: products are compared using the same transparent category-specific rule, and data gaps remain visible.",
+  "intro": "Plant based yogurt with less sugar: products are compared using the same transparent rule for their category, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "US",

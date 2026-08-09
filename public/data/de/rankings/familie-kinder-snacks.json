@@ -1,9 +1,9 @@
 {
   "attribute": "familie",
   "category": "kinder-snacks",
-  "title": "Beste Kinder-Snacks für Familien",
+  "title": "Beste Kinder Snacks für Familien",
   "sortScore": "family",
-  "intro": "Beste Kinder-Snacks für Familien: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "intro": "Beste Kinder Snacks für Familien: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "DE",

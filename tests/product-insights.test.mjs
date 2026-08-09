@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { categoryCatalog, defaultRankingPages } from "../lib/catalog.ts";
+import { categoryCatalog, categoryScoringProfiles, defaultRankingPages } from "../lib/catalog.ts";
 import { products } from "../lib/data.ts";
 import {
   alternativeReasons,
@@ -20,9 +20,21 @@ const muesli = products.find((product) => product.slug === "morgenfeld-basis-mue
 const proteinBar = products.find((product) => product.slug === "kraftkern-proteinriegel-kakao");
 
 test("defines the full first-market category and ranking palette", () => {
-  assert.equal(categoryCatalog.length, 12);
-  assert.equal(defaultRankingPages.length, 24);
-  assert.equal(new Set(defaultRankingPages.map((ranking) => `${ranking.attribute}/${ranking.category}`)).size, 24);
+  assert.equal(categoryCatalog.length, 18);
+  assert.equal(defaultRankingPages.length, 36);
+  assert.equal(new Set(defaultRankingPages.map((ranking) => `${ranking.attribute}/${ranking.category}`)).size, 36);
+});
+
+test("uses complete category profiles for the everyday basics wave", () => {
+  for (const slug of ["brot", "pasta", "pastasaucen", "suppen", "tiefkuehlgerichte", "cracker"]) {
+    const profile = categoryScoringProfiles[slug];
+    assert.ok(profile.sugar.weak > profile.sugar.excellent);
+    assert.ok(profile.protein.excellent > profile.protein.okay);
+    assert.ok(profile.salt.weak > profile.salt.excellent);
+    assert.ok(profile.saturatedFat.weak > profile.saturatedFat.excellent);
+  }
+  assert.notDeepEqual(categoryScoringProfiles.brot.salt, categoryScoringProfiles.pasta.salt);
+  assert.notDeepEqual(categoryScoringProfiles.pastasaucen.saturatedFat, categoryScoringProfiles.cracker.saturatedFat);
 });
 
 test("derives ingredient traits without treating missing data as a positive", () => {

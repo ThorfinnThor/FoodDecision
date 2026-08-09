@@ -6,13 +6,14 @@ import { categoryImages } from "@/lib/category-images";
 import { localizedPath, pick } from "@/lib/i18n";
 import { localeAlternates, requireLocale } from "@/lib/locale-page";
 import { getCatalog } from "@/lib/static-data";
+import { BRAND_NAME } from "@/lib/brand";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = requireLocale((await params).locale);
   return {
-    title: pick(locale, "Bildnachweise - Food Decision Engine", "Photo credits - Food Decision Engine"),
+    title: pick(locale, `Bildnachweise | ${BRAND_NAME}`, `Photo credits | ${BRAND_NAME}`),
     description: pick(locale, "Quellen, Urheber und offene Lizenzen der Kategoriebilder.", "Sources, creators, and open licenses for category photos."),
     alternates: localeAlternates(locale, "/image-credits"),
     robots: { index: false, follow: true },

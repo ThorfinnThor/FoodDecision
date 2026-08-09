@@ -19,21 +19,29 @@ test("continues partial imports unless strict category handling is requested", (
 test("uses canonical Open Food Facts taxonomy sources for narrow categories", () => {
   const veganSnacks = categoryJobs.find((job) => job.slug === "vegane-snacks");
   const plantYogurts = categoryJobs.find((job) => job.slug === "pflanzliche-joghurts");
+  const nutButters = categoryJobs.find((job) => job.slug === "nussmuse");
   const kidsSnacks = categoryJobs.find((job) => job.slug === "kinder-snacks");
 
   assert.deepEqual(veganSnacks?.sources[0].extraParams, { labels_tags_en: "Vegan" });
-  assert.equal(plantYogurts?.sources[0].offCategory, "non-dairy-yogurts");
+  assert.deepEqual(
+    plantYogurts?.sources.map((source) => source.offCategory),
+    ["non-dairy-yogurts", "soy-yogurts", "coconut-yogurts"],
+  );
+  assert.deepEqual(
+    nutButters?.sources.map((source) => source.offCategory),
+    ["nut-butters", "peanut-butters", "almond-butters"],
+  );
   assert.deepEqual(
     kidsSnacks?.sources.map((source) => source.offCategory),
-    ["cereal-bars", "applesauces", "wheat-crackers"],
+    ["cereal-bars", "fruit-snacks", "applesauces", "wheat-crackers"],
   );
 });
 
 test("keeps a multi-source category within its configured page budget", () => {
   const kidsSnacks = categoryJobs.find((job) => job.slug === "kinder-snacks");
-  assert.deepEqual(allocateSourcePageSizes(50, kidsSnacks.sources), [25, 13, 12]);
+  assert.deepEqual(allocateSourcePageSizes(50, kidsSnacks.sources), [25, 9, 8, 8]);
   assert.equal(allocateSourcePageSizes(50, kidsSnacks.sources).reduce((sum, value) => sum + value, 0), 50);
-  assert.deepEqual(allocateSourcePageSizes(2, kidsSnacks.sources), [1, 1, 0]);
+  assert.deepEqual(allocateSourcePageSizes(2, kidsSnacks.sources), [1, 1, 0, 0]);
 });
 
 test("enforces request spacing across pages, sources, and categories", () => {
@@ -60,12 +68,14 @@ test("renders per-source coverage for GitHub job summaries", () => {
       {
         category: "kinder-snacks",
         source: "cereal-bars",
+        startPage: 2,
+        endPage: 4,
         pageSize: 25,
         completedPages: 1,
         fetchedProducts: 25,
         acceptedProducts: 24,
       },
     ]).slice(-1),
-    ["| kinder-snacks | cereal-bars | 25 | 1 | 25 | 24 |"],
+    ["| kinder-snacks | cereal-bars | 2-4 | 25 | 1 | 25 | 24 |"],
   );
 });

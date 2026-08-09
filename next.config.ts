@@ -40,12 +40,7 @@ const nextConfig: NextConfig = {
     workerThreads: true,
   },
   async headers() {
-    const scannerPermissions = [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(), usb=()" }];
-    return [
-      { source: "/:path*", headers: securityHeaders },
-      { source: "/de/scan", headers: scannerPermissions },
-      { source: "/en-us/scan", headers: scannerPermissions },
-    ];
+    return [{ source: "/:path*", headers: securityHeaders }];
   },
   async redirects() {
     const prefixes = ["best", "brand", "category", "compare", "favorites", "finder", "ingredient", "methodology", "nutrition", "preferences", "privacy", "product", "products", "scan", "shopping-list"];

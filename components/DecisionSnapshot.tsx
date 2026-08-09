@@ -34,7 +34,7 @@ export function DecisionSnapshot({ categoryProducts, product }: { categoryProduc
         <article>
           <span>{pick(locale, "Besonders passend für", "Best suited for")}</span>
           <strong className="decision-text-value">{primaryUse?.label ?? pick(locale, "Allgemeinen Vergleich", "General comparison")}</strong>
-          <p>{primaryUse?.reason ?? pick(locale, "Für eine klare Empfehlung fehlen noch belastbare Teildaten.", "More reliable sub-score data is needed for a specific recommendation.")}</p>
+          <p>{primaryUse?.reason ?? pick(locale, "Für eine klare Empfehlung fehlen noch belastbare Teildaten.", "More reliable component data is needed for a specific recommendation.")}</p>
         </article>
         {summary.peerMetrics.map((metric) => {
           const copy = metricCopy(metric, product);

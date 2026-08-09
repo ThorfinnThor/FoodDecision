@@ -10,7 +10,13 @@ export type CategorySlug =
   | "nussmuse"
   | "fertiggerichte"
   | "erfrischungsgetraenke"
-  | "kinder-snacks";
+  | "kinder-snacks"
+  | "brot"
+  | "pasta"
+  | "pastasaucen"
+  | "suppen"
+  | "tiefkuehlgerichte"
+  | "cracker";
 
 export type MarketCode = "DE" | "US";
 export type SiteLocale = "de-DE" | "en-US";

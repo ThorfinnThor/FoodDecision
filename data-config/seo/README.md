@@ -1,4 +1,4 @@
-# Food Decision Engine SEO Registry
+# Compare Your Food SEO Registry
 
 These files control programmatic SEO publication. Page templates may render without being indexable.
 

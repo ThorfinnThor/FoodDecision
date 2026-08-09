@@ -1,0 +1,11 @@
+{
+  "slug": "pasta",
+  "label": "Pasta",
+  "intent": "Pasta with a useful nutrition profile for everyday meals.",
+  "description": "Pasta is compared by protein, sugar, sodium, saturated fat, and ingredient quality.",
+  "rankingAttributes": [
+    "proteinreich",
+    "gute-zutaten"
+  ],
+  "products": []
+}

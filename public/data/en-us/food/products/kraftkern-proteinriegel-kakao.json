@@ -7,7 +7,7 @@
   "category": "proteinriegel",
   "categoryLabel": "Protein bars",
   "imageTone": "cocoa",
-  "description": "High-protein cocoa bar with a moderate sugar level.",
+  "description": "Cocoa protein bar with a moderate sugar level.",
   "labels": [
     "high protein",
     "vegetarian"
@@ -50,32 +50,31 @@
     {
       "type": "nutrition",
       "label": "Nutrition score",
-      "score": 78,
-      "grade": "good",
+      "score": 93,
+      "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Category-specific assessment based on sugar, protein, salt, and saturated fat."
+        "Assessment based on sugar, protein, salt, and saturated fat with reference values suited to the category."
       ],
-      "negatives": [
-        "Saturated fat lowers the score."
-      ],
+      "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "ingredient_quality",
       "label": "Ingredient score",
-      "score": 78,
+      "score": 70,
       "grade": "good",
       "confidence": "high",
       "positives": [
         "No added sugar detected in the ingredient list."
       ],
       "negatives": [
+        "Sweeteners detected.",
         "Additives or flavorings detected."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "protein",
@@ -88,7 +87,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "low_sugar",
@@ -101,13 +100,13 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "family",
       "label": "Family score",
-      "score": 88,
-      "grade": "excellent",
+      "score": 84,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Conservative assessment based on sugar, ingredients, and salt."
@@ -116,25 +115,23 @@
         "Check allergens: Milk, Almonds."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "vegan",
       "label": "Vegan score",
-      "score": 0,
-      "grade": "weak",
+      "score": 60,
+      "grade": "okay",
       "confidence": "high",
       "positives": [],
-      "negatives": [
-        "Product data indicates milk or lactose."
-      ],
+      "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "overall_match",
       "label": "Overall score",
-      "score": 86,
+      "score": 89,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -142,7 +139,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     }
   ]
 }

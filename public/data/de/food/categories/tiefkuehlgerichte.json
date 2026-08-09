@@ -1,0 +1,11 @@
+{
+  "slug": "tiefkuehlgerichte",
+  "label": "Tiefkühlgerichte",
+  "intent": "Schnelle Tiefkühlgerichte mit transparenten Stärken und Schwächen.",
+  "description": "Tiefkühlgerichte werden nach Zucker, Protein, Salz, gesättigten Fettsäuren und Zutatenqualität verglichen.",
+  "rankingAttributes": [
+    "beste-wahl",
+    "familie"
+  ],
+  "products": []
+}

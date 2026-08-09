@@ -1,0 +1,12 @@
+{
+  "attribute": "beste-wahl",
+  "category": "tiefkuehlgerichte",
+  "title": "Best frozen meals overall",
+  "sortScore": "overall_match",
+  "intro": "Best frozen meals overall: products are compared using the same transparent rule for their category, and data gaps remain visible.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "US",
+  "locale": "en-US",
+  "items": []
+}

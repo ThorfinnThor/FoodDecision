@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { pick } from "@/lib/i18n";
+import { compareGoalEvidence } from "@/lib/ranking-order";
 import { scoreByType } from "@/lib/scoring";
 import type { Product, ScoreType } from "@/lib/types";
 import { FavoriteButton } from "./FavoriteButton";
@@ -28,11 +29,23 @@ export function ComparisonDecision({ first, second }: { first: Product; second: 
   const firstScore = scoreByType(first, goal);
   const secondScore = scoreByType(second, goal);
   const comparable = first.category === second.category && first.nutrition.basis === second.nutrition.basis;
-  const tied = firstScore?.score !== null && firstScore?.score === secondScore?.score;
-  const winner = !comparable || tied || firstScore?.score === null || secondScore?.score === null || firstScore === undefined || secondScore === undefined
+  const evidenceDifference = comparable && firstScore?.score !== null && secondScore?.score !== null && firstScore && secondScore
+    ? compareGoalEvidence(first, second, goal)
+    : 0;
+  const winner = evidenceDifference === 0 || !firstScore || !secondScore
     ? null
-    : (firstScore.score ?? 0) > (secondScore.score ?? 0) ? { product: first, score: firstScore, other: secondScore } : { product: second, score: secondScore, other: firstScore };
-  const advantage = winner ? Math.abs((winner.score.score ?? 0) - (winner.other.score ?? 0)) : 0;
+    : evidenceDifference < 0
+      ? { product: first, score: firstScore, other: secondScore }
+      : { product: second, score: secondScore, other: firstScore };
+  const scoreAdvantage = winner ? Math.abs((winner.score.score ?? 0) - (winner.other.score ?? 0)) : 0;
+  const exactDifference = goal === "protein" && first.nutrition.protein !== null && second.nutrition.protein !== null
+    ? `${Math.abs(first.nutrition.protein - second.nutrition.protein).toLocaleString(locale)} g ${pick(locale, "Protein", "protein")}`
+    : goal === "low_sugar" && first.nutrition.sugar !== null && second.nutrition.sugar !== null
+      ? `${Math.abs(first.nutrition.sugar - second.nutrition.sugar).toLocaleString(locale)} g ${pick(locale, "Zucker", "sugar")}`
+      : null;
+  const advantage = scoreAdvantage > 0
+    ? `${scoreAdvantage} ${pick(locale, "Punkte", "points")}`
+    : exactDifference ?? pick(locale, "Detailvergleich", "Detail comparison");
 
   return (
     <section className="detail-section compare-summary-section">
@@ -44,9 +57,9 @@ export function ComparisonDecision({ first, second }: { first: Product; second: 
         {goals.map((item) => <button aria-pressed={goal === item} key={item} onClick={() => setGoal(item)} type="button">{goalLabel(item, locale)}</button>)}
       </div>
       <div className="compare-summary-grid">
-        <article><span>{pick(locale, "Ziel", "Goal")}</span><strong>{goalLabel(goal, locale)}</strong><p>{pick(locale, "Beide Produkte werden mit derselben kategoriespezifischen Regel bewertet.", "Both products use the same category-specific scoring rule.")}</p></article>
+        <article><span>{pick(locale, "Ziel", "Goal")}</span><strong>{goalLabel(goal, locale)}</strong><p>{pick(locale, "Beide Produkte werden mit derselben Regel für ihre Kategorie bewertet.", "Both products use the same scoring rule for their category.")}</p></article>
         <article><span>{pick(locale, "Stärkere Wahl", "Stronger choice")}</span><strong>{winner?.product.name ?? pick(locale, "Kein fairer Gewinner", "No fair winner")}</strong><p>{winner ? (winner.score.positives[0] ?? pick(locale, "Höherer Ziel-Score im direkten Vergleich.", "Higher goal score in this comparison.")) : pick(locale, "Gleichstand, fehlende Werte oder unterschiedliche Kategorien.", "The scores are tied, incomplete, or from different categories.")}</p></article>
-        <article><span>{pick(locale, "Abstand", "Difference")}</span><strong>{winner ? `${advantage} ${pick(locale, "Punkte", "points")}` : "-"}</strong><p>{winner ? pick(locale, `${winner.score.score}/100 bei ${winner.score.confidence === "high" ? "hoher" : winner.score.confidence === "medium" ? "mittlerer" : "niedriger"} Datensicherheit.`, `${winner.score.score}/100 with ${winner.score.confidence} data confidence.`) : pick(locale, "Ohne belastbare Differenz wird keine Empfehlung erzwungen.", "No recommendation is forced without a reliable difference.")}</p></article>
+        <article><span>{pick(locale, "Abstand", "Difference")}</span><strong>{winner ? advantage : "-"}</strong><p>{winner ? (scoreAdvantage > 0 ? pick(locale, `${winner.score.score}/100 bei ${winner.score.confidence === "high" ? "hoher" : winner.score.confidence === "medium" ? "mittlerer" : "niedriger"} Datensicherheit.`, `${winner.score.score}/100 with ${winner.score.confidence} data confidence.`) : pick(locale, "Bei gleichem Zielscore entscheidet der sichtbare Detailwert. Beide Produkte bleiben nach derselben Regel bewertet.", "When goal scores are tied, the visible detail value decides. Both products still use the same rule.")) : pick(locale, "Ohne belastbare Differenz wird keine Empfehlung erzwungen.", "No recommendation is forced without a reliable difference.")}</p></article>
       </div>
       {winner ? (
         <div className="comparison-next-step">

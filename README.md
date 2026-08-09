@@ -1,9 +1,8 @@
-# Food Decision Engine
+# Compare Your Food
 
 An explainable food decision engine with category-specific scoring, transparent
 data quality, guided product discovery, comparisons, and governed static SEO
-routes. The implementation plan lives in
-`outputs/food-decision-engine-implementation-plan.md`.
+routes. The implementation plan documents the complete product scope and delivery sequence.
 
 The public app has two explicit market routes:
 
@@ -68,7 +67,7 @@ active offer exists in the exported dataset and are always labeled as ads.
 Camera frames and recognized barcode values never leave the browser. Optional
 usage analytics is disabled by default, respects Do Not Track, excludes URL
 query parameters, and can be enabled or disabled on `/de/privacy` and
-`/en-us/privacy`. Those pages also let visitors delete all Food Decision Engine
+`/en-us/privacy`. Those pages also let visitors delete all Compare Your Food
 data stored locally in the current browser. Configure the public privacy contact
 before launch with `NEXT_PUBLIC_OPERATOR_NAME` and
 `NEXT_PUBLIC_PRIVACY_CONTACT`.
@@ -152,7 +151,7 @@ STATIC_EXPORT_SOURCE=supabase SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_...
 Targeted German write:
 
 ```bash
-SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... OFF_MARKET=DE OFF_CATEGORY_SLUGS="pflanzliche-joghurts,kinder-snacks" OFF_USER_AGENT="food-decision-engine/0.1 (contact: you@example.com)" npm run ingest:off
+SUPABASE_URL=... SUPABASE_SECRET_KEY=sb_secret_... OFF_MARKET=DE OFF_CATEGORY_SLUGS="pflanzliche-joghurts,kinder-snacks" OFF_USER_AGENT="compareyourfood.com/0.1 (contact: you@example.com)" npm run ingest:off
 ```
 
 Normalize the latest successful import:
@@ -169,21 +168,27 @@ sources are hidden and reported as quality flags.
 
 Each internal category uses one or more explicit Open Food Facts taxonomy
 sources. Multi-source categories split `OFF_PAGE_SIZE` across their sources, so
-the configured product budget remains bounded. The GitHub job summary reports
-fetched and uniquely accepted products for every source. `kinder-snacks` is an
-editorial family-snack comparison sourced from cereal bars, applesauces, and
-wheat crackers; it does not claim that Open Food Facts labels those products as
-made for children.
+the configured product budget remains bounded. Narrow fallback taxonomies make
+plant-based yogurt, nut butter, and family-snack imports more resilient when a
+broader Open Food Facts endpoint is temporarily unavailable. Products are
+deduplicated by source product ID. The GitHub job summary reports fetched and
+uniquely accepted products for every source. `kinder-snacks` is an editorial
+family-snack comparison sourced from cereal bars, fruit snacks, applesauces,
+and wheat crackers; it does not claim that Open Food Facts labels those products
+as made for children.
 
 Catalog growth is governed by `data-config/catalog/growth-plan.json`. Manual
-GitHub runs offer `core`, `plant-forward`, `everyday`, `all`, and `custom`
-waves. Scheduled runs rotate smaller four-category waves instead of requesting
-the whole catalog at once:
+GitHub runs offer `core`, `plant-forward`, `everyday`, `recovery`, `all`, and
+`custom` waves. `recovery` targets the categories that most often need focused
+backfilling. Manual runs can select `start_page`; scheduled runs rotate through
+four bounded page windows automatically. They also rotate smaller four-category
+waves instead of requesting the whole catalog at once:
 
 - Monday, Wednesday, Friday: German `core`, `plant-forward`, and `everyday`
 - Tuesday, Thursday, Saturday: US `core`, `plant-forward`, and `everyday`
 
-This keeps Open Food Facts request pressure bounded and refreshes both markets.
+This keeps Open Food Facts request pressure bounded, grows beyond the first
+result page, and refreshes both markets.
 Resolve a plan locally without contacting Open Food Facts:
 
 ```bash

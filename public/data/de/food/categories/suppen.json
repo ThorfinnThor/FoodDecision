@@ -1,0 +1,11 @@
+{
+  "slug": "suppen",
+  "label": "Suppen",
+  "intent": "Suppen mit ausgewogener Nährwertbasis und klaren Zutaten.",
+  "description": "Suppen werden nach Zucker, Protein, Salz, gesättigten Fettsäuren und Zutatenqualität verglichen.",
+  "rankingAttributes": [
+    "beste-wahl",
+    "familie"
+  ],
+  "products": []
+}

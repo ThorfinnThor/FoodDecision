@@ -48,20 +48,20 @@
   "scores": [
     {
       "type": "nutrition",
-      "label": "Nährwert-Score",
-      "score": 69,
-      "grade": "okay",
+      "label": "Nährwertbewertung",
+      "score": 70,
+      "grade": "good",
       "confidence": "high",
       "positives": [
-        "Kategoriebezogene Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren."
+        "Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren mit passenden Zielwerten für die Kategorie."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "ingredient_quality",
-      "label": "Zutaten-Score",
+      "label": "Zutatenbewertung",
       "score": 92,
       "grade": "excellent",
       "confidence": "high",
@@ -71,11 +71,11 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "protein",
-      "label": "Protein-Score",
+      "label": "Proteinbewertung",
       "score": 29,
       "grade": "weak",
       "confidence": "high",
@@ -84,22 +84,22 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "low_sugar",
-      "label": "Zucker-Score",
+      "label": "Zuckerbewertung",
       "score": 71,
       "grade": "good",
       "confidence": "high",
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "family",
-      "label": "Familien-Score",
+      "label": "Bewertung für Familien",
       "score": 84,
       "grade": "good",
       "confidence": "high",
@@ -110,11 +110,11 @@
         "Allergene prüfen: Hafer."
       ],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "vegan",
-      "label": "Vegan-Score",
+      "label": "Veganbewertung",
       "score": 100,
       "grade": "excellent",
       "confidence": "high",
@@ -123,11 +123,11 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     },
     {
       "type": "overall_match",
-      "label": "Gesamt-Score",
+      "label": "Gesamtbewertung",
       "score": 70,
       "grade": "good",
       "confidence": "high",
@@ -136,7 +136,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.07"
+      "ruleVersion": "2026.08.1"
     }
   ]
 }

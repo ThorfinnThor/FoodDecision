@@ -1,0 +1,11 @@
+{
+  "slug": "cracker",
+  "label": "Crackers",
+  "intent": "Crackers with less sugar, sodium, and understandable ingredients.",
+  "description": "Crackers are compared by sugar, protein, sodium, saturated fat, and ingredient quality.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "gute-zutaten"
+  ],
+  "products": []
+}

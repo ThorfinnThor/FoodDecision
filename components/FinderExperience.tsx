@@ -75,7 +75,7 @@ export function FinderExperience({
     { value: "protein" as const, label: "Higher protein", description: "More protein within the relevant category." },
     { value: "low_sugar" as const, label: "Lower sugar", description: "Less sugar compared with similar products." },
     { value: "ingredient_quality" as const, label: "Simpler ingredients", description: "Prefer shorter, understandable ingredient lists." },
-    { value: "family" as const, label: "Family-friendly", description: "Conservative assessment of sugar, ingredients, and salt." },
+    { value: "family" as const, label: "Suitable for families", description: "Conservative assessment of sugar, ingredients, and salt." },
     { value: "vegan" as const, label: "Vegan", description: "Consider vegan labels and known allergens." },
   ];
   const update = <K extends keyof FinderCriteria>(key: K, value: FinderCriteria[K]) => {
@@ -98,7 +98,7 @@ export function FinderExperience({
   if (criteria.maxCalories !== null) activeFilters.push({ key: "maxCalories", label: `${pick(locale, "Kalorien max.", "Calories max.")} ${criteria.maxCalories}`, clear: () => update("maxCalories", null) });
   if (criteria.includeIngredient) activeFilters.push({ key: "include", label: `+ ${criteria.includeIngredient}`, clear: () => update("includeIngredient", "") });
   if (criteria.excludeIngredient) activeFilters.push({ key: "exclude", label: `− ${criteria.excludeIngredient}`, clear: () => update("excludeIngredient", "") });
-  if (criteria.minimumConfidence !== "any") activeFilters.push({ key: "confidence", label: `${pick(locale, "Datensicherheit", "Confidence")}: ${criteria.minimumConfidence}`, clear: () => update("minimumConfidence", "any") });
+  if (criteria.minimumConfidence !== "any") activeFilters.push({ key: "confidence", label: `${pick(locale, "Datensicherheit", "Confidence")}: ${criteria.minimumConfidence === "high" ? pick(locale, "hoch", "high") : pick(locale, "mittel", "medium")}`, clear: () => update("minimumConfidence", "any") });
   if (criteria.query) activeFilters.push({ key: "query", label: `“${criteria.query}”`, clear: () => update("query", "") });
 
   function toggleAllergen(allergen: string) {

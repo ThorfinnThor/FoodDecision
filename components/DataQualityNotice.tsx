@@ -50,7 +50,7 @@ export function DataQualityNotice({ product }: { product: Product }) {
         <div><dt>{en ? "Source updated" : "Quellenstand"}</dt><dd>{date(product.sourceUpdatedAt)}</dd></div>
         <div><dt>{en ? "Catalog import" : "Katalogimport"}</dt><dd>{date(product.importedAt)}</dd></div>
         <div><dt>{en ? "Freshness" : "Datenfrische"}</dt><dd>{freshnessLabels[freshness.status][en ? 1 : 0]}{freshness.ageAtImportDays !== null ? <small>{en ? `${freshness.ageAtImportDays} days old at import` : `beim Import ${freshness.ageAtImportDays} Tage alt`}</small> : null}</dd></div>
-        <div><dt>{en ? "Scoring rules" : "Score-Regeln"}</dt><dd>{versions.length ? versions.join(", ") : (en ? "Not available" : "Nicht verfügbar")}</dd></div>
+        <div><dt>{en ? "Scoring rules" : "Bewertungsregeln"}</dt><dd>{versions.length ? versions.join(", ") : (en ? "Not available" : "Nicht verfügbar")}</dd></div>
       </dl>
       {hasFlags ? (
         <ul className="quality-flags">

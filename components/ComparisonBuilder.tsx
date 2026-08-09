@@ -13,7 +13,7 @@ function ProductChoice({ label, locale, onChange, products, value }: { label: st
   const product = products.find((item) => item.slug === value);
   return (
     <div className="comparison-choice">
-      <label><span>{label}</span><select onChange={(event) => onChange(event.target.value)} value={value}><option value="">{pick(locale, "Produkt wählen", "Choose product")}</option>{products.map((item) => <option key={item.slug} value={item.slug}>{item.brand} - {item.name}</option>)}</select></label>
+      <label><span>{label}</span><select onChange={(event) => onChange(event.target.value)} value={value}><option value="">{pick(locale, "Produkt wählen", "Choose product")}</option>{products.map((item) => <option key={item.slug} value={item.slug}>{item.brand} · {item.name}</option>)}</select></label>
       {product ? <div className="comparison-choice-preview"><ProductVisual compact product={product} /><div><small>{product.brand}</small><strong>{product.name}</strong><span>{scoreByType(product, "overall_match")?.score ?? "?"}/100 {pick(locale, "Gesamturteil", "overall")}</span></div></div> : <div className="comparison-choice-empty">{pick(locale, "Noch kein Produkt ausgewählt", "No product selected")}</div>}
     </div>
   );

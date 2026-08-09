@@ -28,6 +28,8 @@ on:
           - "core"
           - "plant-forward"
           - "everyday"
+          - "everyday-basics"
+          - "recovery"
           - "all"
           - "custom"
       categories:
@@ -36,6 +38,10 @@ on:
         default: ""
       max_pages:
         description: "Pages per category"
+        type: string
+        default: "1"
+      start_page:
+        description: "First Open Food Facts page"
         type: string
         default: "1"
       page_size:
@@ -49,6 +55,8 @@ on:
     - cron: "47 3 * * 2"
     - cron: "47 3 * * 4"
     - cron: "47 3 * * 6"
+    - cron: "17 3 * * 0"
+    - cron: "47 4 * * 0"
 
 concurrency:
   group: ingest-open-food-facts
@@ -79,6 +87,8 @@ jobs:
           CATALOG_CUSTOM_CATEGORIES: ${{ inputs.categories || '' }}
           CATALOG_MAX_PAGES: ${{ inputs.max_pages || '1' }}
           CATALOG_PAGE_SIZE: ${{ inputs.page_size || '50' }}
+          CATALOG_START_PAGE: ${{ inputs.start_page || '1' }}
+          CATALOG_RUN_NUMBER: ${{ github.run_number }}
         run: npm run resolve:catalog-plan
 
       - name: Ingest raw products
@@ -90,6 +100,7 @@ jobs:
           OFF_MARKET: ${{ steps.plan.outputs.market }}
           OFF_CATEGORY_SLUGS: ${{ steps.plan.outputs.categories }}
           OFF_MAX_PAGES: ${{ steps.plan.outputs.max_pages }}
+          OFF_START_PAGE: ${{ steps.plan.outputs.start_page }}
           OFF_PAGE_SIZE: ${{ steps.plan.outputs.page_size }}
           OFF_REQUEST_DELAY_MS: "7000"
           OFF_CONTINUE_ON_CATEGORY_ERROR: "true"
@@ -127,6 +138,7 @@ jobs:
         if: ${{ inputs.import_mode != 'dry-run' }}
         env:
           CATALOG_AUDIT_MODE: production
+          CATALOG_AUDIT_MARKET: ${{ steps.plan.outputs.market }}
         run: npm run audit:catalog-quality
 
       - name: Validate SEO publication gates

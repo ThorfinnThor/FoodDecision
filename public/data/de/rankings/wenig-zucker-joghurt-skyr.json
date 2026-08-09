@@ -3,7 +3,7 @@
   "category": "joghurt-skyr",
   "title": "Joghurt und Skyr mit wenig Zucker",
   "sortScore": "low_sugar",
-  "intro": "Joghurt und Skyr mit wenig Zucker: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "intro": "Joghurt und Skyr mit wenig Zucker: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "DE",

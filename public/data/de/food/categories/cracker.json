@@ -1,0 +1,11 @@
+{
+  "slug": "cracker",
+  "label": "Cracker",
+  "intent": "Cracker mit weniger Zucker, Salz und verständlichen Zutaten.",
+  "description": "Cracker werden nach Zucker, Protein, Salz, gesättigten Fettsäuren und Zutatenqualität verglichen.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "gute-zutaten"
+  ],
+  "products": []
+}

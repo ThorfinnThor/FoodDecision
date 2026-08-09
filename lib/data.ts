@@ -1,4 +1,5 @@
 import { calculateScores, scoreByType } from "./scoring.ts";
+import { compareRankedProducts } from "./ranking-order.ts";
 import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types.ts";
 import { categoryCatalog, defaultRankingPages, localizedCategoryLabel } from "./catalog.ts";
 
@@ -14,7 +15,7 @@ const baseProducts: Array<Omit<Product, "scores" | "market" | "locale" | "imageL
     category: "hafermilch",
     categoryLabel: "Hafermilch",
     imageTone: "oat",
-    description: "Ungesuesste Barista-Hafermilch mit kurzer Zutatenliste und Calcium-Anreicherung.",
+    description: "Ungesüßte Hafermilch für Kaffee mit kurzer Zutatenliste und zugesetztem Calcium.",
     labels: ["vegan", "ohne Zuckerzusatz", "calcium"],
     ingredients: ["Wasser", "Hafer", "Rapsöl", "Calciumcarbonat", "Meersalz"],
     allergens: ["Hafer"],
@@ -142,7 +143,7 @@ const baseProducts: Array<Omit<Product, "scores" | "market" | "locale" | "imageL
     category: "joghurt-skyr",
     categoryLabel: "Joghurt und Skyr",
     imageTone: "white",
-    description: "Natur-Skyr mit hohem Proteingehalt und kurzer Zutatenliste.",
+    description: "Natur Skyr mit hohem Proteingehalt und kurzer Zutatenliste.",
     labels: ["proteinreich", "vegetarisch"],
     ingredients: ["Magermilch", "Milchsäurekulturen"],
     allergens: ["Milch"],
@@ -233,14 +234,14 @@ const englishProductContent: Record<string, {
   },
   "kraftkern-proteinriegel-kakao": {
     name: "Kraftkern Cocoa Protein Bar",
-    description: "High-protein cocoa bar with a moderate sugar level.",
+    description: "Cocoa protein bar with a moderate sugar level.",
     labels: ["high protein", "vegetarian"],
     ingredients: ["Milk protein", "Cocoa mass", "Almonds", "Fiber", "Erythritol", "Natural flavor"],
     allergens: ["Milk", "Almonds"],
   },
   "morgenfeld-basis-muesli": {
     name: "Morgenfeld Whole Grain Muesli",
-    description: "Simple whole-grain muesli with no added sugar.",
+    description: "Simple whole grain muesli with no added sugar.",
     labels: ["whole grain", "no added sugar", "vegan"],
     ingredients: ["Rolled oats", "Spelt flakes", "Flaxseed", "Sunflower seeds", "Hazelnuts"],
     allergens: ["Gluten", "Hazelnuts"],
@@ -306,11 +307,7 @@ export function getRanking(attribute: string, category: string) {
 export function rankedProducts(category: CategorySlug, scoreType: ScoreType) {
   return getProductsByCategory(category)
     .filter((product) => product.publishability === "ranking_eligible")
-    .sort((a, b) => {
-      const scoreA = scoreByType(a, scoreType)?.score ?? -1;
-      const scoreB = scoreByType(b, scoreType)?.score ?? -1;
-      return scoreB - scoreA;
-    });
+    .sort((a, b) => compareRankedProducts(a, b, scoreType));
 }
 
 export function getAlternative(product: Product) {

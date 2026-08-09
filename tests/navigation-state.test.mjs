@@ -1,0 +1,33 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+test("keeps catalog controls in validated URL parameters", async () => {
+  const catalog = await readFile(new URL("../components/CatalogGrid.tsx", import.meta.url), "utf8");
+  assert.match(catalog, /useSearchParams/);
+  assert.match(catalog, /searchParams\.get\("q"\)/);
+  assert.match(catalog, /searchParams\.get\("category"\)/);
+  assert.match(catalog, /searchParams\.get\("sort"\)/);
+  assert.match(catalog, /searchParams\.get\("complete"\)/);
+  assert.match(catalog, /searchParams\.get\("page"\)/);
+  assert.match(catalog, /router\[history\]\(href, \{ scroll: false \}\)/);
+  assert.match(catalog, /compareRankedProducts\(a, b, scoreType\)/);
+});
+
+test("preserves compatible query state across locale changes", async () => {
+  const switcher = await readFile(new URL("../components/LocaleSwitcher.tsx", import.meta.url), "utf8");
+  assert.match(switcher, /useSearchParams/);
+  assert.match(switcher, /const query = searchParams\.toString\(\)/);
+  assert.match(switcher, /parts\[0\] === "compare"/);
+  assert.match(switcher, /translated = "\/compare"/);
+  assert.match(switcher, /parts\[0\] === "product"/);
+  assert.match(switcher, /translated = "\/products"/);
+});
+
+test("provides a localized recovery page for invalid routes", async () => {
+  const notFound = await readFile(new URL("../app/[locale]/not-found.tsx", import.meta.url), "utf8");
+  assert.match(notFound, /Diese Seite wurde nicht gefunden/);
+  assert.match(notFound, /This page could not be found/);
+  assert.match(notFound, /Produkte durchsuchen/);
+  assert.match(notFound, /Browse products/);
+});

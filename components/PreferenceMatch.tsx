@@ -18,7 +18,7 @@ const goalLabels: Record<ScoreType, [string, string]> = {
   ingredient_quality: ["Nachvollziehbare Zutaten", "Simpler ingredients"],
   protein: ["Mehr Protein", "Higher protein"],
   low_sugar: ["Weniger Zucker", "Lower sugar"],
-  family: ["Für Familien", "Family-friendly"],
+  family: ["Für Familien", "Suitable for families"],
   vegan: ["Vegan", "Vegan"],
   overall_match: ["Beste Gesamtwahl", "Best overall"],
 };
@@ -110,7 +110,7 @@ export function PreferenceMatch({ product }: { product: Product }) {
             <span className="preference-match-status">{result.assessment.passes ? c("Passt", "Matches") : c("Passt nicht", "Doesn’t match")}</span>
             <div className="preference-match-score">
               <strong className={result.assessment.passes ? undefined : "preference-match-no"}>{result.assessment.passes ? `${result.match.score}%` : c("Nein", "No")}</strong>
-              <span>{result.assessment.passes ? c("Ziel-Match", "goal match") : c("Kriterien nicht erfüllt", "criteria not met")}</span>
+              <span>{result.assessment.passes ? c("Übereinstimmung", "goal match") : c("Kriterien nicht erfüllt", "criteria not met")}</span>
             </div>
             <p>{c("Priorität", "Priority")}: <strong>{goalLabels[state.criteria.goal][product.locale === "de-DE" ? 0 : 1]}</strong></p>
             <small>{result.criteriaCount ? c(`${result.criteriaCount} zusätzliche Kriterien aktiv`, `${result.criteriaCount} additional criteria active`) : c("Keine zusätzlichen Ausschlüsse aktiv", "No additional exclusions active")}</small>

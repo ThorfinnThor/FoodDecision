@@ -7,9 +7,9 @@ export function AffiliateOffers({ offers, productSlug }: { offers: AffiliateOffe
   if (!offers.length) return null;
   return (
     <section className="detail-section offers-section">
-      <div className="section-heading"><p className="eyebrow">Verfügbarkeit</p><h2>Angebote ansehen</h2><p>Shop-Links verändern unsere Bewertung nicht. Bei einem Kauf können wir eine Provision erhalten.</p></div>
+      <div className="section-heading"><p className="eyebrow">Verfügbarkeit</p><h2>Angebote ansehen</h2><p>Links zu Shops verändern unsere Bewertung nicht. Bei einem Kauf können wir eine Provision erhalten.</p></div>
       <div className="offer-list">
-        {offers.map((offer) => <a href={offer.url} key={offer.id} onClick={() => trackEvent("affiliate_clicked", { entityType: "product", entityId: productSlug, metadata: { offerId: offer.id, merchant: offer.merchant } })} rel="nofollow sponsored noopener" target="_blank"><span><strong>{offer.merchant}</strong>{offer.sponsored ? <small>Anzeige / Affiliate-Link</small> : <small>Händlerangebot</small>}</span><span>{offer.priceHint ?? "Preis im Shop"}</span><span aria-hidden="true">↗</span></a>)}
+        {offers.map((offer) => <a href={offer.url} key={offer.id} onClick={() => trackEvent("affiliate_clicked", { entityType: "product", entityId: productSlug, metadata: { offerId: offer.id, merchant: offer.merchant } })} rel="nofollow sponsored noopener" target="_blank"><span><strong>{offer.merchant}</strong>{offer.sponsored ? <small>Anzeige mit Provision</small> : <small>Händlerangebot</small>}</span><span>{offer.priceHint ?? "Preis im Shop"}</span><span aria-hidden="true">↗</span></a>)}
       </div>
     </section>
   );

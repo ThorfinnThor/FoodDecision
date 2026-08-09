@@ -10,7 +10,7 @@ const config = JSON.parse(await readFile(new URL("../data-config/catalog/growth-
 test("resolves balanced scheduled growth waves for both markets", () => {
   const german = resolveCatalogIngestionPlan(config, { schedule: "17 3 * * 1" });
   const american = resolveCatalogIngestionPlan(config, { schedule: "47 3 * * 4" });
-  assert.deepEqual(german, { version: "2026.08.1", market: "DE", preset: "core", categories: ["hafermilch", "proteinriegel", "muesli", "joghurt-skyr"], maxPages: 1, pageSize: 50, scheduled: true });
+  assert.deepEqual(german, { version: "2026.08.3", market: "DE", preset: "core", categories: ["hafermilch", "proteinriegel", "muesli", "joghurt-skyr"], maxPages: 1, pageSize: 50, startPage: 1, scheduled: true });
   assert.equal(american?.market, "US");
   assert.equal(american?.preset, "plant-forward");
   assert.equal(resolveCatalogIngestionPlan(config, { schedule: "unknown" }), null);
@@ -18,16 +18,27 @@ test("resolves balanced scheduled growth waves for both markets", () => {
 
 test("keeps the growth plan aligned with every implemented ingestion category", () => {
   assert.deepEqual([...new Set(config.presets.all)].sort(), categoryJobs.map((job) => job.slug).sort());
-  const scheduledCategories = ["core", "plant-forward", "everyday"].flatMap((preset) => config.presets[preset]);
+  const scheduledCategories = ["core", "plant-forward", "everyday", "everyday-basics"].flatMap((preset) => config.presets[preset]);
   assert.deepEqual([...new Set(scheduledCategories)].sort(), config.presets.all.slice().sort());
 });
 
 test("validates custom ingestion plans and operational limits", () => {
-  const custom = resolveCatalogIngestionPlan(config, { market: "US", preset: "custom", customCategories: "hafermilch,nussmuse,hafermilch", maxPages: "3", pageSize: "40" });
+  const custom = resolveCatalogIngestionPlan(config, { market: "US", preset: "custom", customCategories: "hafermilch,nussmuse,hafermilch", startPage: "3", maxPages: "3", pageSize: "40" });
   assert.deepEqual(custom?.categories, ["hafermilch", "nussmuse"]);
   assert.equal(custom?.maxPages, 3);
+  assert.equal(custom?.startPage, 3);
   assert.equal(resolveCatalogIngestionPlan(config, { preset: "custom", customCategories: "unknown" }), null);
   assert.equal(resolveCatalogIngestionPlan(config, { preset: "core", maxPages: "11" }), null);
+  assert.equal(resolveCatalogIngestionPlan(config, { preset: "core", startPage: "49", maxPages: "3" }), null);
+});
+
+test("rotates scheduled imports through bounded page windows", () => {
+  const first = resolveCatalogIngestionPlan(config, { schedule: "17 3 * * 1", runNumber: "1" });
+  const third = resolveCatalogIngestionPlan(config, { schedule: "17 3 * * 1", runNumber: "3" });
+  const wrapped = resolveCatalogIngestionPlan(config, { schedule: "17 3 * * 1", runNumber: "5" });
+  assert.equal(first?.startPage, 1);
+  assert.equal(third?.startPage, 3);
+  assert.equal(wrapped?.startPage, 1);
 });
 
 function qualityReport(products = 1000) {
@@ -62,7 +73,10 @@ test("wires all growth waves and the production audit into GitHub ingestion", as
   for (const cron of Object.keys(config.schedules)) assert.match(workflow, new RegExp(cron.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(workflow, /Resolve catalog growth plan/);
   assert.match(workflow, /steps\.plan\.outputs\.categories/);
+  assert.match(workflow, /CATALOG_RUN_NUMBER:.*github\.run_number/);
+  assert.match(workflow, /OFF_START_PAGE:.*steps\.plan\.outputs\.start_page/);
   assert.match(workflow, /CATALOG_AUDIT_MODE: production/);
+  assert.match(workflow, /CATALOG_AUDIT_MARKET:.*steps\.plan\.outputs\.market/);
   assert.match(workflow, /Audit production catalog quality/);
 });
 
@@ -81,5 +95,5 @@ test("pins Node 24 compatible workflow actions to verified release commits", asy
   }
   assert.match(workflows.join("\n"), /actions\/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e/);
   assert.match(workflows[2], /supabase\/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf/);
-  assert.match(workflows[2], /version: 2\.112\.0/);
+  assert.match(workflows[2], /version: latest/);
 });

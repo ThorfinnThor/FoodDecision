@@ -1,7 +1,7 @@
 {
   "slug": "fertiggerichte",
   "label": "Fertiggerichte",
-  "intent": "Schnelle Mahlzeiten mit transparenter Nährwert- und Zutatenbewertung.",
+  "intent": "Schnelle Mahlzeiten mit transparenter Bewertung von Nährwerten und Zutaten.",
   "description": "Fertiggerichte werden besonders bei Salz, gesättigten Fettsäuren, Protein und Zutaten differenziert.",
   "rankingAttributes": [
     "beste-wahl",

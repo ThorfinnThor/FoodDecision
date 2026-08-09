@@ -1,0 +1,11 @@
+{
+  "slug": "pastasaucen",
+  "label": "Pastasaucen",
+  "intent": "Pastasaucen mit weniger Zucker, Salz und unnötigen Zusätzen.",
+  "description": "Pastasaucen werden nach Zucker, Salz, gesättigten Fettsäuren, Protein und Zutatenqualität verglichen.",
+  "rankingAttributes": [
+    "wenig-zucker",
+    "gute-zutaten"
+  ],
+  "products": []
+}

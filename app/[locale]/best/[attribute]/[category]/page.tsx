@@ -23,6 +23,7 @@ import {
   getSeoPageDefinition,
 } from "@/lib/seo";
 import { getCatalog } from "@/lib/static-data";
+import { BRAND_NAME } from "@/lib/brand";
 
 type Props = {
   params: Promise<{ locale: string; attribute: string; category: string }>;
@@ -79,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = insights.answer;
 
   return {
-    title: `${ranking.title} - Food Decision Engine`,
+    title: `${ranking.title} | ${BRAND_NAME}`,
     description,
     alternates: {
       canonical,
@@ -101,7 +102,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: canonical,
       locale: locale === "de-DE" ? "de_DE" : "en_US",
       images: insights.topPick.imageUrl && insights.topPick.imageLicense
-        ? [{ url: insights.topPick.imageUrl, alt: `${insights.topPick.name} - ${insights.topPick.brand}` }]
+        ? [{ url: insights.topPick.imageUrl, alt: `${insights.topPick.name} ${pick(locale, "von", "by")} ${insights.topPick.brand}` }]
         : undefined,
     },
     other: {
@@ -209,8 +210,8 @@ export default async function RankingPage({ params }: Props) {
         </div>
         <p>{pick(
           locale,
-          "Jede Platzierung nutzt dieselbe kategoriespezifische Regel. Öffne ein Produkt für Nährwerte, Zutaten, Allergene und alle Teil-Scores.",
-          "Every position uses the same category-specific rule. Open a product for nutrition, ingredients, allergens, and all component scores.",
+          "Jede Platzierung nutzt dieselbe Regel für diese Kategorie. Öffne ein Produkt für Nährwerte, Zutaten, Allergene und alle Teilbewertungen.",
+          "Every position uses the same rule for this category. Open a product for nutrition, ingredients, allergens, and all component scores.",
         )}</p>
       </div>
       <RankingList locale={locale} products={items} scoreType={ranking.sortScore} />

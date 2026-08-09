@@ -20,7 +20,7 @@ export function ScoreBreakdown({ product }: { product: Product }) {
       <div className="section-heading">
         <p className="eyebrow">{pick(locale, "Transparent bewertet", "Transparent scoring")}</p>
         <h2>{pick(locale, "Warum dieses Produkt so bewertet wird", "Why this product received these scores")}</h2>
-        <p>{pick(locale, "Jeder Teilscore basiert auf verfügbaren Produktdaten. Fehlende Angaben werden nicht als Null gewertet.", "Each sub-score uses available product data. Missing values are not treated as zero.")}</p>
+        <p>{pick(locale, "Jede Teilbewertung basiert auf verfügbaren Produktdaten. Fehlende Angaben werden nicht als Null gewertet.", "Each component score uses available product data. Missing values are not treated as zero.")}</p>
       </div>
       <div className="score-grid">
         {product.scores.map((score) => (
@@ -43,7 +43,7 @@ export function ScoreBreakdown({ product }: { product: Product }) {
       </div>
       <details className="method-note">
         <summary>{pick(locale, "So funktioniert der Score", "How the score works")}</summary>
-        <p>{pick(locale, "Die Bewertung kombiniert kategoriespezifische Regeln für Nährwerte, Zutaten und den gewählten Bedarf.", "The assessment combines category-specific rules for nutrition, ingredients, and the selected goal.")} {pick(locale, "Regelstand", "Rule version")}: {product.scores[0]?.ruleVersion ?? pick(locale, "aktuell", "current")}.</p>
+        <p>{pick(locale, "Die Bewertung kombiniert passende Regeln für Nährwerte, Zutaten und den gewählten Bedarf in dieser Kategorie.", "The assessment combines rules for nutrition, ingredients, and the selected goal within this category.")} {pick(locale, "Regelstand", "Rule version")}: {product.scores[0]?.ruleVersion ?? pick(locale, "aktuell", "current")}.</p>
       </details>
     </section>
   );

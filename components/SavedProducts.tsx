@@ -101,7 +101,7 @@ export function SavedProducts({
   }
 
   async function copyShoppingList() {
-    const text = saved.map((product, index) => `${checkedIds.includes(product.slug) ? "[x]" : "[ ]"} ${index + 1}. ${product.name} - ${product.brand} (${product.categoryLabel})`).join("\n");
+    const text = saved.map((product, index) => `${checkedIds.includes(product.slug) ? "[x]" : "[ ]"} ${index + 1}. ${product.name} · ${product.brand} (${product.categoryLabel})`).join("\n");
     try {
       await navigator.clipboard.writeText(text);
       setStatus("copied");

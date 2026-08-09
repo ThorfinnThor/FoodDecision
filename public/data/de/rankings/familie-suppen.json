@@ -1,0 +1,12 @@
+{
+  "attribute": "familie",
+  "category": "suppen",
+  "title": "Geeignete Suppen für Familien",
+  "sortScore": "family",
+  "intro": "Geeignete Suppen für Familien: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "indexable": false,
+  "minProductsRequired": 20,
+  "market": "DE",
+  "locale": "de-DE",
+  "items": []
+}

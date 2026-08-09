@@ -1,7 +1,7 @@
 # Image Provenance
 
 - `food-decision-hero.png` is a project-created image generated specifically
-  for Food Decision Engine. It is not sourced from a stock library or a
+  for Compare Your Food. It is not sourced from a stock library or a
   third-party product catalog.
 - Imported product images are not stored in this directory. The application
   displays them only from approved HTTPS Open Food Facts hosts, labels them
@@ -31,3 +31,9 @@ in-product attribution list. The files are not retouched; the UI uses CSS
 | `categories/ready-meals.jpg` | Ella Olsson | CC BY 2.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Meal_prep_container_(44260855980).jpg) |
 | `categories/soft-drinks.jpg` | pic_p_ter | Public domain | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Glass_cola.jpg) |
 | `categories/kids-snacks.jpg` | Cindyparnell | CC BY 4.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Healthy_kids_lunch_packed.jpg) |
+| `categories/bread.jpg` | Gnu-Bricoleur | CC BY 4.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sliced_Bread.jpg) |
+| `categories/pasta.jpg` | Daniel K. Gebhart | CC BY 2.5 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Pasta.jpg) |
+| `categories/pasta-sauce.jpg` | Iain Cameron | CC BY 2.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Making_tomato_sauce_for_pasta_dish.jpg) |
+| `categories/soup.jpg` | THOR | CC BY 2.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Soup_Bowl.jpg) |
+| `categories/frozen-meal.jpg` | Tiia Monto | CC BY-SA 4.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Frozen_meal.jpg) |
+| `categories/crackers.jpg` | Evan-Amos | Public domain | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Saltine-Crackers.JPG) |

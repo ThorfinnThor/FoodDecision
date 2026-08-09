@@ -5,13 +5,14 @@ import { categoryRouteSlug, localizedPath, pick } from "@/lib/i18n";
 import { localeAlternates, requireLocale } from "@/lib/locale-page";
 import { getCatalog } from "@/lib/static-data";
 import type { CatalogQualityStatus } from "@/lib/types";
+import { BRAND_NAME } from "@/lib/brand";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = requireLocale((await params).locale);
   return {
-    title: pick(locale, "Datenabdeckung - Food Decision Engine", "Data coverage - Food Decision Engine"),
+    title: pick(locale, `Datenabdeckung | ${BRAND_NAME}`, `Data coverage | ${BRAND_NAME}`),
     description: pick(locale, "Aktuelle Abdeckung und Datenqualität des veröffentlichten Lebensmittelkatalogs.", "Current coverage and data quality of the published food catalog."),
     alternates: localeAlternates(locale, "/data-quality"),
   };
@@ -43,7 +44,7 @@ export default async function DataQualityPage({ params }: Props) {
     <section className="data-quality-summary" aria-label={c("Katalogübersicht", "Catalog overview")}>
       <div><strong>{report.totals.products.toLocaleString(locale)}</strong><span>{c("veröffentlichte Produkte", "published products")}</span></div>
       <div><strong>{percent(report.totals.rankingEligible)}</strong><span>{c("für Rankings geeignet", "eligible for rankings")}</span></div>
-      <div><strong>{percent(report.totals.completeNutrition)}</strong><span>{c("mit vollständigen Nährwerten", "with complete nutrition")}</span></div>
+      <div><strong>{percent(report.totals.completeNutrition)}</strong><span>{c("mit entscheidungsrelevanten Nährwerten", "with decision-ready nutrition")}</span></div>
       <div><strong>{percent(report.totals.recentlyUpdated)}</strong><span>{c("mit aktuellem Quellenstand", "with recent source data")}</span></div>
     </section>
 
@@ -55,7 +56,7 @@ export default async function DataQualityPage({ params }: Props) {
       </div>
       <div className="data-quality-table-wrap">
         <table className="data-quality-table">
-          <thead><tr><th>{c("Kategorie", "Category")}</th><th>{c("Abdeckung", "Coverage")}</th><th>{c("Produkte", "Products")}</th><th>{c("Rankingfähig", "Ranking eligible")}</th><th>{c("Nährwerte", "Nutrition")}</th><th>{c("Zutaten", "Ingredients")}</th><th>{c("Bilder", "Images")}</th><th>{c("Aktuell", "Recent")}</th></tr></thead>
+          <thead><tr><th>{c("Kategorie", "Category")}</th><th>{c("Abdeckung", "Coverage")}</th><th>{c("Produkte", "Products")}</th><th>{c("Rankingfähig", "Ranking eligible")}</th><th>{c("Kernnährwerte", "Core nutrition")}</th><th>{c("Zutaten", "Ingredients")}</th><th>{c("Bilder", "Images")}</th><th>{c("Aktuell", "Recent")}</th></tr></thead>
           <tbody>{report.categories.map((category) => <tr key={category.slug}>
             <th scope="row">{category.products ? <Link href={localizedPath(locale, `/category/${categoryRouteSlug(category.slug, locale)}`)}>{category.label}</Link> : category.label}</th>
             <td><span className={`coverage-status is-${category.status}`}>{statusLabels[category.status]}</span></td>
@@ -74,6 +75,7 @@ export default async function DataQualityPage({ params }: Props) {
       <div className="section-heading"><p className="eyebrow">{c("So lesen wir die Zahlen", "How to read the numbers")}</p><h2>{c("Breite und Qualität bleiben getrennt", "Breadth and quality stay separate")}</h2></div>
       <div>
         <article><h3>{c("Abdeckung", "Coverage")}</h3><p>{c("Ab 50 Produkten nennen wir die Kategorie von der Größe her solide, zwischen 20 und 49 im Aufbau und darunter eine kleine Auswahl. Das ist keine Bewertung der einzelnen Produkte.", "We call a category solid in size at 50 products, developing from 20 to 49, and a small selection below that. This is not a rating of individual products.")}</p></article>
+        <article><h3>{c("Kernnährwerte", "Core nutrition")}</h3><p>{c("Gezählt werden Produkte mit Zucker, Protein, Salz und gesättigten Fettsäuren. Genau diese Werte benötigt unsere kategoriespezifische Nährwertbewertung; weitere fehlende Angaben bleiben auf der Produktseite sichtbar.", "Products count when sugar, protein, salt, and saturated fat are available. These are the values required for our category-specific nutrition assessment; any other missing values remain visible on the product page.")}</p></article>
         <article><h3>{c("Aktualität", "Freshness")}</h3><p>{c("Als aktuell zählen Quellenstände, die beim Import höchstens 180 Tage alt waren. Die Produktseite zeigt das genaue Quellen- und Importdatum.", "Source data counts as recent when it was no more than 180 days old at import. Product pages show the exact source and import dates.")}</p></article>
         <article><h3>{c("Bilder", "Images")}</h3><p>{c("Gezählt werden nur Produktbilder mit einer für die Anzeige bestätigten offenen Lizenz. Fehlende oder ungeklärte Bilder werden nicht als verfügbar gewertet.", "Only product images with a confirmed open license for display are counted. Missing or unverified images are not treated as available.")}</p></article>
       </div>

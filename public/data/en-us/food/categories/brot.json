@@ -1,0 +1,11 @@
+{
+  "slug": "brot",
+  "label": "Bread",
+  "intent": "Bread with a useful nutrition profile and understandable ingredients.",
+  "description": "Bread is compared by sugar, protein, sodium, saturated fat, and ingredient quality.",
+  "rankingAttributes": [
+    "beste-wahl",
+    "gute-zutaten"
+  ],
+  "products": []
+}

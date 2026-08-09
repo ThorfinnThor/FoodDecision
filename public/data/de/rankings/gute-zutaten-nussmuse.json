@@ -3,7 +3,7 @@
   "category": "nussmuse",
   "title": "Nussmuse mit kurzer Zutatenliste",
   "sortScore": "ingredient_quality",
-  "intro": "Nussmuse mit kurzer Zutatenliste: Produkte werden mit derselben transparenten, kategoriespezifischen Regel verglichen. Datenlücken bleiben sichtbar.",
+  "intro": "Nussmuse mit kurzer Zutatenliste: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "DE",

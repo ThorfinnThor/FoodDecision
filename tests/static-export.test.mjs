@@ -6,8 +6,10 @@ import {
   resolveExportSource,
   isFutureJwtError,
   supabaseAuthHeaders,
+  comparisonPairs,
 } from "../scripts/export/static-data.ts";
 import { getCatalog } from "../lib/static-data.ts";
+import { products as fixtureProducts } from "../lib/data.ts";
 
 function productRow(nutritionFacts) {
   return {
@@ -59,6 +61,27 @@ test("also accepts the array relationship shape used by older responses", () => 
   assert.equal(product.nutrition.protein, 12);
 });
 
+test("recalculates stored Supabase scores with the current rule version", () => {
+  const row = productRow(nutrition);
+  row.product_scores = [{
+    score_type: "overall_match",
+    label: "Alter Gesamt-Score",
+    score: 1,
+    grade: "weak",
+    confidence: "low",
+    positives: [],
+    negatives: [],
+    missing_data: [],
+    rule_version: "2026.07",
+  }];
+
+  const product = mapSupabaseProduct(row);
+
+  assert.equal(product.scores.length, 7);
+  assert.ok(product.scores.every((score) => score.ruleVersion === "2026.08.1"));
+  assert.notEqual(product.scores.find((score) => score.type === "overall_match")?.score, 1);
+});
+
 test("rejects fixture exports in Vercel deployments", () => {
   assert.throws(
     () => assertDeploymentExportPolicy({ isVercel: true, exportSource: "fixtures" }),
@@ -86,4 +109,22 @@ test("only exposes categories that have products in the current market catalog",
   assert.ok(available.length > 0);
   assert.ok(available.length < catalog.getCategories().length);
   assert.ok(available.every((category) => catalog.getCategoryProductCount(category.slug) > 0));
+});
+
+test("generates a bounded prepared comparison library within categories", () => {
+  const pairs = comparisonPairs(fixtureProducts);
+  const bySlug = new Map(fixtureProducts.map((product) => [product.slug, product]));
+  const categoryCounts = new Map();
+  assert.ok(pairs.length > 0);
+  for (const pair of pairs) {
+    const [firstSlug, secondSlug] = pair.split("-vs-");
+    const first = bySlug.get(firstSlug);
+    const second = bySlug.get(secondSlug);
+    assert.ok(first && second);
+    assert.equal(first.category, second.category);
+    assert.ok(["ranking_eligible", "published"].includes(first.publishability));
+    assert.ok(["ranking_eligible", "published"].includes(second.publishability));
+    categoryCounts.set(first.category, (categoryCounts.get(first.category) ?? 0) + 1);
+  }
+  assert.ok([...categoryCounts.values()].every((count) => count <= 2));
 });

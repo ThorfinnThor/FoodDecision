@@ -27,7 +27,7 @@ test("allows only HTTPS Open Food Facts image hosts and records attribution", ()
 
 test("every category photo is local, commercially reusable, and attributed", () => {
   const entries = Object.entries(categoryImages);
-  assert.equal(entries.length, 12);
+  assert.equal(entries.length, 18);
   for (const [slug, image] of entries) {
     assert.equal(existsSync(join(process.cwd(), "public", image.src)), true, `${slug} image is missing`);
     assert.match(image.sourceUrl, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);

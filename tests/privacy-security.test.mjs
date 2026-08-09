@@ -8,12 +8,10 @@ function headerMap(headers) {
   return new Map(headers.map(({ key, value }) => [key.toLowerCase(), value]));
 }
 
-test("sets restrictive browser security headers and grants camera only to scanner routes", async () => {
+test("sets restrictive browser security headers and blocks camera on every route", async () => {
   assert.equal(typeof nextConfig.headers, "function");
   const rules = await nextConfig.headers();
   const global = headerMap(rules.find((rule) => rule.source === "/:path*").headers);
-  const germanScanner = headerMap(rules.find((rule) => rule.source === "/de/scan").headers);
-  const usScanner = headerMap(rules.find((rule) => rule.source === "/en-us/scan").headers);
 
   assert.match(global.get("content-security-policy"), /default-src 'self'/);
   assert.match(global.get("content-security-policy"), /frame-ancestors 'none'/);
@@ -23,11 +21,10 @@ test("sets restrictive browser security headers and grants camera only to scanne
   assert.match(global.get("strict-transport-security"), /max-age=63072000/);
   assert.match(global.get("permissions-policy"), /camera=\(\)/);
   assert.match(global.get("permissions-policy"), /microphone=\(\)/);
-  assert.match(germanScanner.get("permissions-policy"), /camera=\(self\)/);
-  assert.match(usScanner.get("permissions-policy"), /camera=\(self\)/);
+  assert.equal(rules.some((rule) => /scan/.test(rule.source)), false);
 });
 
-test("keeps camera frames and barcode values out of telemetry", async () => {
+test("keeps scanner camera-free and barcode values out of telemetry", async () => {
   const [scanner, eventRoute, clientState] = await Promise.all([
     readFile(new URL("../components/BarcodeLookup.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/events/route.ts", import.meta.url), "utf8"),
@@ -36,10 +33,10 @@ test("keeps camera frames and barcode values out of telemetry", async () => {
 
   assert.doesNotMatch(scanner, /trackEvent|barcode_matched|barcode_unmatched/);
   assert.doesNotMatch(eventRoute, /barcode_matched|barcode_unmatched/);
-  assert.match(scanner, /audio: false/);
-  assert.match(scanner, /visibilitychange/);
-  assert.match(scanner, /pagehide/);
-  assert.match(scanner, /getTracks\(\)\.forEach\(\(track\) => track\.stop\(\)\)/);
+  assert.doesNotMatch(scanner, /getUserMedia|BarcodeDetector|MediaStream|<video|cameraRequest|Kamera stoppen|Scan barcode with camera/);
+  assert.match(scanner, /Die Nummer bleibt in deinem Browser/);
+  assert.match(scanner, /The number stays in your browser/);
+  assert.match(scanner, /if \(reason === "unknown"\) remember/);
   assert.match(clientState, /analyticsEnabled\(\)/);
   assert.match(clientState, /path: window\.location\.pathname/);
   assert.doesNotMatch(clientState, /location\.search/);
@@ -76,20 +73,26 @@ test("rejects oversized, non-JSON, and cross-origin API requests", () => {
 });
 
 test("publishes bilingual privacy disclosures and local controls", async () => {
-  const [page, controls, footer, newsletter] = await Promise.all([
+  const [page, controls, footer, newsletter, migration] = await Promise.all([
     readFile(new URL("../app/[locale]/privacy/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/PrivacyControls.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/SiteFooter.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/newsletter/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../supabase/migrations/0010_remove_inactive_newsletter.sql", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /Weder Kamerabilder noch Video, Ton oder die erkannte Barcodenummer/);
-  assert.match(page, /Camera images, video, audio, and the recognized barcode number are not sent/);
+  assert.match(page, /Die Website fordert keinen Zugriff auf Kamera oder Mikrofon an/);
+  assert.match(page, /The website does not request camera or microphone access/);
+  assert.match(page, /Ungültige Eingaben werden nicht gespeichert/);
   assert.match(page, /standardmäßig deaktiviert/);
   assert.match(controls, /Alle lokalen Daten löschen/);
   assert.match(controls, /Do Not Track/);
   assert.match(footer, /\/privacy/);
   assert.match(page, /NEXT_PUBLIC_OPERATOR_NAME/);
   assert.match(page, /NEXT_PUBLIC_PRIVACY_CONTACT/);
-  assert.match(newsletter, /locale, source/);
+  assert.match(page, /Wir bieten derzeit keinen Newsletter an/);
+  assert.match(page, /We currently do not offer a newsletter/);
+  assert.match(newsletter, /signup_not_available/);
+  assert.doesNotMatch(newsletter, /newsletter_subscribers|email_normalized/);
+  assert.match(migration, /drop table if exists newsletter_subscribers/);
 });
