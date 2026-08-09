@@ -44,7 +44,7 @@ test("normalizes a complete Open Food Facts product into a ranking candidate", (
   assert.deepEqual(product.ingredients, ["Haferflocken", "Nuesse (Mandeln, Haselnuesse)", "Salz"]);
   assert.deepEqual(product.allergens, ["Gluten", "Mandeln"]);
   assert.equal(product.scores.length, 7);
-  assert.equal(product.scores.find((score) => score.type === "low_sugar")?.score, 100);
+  assert.equal(product.scores.find((score) => score.type === "low_sugar")?.score, 94);
 });
 
 test("keeps missing and implausible nutrition out of scores", () => {

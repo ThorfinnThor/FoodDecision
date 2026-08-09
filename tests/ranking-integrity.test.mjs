@@ -55,3 +55,21 @@ test("keeps products without a goal score out of generated ranking pages", () =>
   const excluded = auditRankingIntegrity([base], [proteinRanking([])]);
   assert.equal(excluded.failures.some((failure) => failure.includes("order_or_membership_mismatch")), false);
 });
+
+test("blocks perfect overall score saturation in established categories", () => {
+  const base = products.find((product) => product.category === "proteinriegel");
+  const saturated = Array.from({ length: 20 }, (_, index) => {
+    const product = structuredClone(base);
+    product.id = `saturated-${index}`;
+    product.slug = `saturated-${index}`;
+    for (const score of product.scores) {
+      if (score.type === "nutrition" || score.type === "ingredient_quality" || score.type === "overall_match") {
+        score.score = 100;
+        score.grade = "excellent";
+      }
+    }
+    return product;
+  });
+  const result = auditRankingIntegrity(saturated, []);
+  assert.ok(result.failures.some((failure) => failure.includes("perfect_overall_score_saturation_20_of_20")));
+});

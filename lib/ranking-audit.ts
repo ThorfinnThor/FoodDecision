@@ -18,7 +18,8 @@ export type RankingAuditStats = {
 
 const requiredScoreTypes = ["nutrition", "ingredient_quality", "protein", "low_sugar", "family", "vegan", "overall_match"] as const;
 
-function distributionWarnings(products: Product[]) {
+function distributionFindings(products: Product[]) {
+  const failures: string[] = [];
   const warnings: string[] = [];
   const categoryTypes = new Map<string, Product[]>();
   for (const product of products.filter((item) => item.publishability === "ranking_eligible")) {
@@ -40,8 +41,11 @@ function distributionWarnings(products: Product[]) {
     if (uniqueScores.size <= 3) warnings.push(`${key}:only_${uniqueScores.size}_distinct_scores_for_${scores.length}_products`);
     if (topTies >= Math.max(5, Math.ceil(scores.length * 0.2))) warnings.push(`${key}:top_score_${top}_shared_by_${topTies}_products`);
     if (maximumScores / scores.length > 0.3) warnings.push(`${key}:${maximumScores}_of_${scores.length}_products_score_100`);
+    if (scoreType === "overall_match" && maximumScores / scores.length > 0.05) {
+      failures.push(`${key}:perfect_overall_score_saturation_${maximumScores}_of_${scores.length}`);
+    }
   }
-  return warnings;
+  return { failures, warnings };
 }
 
 function independentAlternativeCandidates(current: Product, products: Product[], goal: AlternativeGoal) {
@@ -149,7 +153,9 @@ export function auditRankingIntegrity(products: Product[], rankings: GeneratedRa
   const alternatives = auditAlternatives(products);
   failures.push(...alternatives.failures);
 
-  warnings.push(...distributionWarnings(products));
+  const distribution = distributionFindings(products);
+  failures.push(...distribution.failures);
+  warnings.push(...distribution.warnings);
   const stats: RankingAuditStats = {
     products: products.length,
     rankingPages: rankings.length,

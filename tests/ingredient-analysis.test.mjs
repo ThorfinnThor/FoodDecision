@@ -57,7 +57,7 @@ test("uses the shared bilingual analysis for Finder traits and ingredient scores
   assert.equal(traits.palmOilFree, false);
 
   const ingredientScore = calculateScores(american).find((score) => score.type === "ingredient_quality");
-  assert.equal(ingredientScore?.ruleVersion, "2026.08.2");
+  assert.equal(ingredientScore?.ruleVersion, "2026.08.3");
   assert.ok(ingredientScore?.negatives.some((reason) => /Added sugar/i.test(reason)));
   assert.ok(ingredientScore?.negatives.some((reason) => /Additives or flavorings/i.test(reason)));
 });

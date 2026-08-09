@@ -10,8 +10,13 @@ import type {
 import { categoryScoringProfiles } from "./catalog.ts";
 import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
 
-const RULE_VERSION = "2026.08.2";
+const RULE_VERSION = "2026.08.3";
 export const OVERALL_SCORE_WEIGHTS = { nutrition: 0.65, ingredientQuality: 0.35 } as const;
+
+const STRONG_REFERENCE_SCORE = 90;
+const WEAK_REFERENCE_SCORE = 40;
+const PROTEIN_OKAY_SCORE = 60;
+const PROTEIN_STRETCH_FACTOR = 1.5;
 
 function clamp(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -118,8 +123,32 @@ function proteinTarget(category: CategorySlug) {
   return categoryScoringProfiles[category].protein;
 }
 
-function lowerIsBetterScore(value: number, excellent: number, weak: number) {
-  return clamp(100 - ((value - excellent) / (weak - excellent)) * 60);
+export function lowerIsBetterScore(value: number, excellent: number, weak: number) {
+  if (value <= excellent) {
+    if (excellent === 0) return value === 0 ? 100 : STRONG_REFERENCE_SCORE;
+    return clamp(STRONG_REFERENCE_SCORE + (1 - value / excellent) * (100 - STRONG_REFERENCE_SCORE));
+  }
+
+  return clamp(
+    STRONG_REFERENCE_SCORE +
+    ((value - excellent) / (weak - excellent)) * (WEAK_REFERENCE_SCORE - STRONG_REFERENCE_SCORE),
+  );
+}
+
+export function higherProteinScore(value: number, okay: number, excellent: number) {
+  if (value <= okay) return clamp((value / okay) * PROTEIN_OKAY_SCORE);
+  if (value <= excellent) {
+    return clamp(
+      PROTEIN_OKAY_SCORE +
+      ((value - okay) / (excellent - okay)) * (STRONG_REFERENCE_SCORE - PROTEIN_OKAY_SCORE),
+    );
+  }
+
+  const stretchTarget = excellent * PROTEIN_STRETCH_FACTOR;
+  return clamp(
+    STRONG_REFERENCE_SCORE +
+    ((value - excellent) / (stretchTarget - excellent)) * (100 - STRONG_REFERENCE_SCORE),
+  );
 }
 
 function lowSugarScore(product: Omit<Product, "scores">) {
@@ -141,9 +170,7 @@ function lowSugarScore(product: Omit<Product, "scores">) {
       "medium",
     );
   }
-  const raw =
-    100 - ((product.nutrition.sugar - target.excellent) / (target.weak - target.excellent)) * 60;
-  const score = clamp(raw);
+  const score = lowerIsBetterScore(product.nutrition.sugar, target.excellent, target.weak);
   const positives =
     product.nutrition.sugar <= target.excellent
       ? [copy(product, `Sehr niedriger Zuckerwert für diese Kategorie: ${displayNumber(product, product.nutrition.sugar)} g pro ${target.unit}.`, `Very low sugar for this category: ${displayNumber(product, product.nutrition.sugar)} g per ${target.unit}.`)]
@@ -163,7 +190,7 @@ function proteinScore(product: Omit<Product, "scores">) {
   }
 
   const target = proteinTarget(product.category);
-  const score = clamp((product.nutrition.protein / target.excellent) * 100);
+  const score = higherProteinScore(product.nutrition.protein, target.okay, target.excellent);
   const positives =
     product.nutrition.protein >= target.excellent
       ? [copy(product, `Sehr proteinreich für die Kategorie: ${displayNumber(product, product.nutrition.protein)} g.`, `Very high in protein for this category: ${displayNumber(product, product.nutrition.protein)} g.`)]

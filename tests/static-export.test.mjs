@@ -79,7 +79,7 @@ test("recalculates stored Supabase scores with the current rule version", () => 
   const product = mapSupabaseProduct(row);
 
   assert.equal(product.scores.length, 7);
-  assert.ok(product.scores.every((score) => score.ruleVersion === "2026.08.2"));
+  assert.ok(product.scores.every((score) => score.ruleVersion === "2026.08.3"));
   assert.notEqual(product.scores.find((score) => score.type === "overall_match")?.score, 1);
 });
 

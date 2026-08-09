@@ -36,9 +36,9 @@ test("breaks capped protein score ties with the exact protein value", () => {
   assert.ok(compareGoalEvidence(items[0], items[1], "protein") < 0);
 });
 
-test("breaks capped low sugar score ties with the exact sugar value", () => {
+test("orders strong low sugar products across the calibrated top range", () => {
   const items = [pastaProduct("sugar2", 14, 2), pastaProduct("sugar1", 14, 1), pastaProduct("sugar05", 14, 0.5)];
-  assert.deepEqual(items.map((item) => item.scores.find((score) => score.type === "low_sugar")?.score), [100, 100, 100]);
+  assert.deepEqual(items.map((item) => item.scores.find((score) => score.type === "low_sugar")?.score), [93, 97, 98]);
   assert.deepEqual(items.sort((a, b) => compareRankedProducts(a, b, "low_sugar")).map((item) => item.name), ["sugar05", "sugar1", "sugar2"]);
 });
 
