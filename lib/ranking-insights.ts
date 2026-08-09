@@ -181,8 +181,8 @@ function methodCopy(locale: SiteLocale, ranking: RankingPage) {
       "Vegan or plant based labels and disclosed milk allergens determine the vegan score. The package label remains authoritative.",
     ],
     overall_match: [
-      "Das Gesamturteil gewichtet Nährwerte, Zutatenqualität, Zucker, Protein und Familientauglichkeit zu einem vergleichbaren Score.",
-      "The overall score weights nutrition, ingredient quality, sugar, protein, and family suitability into one comparable score.",
+      "Das Gesamturteil besteht aus 65 Prozent Nährwertbewertung und 35 Prozent Zutatenbewertung. Zucker und Protein fließen nur über die Nährwertbewertung ein und werden nicht doppelt gezählt.",
+      "The overall score consists of 65 percent nutrition and 35 percent ingredients. Sugar and protein contribute through nutrition only and are not counted twice.",
     ],
     nutrition: [
       "Die Nährwertbewertung kombiniert Zucker, Protein, Salz und gesättigte Fettsäuren im Kontext der Produktgruppe.",

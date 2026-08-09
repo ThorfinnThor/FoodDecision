@@ -63,3 +63,16 @@ test("prefers the more reliable product when overall scores tie", () => {
 
   assert.deepEqual([uncertain, reliable].sort((a, b) => compareRankedProducts(a, b, "overall_match")).map((item) => item.name), ["Reliable", "Uncertain"]);
 });
+
+test("sorts compact Supabase ranking records with the same evidence rules", () => {
+  const compact = (name, protein) => ({
+    name,
+    slug: name.toLowerCase(),
+    locale: "de-DE",
+    nutrition: { sugar: 2, protein, salt: 0.1, saturatedFat: 0.5 },
+    ingredients: [{ id: "ingredient" }],
+    scores: [{ type: "protein", score: 100, confidence: "high" }],
+  });
+  const records = [compact("Erbsenpasta", 21), compact("Linsenpasta", 26), compact("Edamamepasta", 41.5)];
+  assert.deepEqual(records.sort((a, b) => compareRankedProducts(a, b, "protein")).map((item) => item.name), ["Edamamepasta", "Linsenpasta", "Erbsenpasta"]);
+});

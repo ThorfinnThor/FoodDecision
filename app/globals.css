@@ -267,10 +267,22 @@ main { min-height: 70vh; }
 .score-detail h3 { font-size: 18px; margin: 0; }
 .score-detail-head strong { color: var(--color-primary-700); font-size: 20px; font-variant-numeric: tabular-nums; }
 .score-detail > p { color: var(--color-text-500); font-size: 12px; }
+.score-calculation { align-items: stretch; background: var(--color-primary-50); border: 1px solid #dcebd1; border-radius: var(--radius-md); display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 0.8fr); margin-bottom: 20px; padding: 18px 20px; }
+.score-calculation > div { display: grid; gap: 4px; }
+.score-calculation span, .score-calculation small { color: var(--color-text-500); font-size: 12px; }
+.score-calculation strong { font-size: 20px; font-variant-numeric: tabular-nums; }
+.score-calculation > b { align-self: center; color: var(--color-text-500); font-size: 20px; }
+.score-calculation-result { border-left: 1px solid #c9dfb8; padding-left: 20px; }
+.score-calculation-result strong { color: var(--color-primary-700); }
 .reason-list { list-style: disc; padding-left: 18px; }
 .method-note, .faq-list details { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-top: 20px; padding: 0 20px; }
 .method-note summary, .faq-list summary { cursor: pointer; font-weight: 700; min-height: 52px; padding: 16px 0; }
 .method-note p, .faq-list details p { color: var(--color-text-700); line-height: 1.65; margin-top: 0; }
+.method-note h3 { font-size: 16px; margin: 22px 0 12px; }
+.score-thresholds { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 0 20px; }
+.score-thresholds > div { border-top: 1px solid var(--color-border); display: grid; gap: 4px; padding-top: 10px; }
+.score-thresholds dt { font-weight: 700; }
+.score-thresholds dd { color: var(--color-text-700); line-height: 1.5; margin: 0; }
 .two-column { display: grid; gap: 24px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .detail-panel { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 24px; }
 .detail-panel h3 { margin-top: 0; }
@@ -519,6 +531,10 @@ main { min-height: 70vh; }
   .product-detail-visual { height: 360px; order: 2; width: 100%; }
   .product-detail-copy { order: 1; }
   .pros-cons, .two-column, .score-grid, .suitability-grid, .compare-summary-grid { grid-template-columns: 1fr; }
+  .score-calculation { grid-template-columns: 1fr; }
+  .score-calculation > b { display: none; }
+  .score-calculation-result { border-left: 0; border-top: 1px solid #c9dfb8; padding-left: 0; padding-top: 12px; }
+  .score-thresholds { grid-template-columns: 1fr; }
   .quality-notice { grid-template-columns: 1fr; }
   .quality-flags { grid-column: auto; }
   .product-page { padding-bottom: 72px; }

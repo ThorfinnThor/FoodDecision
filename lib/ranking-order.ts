@@ -1,5 +1,18 @@
-import { scoreByType } from "./scoring.ts";
-import type { Product, ScoreConfidence, ScoreType } from "./types.ts";
+import type { ProductScore, ScoreConfidence, ScoreType, SiteLocale } from "./types.ts";
+
+export type RankableProduct = {
+  name: string;
+  slug: string;
+  locale: SiteLocale;
+  nutrition: {
+    sugar: number | null;
+    protein: number | null;
+    salt: number | null;
+    saturatedFat: number | null;
+  };
+  ingredients: unknown[];
+  scores: Array<Pick<ProductScore, "type" | "score" | "confidence">>;
+};
 
 type Direction = "ascending" | "descending";
 type TieBreaker = { direction: Direction; value: number | null };
@@ -17,16 +30,16 @@ function compareNullable(a: number | null, b: number | null, direction: Directio
   return direction === "descending" ? b - a : a - b;
 }
 
-function scoreValue(product: Product, type: ScoreType) {
-  return scoreByType(product, type)?.score ?? null;
+function scoreValue(product: RankableProduct, type: ScoreType) {
+  return product.scores.find((score) => score.type === type)?.score ?? null;
 }
 
-function nutritionCompleteness(product: Product) {
+function nutritionCompleteness(product: RankableProduct) {
   const values = Object.values(product.nutrition).filter((value) => typeof value === "number");
   return values.length + (product.ingredients.length > 0 ? 1 : 0);
 }
 
-function goalTieBreakers(product: Product, scoreType: ScoreType): TieBreaker[] {
+function goalTieBreakers(product: RankableProduct, scoreType: ScoreType): TieBreaker[] {
   switch (scoreType) {
     case "protein":
       return [{ value: product.nutrition.protein, direction: "descending" }];
@@ -65,9 +78,9 @@ function goalTieBreakers(product: Product, scoreType: ScoreType): TieBreaker[] {
   }
 }
 
-export function compareGoalEvidence(a: Product, b: Product, scoreType: ScoreType) {
-  const scoreA = scoreByType(a, scoreType);
-  const scoreB = scoreByType(b, scoreType);
+export function compareGoalEvidence(a: RankableProduct, b: RankableProduct, scoreType: ScoreType) {
+  const scoreA = a.scores.find((score) => score.type === scoreType);
+  const scoreB = b.scores.find((score) => score.type === scoreType);
   const scoreDifference = compareNullable(scoreA?.score ?? null, scoreB?.score ?? null, "descending");
   if (scoreDifference !== 0) return scoreDifference;
 
@@ -92,7 +105,7 @@ export function compareGoalEvidence(a: Product, b: Product, scoreType: ScoreType
   return 0;
 }
 
-export function compareRankedProducts(a: Product, b: Product, scoreType: ScoreType) {
+export function compareRankedProducts(a: RankableProduct, b: RankableProduct, scoreType: ScoreType) {
   const evidenceDifference = compareGoalEvidence(a, b, scoreType);
   if (evidenceDifference !== 0) return evidenceDifference;
 

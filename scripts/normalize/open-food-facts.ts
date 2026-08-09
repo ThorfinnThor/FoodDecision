@@ -7,7 +7,8 @@ import {
   type NormalizedOpenFoodFactsProduct,
   type RawOpenFoodFactsRow,
 } from "../../lib/normalization.ts";
-import type { MarketCode, SiteLocale } from "../../lib/types.ts";
+import { compareRankedProducts, type RankableProduct } from "../../lib/ranking-order.ts";
+import type { MarketCode, ScoreType, SiteLocale } from "../../lib/types.ts";
 
 const SOURCE_ID = "open-food-facts";
 const BATCH_SIZE = 100;
@@ -181,17 +182,55 @@ async function upsertNamedEntities(table: "ingredients" | "allergens" | "labels"
 
 type RankedProductRow = {
   id: string;
+  name: string;
+  slug: string;
+  locale: SiteLocale;
   product_categories?: Array<{ categories?: { slug: string } | null }>;
+  nutrition_facts?: {
+    sugar: number | null;
+    protein: number | null;
+    salt: number | null;
+    saturated_fat: number | null;
+  } | Array<{
+    sugar: number | null;
+    protein: number | null;
+    salt: number | null;
+    saturated_fat: number | null;
+  }> | null;
+  product_ingredients?: Array<{ id: string }>;
   product_scores?: Array<{
-    score_type: string;
+    score_type: ScoreType;
     score: number | null;
     confidence: "high" | "medium" | "low";
   }>;
 };
 
+function rankableProduct(product: RankedProductRow): RankableProduct {
+  const nutrition = Array.isArray(product.nutrition_facts)
+    ? product.nutrition_facts[0]
+    : product.nutrition_facts;
+  return {
+    name: product.name,
+    slug: product.slug,
+    locale: product.locale,
+    nutrition: {
+      sugar: nutrition?.sugar ?? null,
+      protein: nutrition?.protein ?? null,
+      salt: nutrition?.salt ?? null,
+      saturatedFat: nutrition?.saturated_fat ?? null,
+    },
+    ingredients: product.product_ingredients ?? [],
+    scores: product.product_scores?.map((score) => ({
+      type: score.score_type,
+      score: score.score,
+      confidence: score.confidence,
+    })) ?? [],
+  };
+}
+
 async function rebuildRankings(rankingRows: RankingPageRow[]) {
   const products = await supabaseRequest<RankedProductRow[]>(
-    `products?select=id,product_categories(categories(slug)),product_scores(score_type,score,confidence)&market=eq.${market}&publishability=eq.ranking_eligible`,
+    `products?select=id,name,slug,locale,product_categories(categories(slug)),nutrition_facts(sugar,protein,salt,saturated_fat),product_ingredients(id),product_scores(score_type,score,confidence)&market=eq.${market}&publishability=eq.ranking_eligible`,
   );
 
   for (const ranking of rankingRows) {
@@ -201,10 +240,11 @@ async function rebuildRankings(rankingRows: RankingPageRow[]) {
       )
       .map((product) => ({
         product,
+        rankable: rankableProduct(product),
         score: product.product_scores?.find((item) => item.score_type === ranking.sort_score),
       }))
       .filter((entry) => entry.score?.score !== null && entry.score?.score !== undefined)
-      .sort((a, b) => (b.score?.score ?? -1) - (a.score?.score ?? -1));
+      .sort((a, b) => compareRankedProducts(a.rankable, b.rankable, ranking.sort_score as ScoreType));
     const confidentCount = candidates.filter((entry) => entry.score?.confidence !== "low").length;
     const indexable = candidates.length >= ranking.min_products_required && confidentCount >= 10;
 

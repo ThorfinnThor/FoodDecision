@@ -22,12 +22,15 @@ function proteinRanking(items) {
 
 test("accepts rankings ordered by goal evidence and deterministic tie breakers", () => {
   const base = products.find((product) => product.category === "proteinriegel");
-  const alpha = rescoredProduct(base, { id: "alpha", slug: "alpha", name: "Alpha", nutrition: { ...base.nutrition, protein: 30 } });
+  const alpha = rescoredProduct(base, { id: "alpha", slug: "alpha", name: "Alpha", nutrition: { ...base.nutrition, protein: 15 } });
   const beta = rescoredProduct(base, { id: "beta", slug: "beta", name: "Beta", nutrition: { ...base.nutrition, protein: 36 } });
   const candidates = [alpha, beta].sort((a, b) => compareRankedProducts(a, b, "protein"));
   const result = auditRankingIntegrity(candidates, [proteinRanking(candidates)]);
   assert.deepEqual(result.failures, []);
   assert.equal(candidates[0].slug, "beta");
+  assert.ok(result.stats.alternativeOpportunities > 0);
+  assert.equal(result.stats.coveredAlternativeOpportunities, result.stats.alternativeOpportunities);
+  assert.ok(result.stats.productsWithOverallAlternatives >= 0);
 });
 
 test("blocks ranking membership, ordering, formula, and contradiction regressions", () => {

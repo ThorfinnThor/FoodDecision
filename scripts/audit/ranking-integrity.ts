@@ -36,9 +36,9 @@ for (const localeEntry of rootManifest.locales) {
 const lines = [
   "## Ranking integrity audit",
   "",
-  "| Market | Products | Ranking pages | Ranked items | Sugar conflicts | Missing ingredients | Result |",
-  "| --- | ---: | ---: | ---: | ---: | ---: | --- |",
-  ...results.map(({ market, stats, failures }) => `| ${market} | ${stats.products} | ${stats.rankingPages} | ${stats.rankedItems} | ${stats.contradictorySugarProducts} | ${stats.missingIngredientProducts} | ${failures.length ? "Blocked" : "Pass"} |`),
+  "| Market | Products | Ranking pages | Ranked items | Alternative opportunities | Covered | Products with overall alternatives | Result |",
+  "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+  ...results.map(({ market, stats, failures }) => `| ${market} | ${stats.products} | ${stats.rankingPages} | ${stats.rankedItems} | ${stats.alternativeOpportunities} | ${stats.coveredAlternativeOpportunities} | ${stats.productsWithOverallAlternatives} | ${failures.length ? "Blocked" : "Pass"} |`),
 ];
 
 for (const { market, failures, warnings } of results) {

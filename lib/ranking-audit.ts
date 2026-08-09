@@ -1,4 +1,5 @@
 import { compareRankedProducts } from "./ranking-order.ts";
+import { alternativeGoalOrder, rankImprovingAlternatives, type AlternativeGoal } from "./product-insights.ts";
 import { calculateOverallScoreValue, gradeForScore, scoreByType } from "./scoring.ts";
 import type { Product, RankingPage, ScoreType } from "./types.ts";
 
@@ -10,6 +11,9 @@ export type RankingAuditStats = {
   rankedItems: number;
   contradictorySugarProducts: number;
   missingIngredientProducts: number;
+  alternativeOpportunities: number;
+  coveredAlternativeOpportunities: number;
+  productsWithOverallAlternatives: number;
 };
 
 const requiredScoreTypes = ["nutrition", "ingredient_quality", "protein", "low_sugar", "family", "vegan", "overall_match"] as const;
@@ -38,6 +42,52 @@ function distributionWarnings(products: Product[]) {
     if (maximumScores / scores.length > 0.3) warnings.push(`${key}:${maximumScores}_of_${scores.length}_products_score_100`);
   }
   return warnings;
+}
+
+function independentAlternativeCandidates(current: Product, products: Product[], goal: AlternativeGoal) {
+  const currentScore = scoreByType(current, goal)?.score;
+  if (typeof currentScore !== "number") return [];
+  return products.filter((candidate) => {
+    if (candidate.slug === current.slug || candidate.category !== current.category) return false;
+    if (candidate.market !== current.market || candidate.locale !== current.locale || candidate.nutrition.basis !== current.nutrition.basis) return false;
+    if (candidate.publishability !== "ranking_eligible" && candidate.publishability !== "published") return false;
+    const candidateScore = scoreByType(candidate, goal);
+    if (typeof candidateScore?.score !== "number" || candidateScore.score - currentScore < 3) return false;
+    if (candidateScore.confidence === "low") return false;
+    if (goal === "overall_match" && scoreByType(candidate, "ingredient_quality")?.score == null) return false;
+    return true;
+  });
+}
+
+function auditAlternatives(products: Product[]) {
+  const failures: string[] = [];
+  let opportunities = 0;
+  let covered = 0;
+  const productsWithOverallAlternatives = new Set<string>();
+  const comparableProducts = products.filter((product) => product.publishability === "ranking_eligible" || product.publishability === "published");
+
+  for (const current of comparableProducts) {
+    for (const goal of alternativeGoalOrder) {
+      const expected = independentAlternativeCandidates(current, comparableProducts, goal);
+      const recommendations = rankImprovingAlternatives(current, comparableProducts, goal, 3);
+      const key = `${current.slug}:${goal}`;
+      if (expected.length) opportunities += 1;
+      if (recommendations.length) covered += 1;
+      if (goal === "overall_match" && recommendations.length) productsWithOverallAlternatives.add(current.slug);
+      if (expected.length && !recommendations.length) failures.push(`${key}:better_candidates_not_recommended`);
+      if (!expected.length && recommendations.length) failures.push(`${key}:recommendation_without_eligible_candidate`);
+      if (new Set(recommendations.map((recommendation) => recommendation.product.slug)).size !== recommendations.length) {
+        failures.push(`${key}:duplicate_recommendations`);
+      }
+      for (const recommendation of recommendations) {
+        if (!expected.some((candidate) => candidate.slug === recommendation.product.slug)) {
+          failures.push(`${key}:${recommendation.product.slug}:ineligible_recommendation`);
+        }
+        if (recommendation.scoreDelta < 3) failures.push(`${key}:${recommendation.product.slug}:score_delta_below_3`);
+      }
+    }
+  }
+  return { failures, opportunities, covered, productsWithOverallAlternatives: productsWithOverallAlternatives.size };
 }
 
 export function auditRankingIntegrity(products: Product[], rankings: GeneratedRanking[]) {
@@ -96,6 +146,9 @@ export function auditRankingIntegrity(products: Product[], rankings: GeneratedRa
     if (actualSlugs.join("|") !== expectedSlugs.join("|")) failures.push(`${key}:order_or_membership_mismatch`);
   }
 
+  const alternatives = auditAlternatives(products);
+  failures.push(...alternatives.failures);
+
   warnings.push(...distributionWarnings(products));
   const stats: RankingAuditStats = {
     products: products.length,
@@ -103,6 +156,9 @@ export function auditRankingIntegrity(products: Product[], rankings: GeneratedRa
     rankedItems: rankings.reduce((total, ranking) => total + ranking.items.length, 0),
     contradictorySugarProducts: products.filter((product) => product.qualityFlags.includes("ingredient_nutrition_conflict")).length,
     missingIngredientProducts: products.filter((product) => !product.ingredients.length).length,
+    alternativeOpportunities: alternatives.opportunities,
+    coveredAlternativeOpportunities: alternatives.covered,
+    productsWithOverallAlternatives: alternatives.productsWithOverallAlternatives,
   };
   return { failures: [...new Set(failures)], warnings: [...new Set(warnings)], stats };
 }
