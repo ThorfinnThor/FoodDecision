@@ -73,7 +73,9 @@ function createCatalog(locale: SiteLocale) {
       }))
       .sort((a, b) => b.match.score - a.match.score)
       .slice(0, limit);
+  let brandCache: Array<{ name: string; slug: string; products: Product[] }> | null = null;
   const getBrands = () => {
+    if (brandCache) return brandCache;
     const counts = new Map<string, { name: string; slug: string; products: Product[] }>();
     for (const product of products) {
       const slug = entitySlug(product.brand);
@@ -81,10 +83,13 @@ function createCatalog(locale: SiteLocale) {
       current.products.push(product);
       counts.set(slug, current);
     }
-    return [...counts.values()].sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, locale));
+    brandCache = [...counts.values()].sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, locale));
+    return brandCache;
   };
   const getBrand = (slug: string) => getBrands().find((brand) => brand.slug === slug);
-  const getIngredients = (minProducts = 3, limit = 150) => {
+  let ingredientCache: Array<{ name: string; slug: string; products: Product[] }> | null = null;
+  const allIngredients = () => {
+    if (ingredientCache) return ingredientCache;
     const counts = new Map<string, { name: string; slug: string; products: Product[] }>();
     for (const product of products) {
       for (const ingredient of new Set(product.ingredients)) {
@@ -95,12 +100,19 @@ function createCatalog(locale: SiteLocale) {
         counts.set(slug, current);
       }
     }
-    return [...counts.values()]
+    ingredientCache = [...counts.values()]
+      .sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, locale));
+    return ingredientCache;
+  };
+  const getIngredients = (minProducts = 3, limit = 150) => {
+    return allIngredients()
       .filter((ingredient) => ingredient.products.length >= minProducts)
-      .sort((a, b) => b.products.length - a.products.length || a.name.localeCompare(b.name, locale))
       .slice(0, limit);
   };
-  const getIngredient = (slug: string) => getIngredients(2, 300).find((ingredient) => ingredient.slug === slug);
+  const getIngredient = (slug: string) => {
+    const ingredient = allIngredients().find((candidate) => candidate.slug === slug);
+    return ingredient && ingredient.products.length >= 2 ? ingredient : undefined;
+  };
   const finderResults = () => products
     .filter((product) => product.publishability === "ranking_eligible" || product.publishability === "published")
     .sort((a, b) => (scoreByType(b, "overall_match")?.score ?? 0) - (scoreByType(a, "overall_match")?.score ?? 0));
