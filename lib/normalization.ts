@@ -109,6 +109,41 @@ function unique(values: string[]) {
   return [...bySlug.values()];
 }
 
+const retailPricePattern = /(?:\d+[.,]\d{1,2}\s*(?:€|eur|\$|£)|\b(?:kg|g|ml|l)\s*=)/i;
+const knownBrands = ["Alnatura"];
+
+export function normalizeListingName(value: string | null | undefined) {
+  if (!value?.trim()) return null;
+  let name = value.replace(/\s+/g, " ").trim();
+  name = name.replace(/\s+\d+(?:[.,]\d+)?\s*(?:kg|g|ml|l)\b.*$/i, "");
+  name = name.replace(/\s+\d+[.,]\d{1,2}\s*(?:€|eur|\$|£).*$/i, "");
+  for (const brand of knownBrands) {
+    name = name.replace(new RegExp(`^(?:rossmann|dm|rewe|edeka|aldi|lidl|kaufland)\\s+(?=${brand}\\b)`, "i"), "");
+  }
+  return name.replace(/[\s,;:|\-]+$/g, "").trim() || null;
+}
+
+export function normalizeBrandName(value: string | null | undefined) {
+  if (!value?.trim()) return null;
+  const brand = value.split(",")[0].replace(/\s+/g, " ").trim();
+  if (!/[\p{L}]/u.test(brand) || retailPricePattern.test(brand) || /^[\d\s.,()€$£]+$/.test(brand) || brand.length > 80) return null;
+  return brand;
+}
+
+export function inferBrandFromProductName(name: string | null | undefined) {
+  if (!name) return null;
+  return knownBrands.find((brand) => new RegExp(`\\b${brand}\\b`, "i").test(name)) ?? null;
+}
+
+function inferredBrand(name: string | null, payload: Record<string, unknown>) {
+  const payloadBrand = normalizeBrandName(typeof payload.brands === "string" ? payload.brands : null);
+  if (payloadBrand) return payloadBrand;
+  const tags = stringArray(payload.brands_tags);
+  const tagBrand = tags.map((tag) => normalizeBrandName(tag.replace(/^[a-z]{2}:/i, "").replace(/[-_]+/g, " "))).find(Boolean);
+  if (tagBrand) return tagBrand;
+  return inferBrandFromProductName(name);
+}
+
 export function splitIngredientText(value: string) {
   const ingredients: string[] = [];
   let current = "";
@@ -217,6 +252,8 @@ function qualityFlags(input: {
   nutritionCompleteness: number;
   implausibleNutrition: string[];
   sourceUpdatedAt: string | null;
+  productNameCleaned: boolean;
+  brandRejected: boolean;
 }) {
   const flags: QualityFlag[] = [];
   const add = (flag: string, severity: QualityFlag["severity"]) => flags.push({ flag, severity });
@@ -224,6 +261,8 @@ function qualityFlags(input: {
   if (!input.gtin) add("missing_gtin", "blocker");
   if (!input.name) add("missing_product_name", "blocker");
   if (!input.brandName) add("missing_brand", "warning");
+  if (input.productNameCleaned) add("retail_listing_text_removed", "info");
+  if (input.brandRejected) add("invalid_brand_removed", "warning");
   if (input.nutritionCompleteness === 0) add("missing_nutrition", "blocker");
   else if (input.nutritionCompleteness < 1) add("incomplete_nutrition", "warning");
   if (input.implausibleNutrition.length) add("implausible_nutrition", "warning");
@@ -272,8 +311,10 @@ export function normalizeOpenFoodFactsRow(raw: RawOpenFoodFactsRow): NormalizedO
   const market = raw.market ?? "DE";
   const locale = raw.locale ?? (market === "US" ? "en-US" : "de-DE");
   const gtin = String(raw.gtin || raw.external_id || "").trim();
-  const name = raw.product_name?.trim() || null;
-  const brandName = raw.brand_names?.split(",")[0]?.trim() || null;
+  const rawName = raw.product_name?.trim() || null;
+  const name = normalizeListingName(rawName);
+  const rawBrandName = raw.brand_names?.split(",")[0]?.trim() || null;
+  const brandName = normalizeBrandName(rawBrandName) ?? inferredBrand(name, raw.payload);
   const image = licensedProductImage(raw.image_url, gtin);
   const ingredients = ingredientNames(raw.payload, locale);
   const labels = unique(stringArray(raw.labels_tags).map((tag) => humanizeTag(tag, locale)));
@@ -290,6 +331,8 @@ export function normalizeOpenFoodFactsRow(raw: RawOpenFoodFactsRow): NormalizedO
     nutritionCompleteness: completeness,
     implausibleNutrition: implausible,
     sourceUpdatedAt: raw.last_modified_at,
+    productNameCleaned: Boolean(rawName && name && rawName !== name),
+    brandRejected: Boolean(rawBrandName && !normalizeBrandName(rawBrandName)),
   });
   const publishability = publishabilityFor(flags, nutrition, completeness);
   const displayName = name ?? (locale === "de-DE" ? `Produkt ${gtin || raw.id}` : `Product ${gtin || raw.id}`);
