@@ -103,11 +103,16 @@ function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
 
-function nonNegativeNumber(value: string | string[] | undefined) {
+export function optionalBoundedNumber(value: string, maximum: number) {
+  if (!value.trim()) return null;
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0) return null;
+  return Math.min(maximum, number);
+}
+
+function boundedParam(value: string | string[] | undefined, maximum: number) {
   const raw = firstParam(value);
-  if (!raw.trim()) return null;
-  const number = Number(raw);
-  return Number.isFinite(number) && number >= 0 ? number : null;
+  return optionalBoundedNumber(raw, maximum);
 }
 
 export function hasFinderSearchParams(params: FinderSearchParams) {
@@ -128,9 +133,9 @@ export function finderCriteriaFromSearchParams(params: FinderSearchParams, categ
     sweetenerFree: firstParam(params.sweeteners) === "1",
     palmOilFree: firstParam(params.palm) === "1",
     excludedAllergens: firstParam(params.allergens).split(",").map((item) => item.trim()).filter(Boolean).slice(0, 20),
-    maxSugar: nonNegativeNumber(params.maxSugar),
-    minProtein: nonNegativeNumber(params.minProtein),
-    maxCalories: nonNegativeNumber(params.maxCalories),
+    maxSugar: boundedParam(params.maxSugar, 100),
+    minProtein: boundedParam(params.minProtein, 100),
+    maxCalories: boundedParam(params.maxCalories, 1000),
     includeIngredient: firstParam(params.include),
     excludeIngredient: firstParam(params.exclude),
     minimumConfidence: confidence === "medium" || confidence === "high" ? confidence : "any",
@@ -143,7 +148,7 @@ export function finderCriteriaFromStored(value: unknown, categories: CategorySlu
   const goal = finderGoals.has(requestedGoal) ? requestedGoal : "overall_match";
   const defaults = defaultFinderCriteria(goal);
   const category = typeof stored.category === "string" ? stored.category as CategorySlug : "all";
-  const numberOrNull = (candidate: unknown) => typeof candidate === "number" && Number.isFinite(candidate) && candidate >= 0 ? candidate : null;
+  const boundedStoredNumber = (candidate: unknown, maximum: number) => typeof candidate === "number" && Number.isFinite(candidate) && candidate >= 0 ? Math.min(maximum, candidate) : null;
   const text = (candidate: unknown) => typeof candidate === "string" ? candidate.trim().slice(0, 120) : "";
   const confidence = stored.minimumConfidence === "medium" || stored.minimumConfidence === "high" ? stored.minimumConfidence : "any";
   const excludedAllergens = Array.isArray(stored.excludedAllergens)
@@ -158,9 +163,9 @@ export function finderCriteriaFromStored(value: unknown, categories: CategorySlu
     sweetenerFree: stored.sweetenerFree === true,
     palmOilFree: stored.palmOilFree === true,
     excludedAllergens,
-    maxSugar: numberOrNull(stored.maxSugar),
-    minProtein: numberOrNull(stored.minProtein),
-    maxCalories: numberOrNull(stored.maxCalories),
+    maxSugar: boundedStoredNumber(stored.maxSugar, 100),
+    minProtein: boundedStoredNumber(stored.minProtein, 100),
+    maxCalories: boundedStoredNumber(stored.maxCalories, 1000),
     includeIngredient: text(stored.includeIngredient),
     excludeIngredient: text(stored.excludeIngredient),
     minimumConfidence: confidence,
