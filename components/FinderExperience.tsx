@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PREFERENCES_KEY, trackEvent } from "@/lib/client-state";
-import { defaultFinderCriteria, finderCriteriaFromStored, finderCriteriaToSearchParams, productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
+import { defaultFinderCriteria, finderCriteriaFromStored, finderCriteriaToSearchParams, optionalBoundedNumber, productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
 import { pick } from "@/lib/i18n";
 import type { Category, Product, ScoreType, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
@@ -185,9 +185,9 @@ export function FinderExperience({
               </fieldset>
 
               <fieldset className="filter-panel"><legend>{pick(locale, "Nährwertgrenzen pro 100 g/ml", "Nutrition limits per 100 g/ml")}</legend>
-                <label className="number-filter"><span>{pick(locale, "Maximaler Zucker", "Maximum sugar")}</span><input min="0" onChange={(event) => update("maxSugar", event.target.value === "" ? null : Number(event.target.value))} placeholder={pick(locale, "keine Grenze", "no limit")} step="0.5" type="number" value={criteria.maxSugar ?? ""} /><small>g</small></label>
-                <label className="number-filter"><span>{pick(locale, "Mindestprotein", "Minimum protein")}</span><input min="0" onChange={(event) => update("minProtein", event.target.value === "" ? null : Number(event.target.value))} placeholder={pick(locale, "keine Grenze", "no limit")} step="0.5" type="number" value={criteria.minProtein ?? ""} /><small>g</small></label>
-                <label className="number-filter"><span>{pick(locale, "Maximale Kalorien", "Maximum calories")}</span><input min="0" onChange={(event) => update("maxCalories", event.target.value === "" ? null : Number(event.target.value))} placeholder={pick(locale, "keine Grenze", "no limit")} step="10" type="number" value={criteria.maxCalories ?? ""} /><small>kcal</small></label>
+                <label className="number-filter"><span>{pick(locale, "Maximaler Zucker", "Maximum sugar")}</span><input max="100" min="0" onChange={(event) => update("maxSugar", optionalBoundedNumber(event.target.value, 100))} placeholder={pick(locale, "keine Grenze", "no limit")} step="0.5" type="number" value={criteria.maxSugar ?? ""} /><small>g</small></label>
+                <label className="number-filter"><span>{pick(locale, "Mindestprotein", "Minimum protein")}</span><input max="100" min="0" onChange={(event) => update("minProtein", optionalBoundedNumber(event.target.value, 100))} placeholder={pick(locale, "keine Grenze", "no limit")} step="0.5" type="number" value={criteria.minProtein ?? ""} /><small>g</small></label>
+                <label className="number-filter"><span>{pick(locale, "Maximale Kalorien", "Maximum calories")}</span><input max="1000" min="0" onChange={(event) => update("maxCalories", optionalBoundedNumber(event.target.value, 1000))} placeholder={pick(locale, "keine Grenze", "no limit")} step="10" type="number" value={criteria.maxCalories ?? ""} /><small>kcal</small></label>
               </fieldset>
 
               <fieldset className="filter-panel"><legend>{pick(locale, "Suche und Datenqualität", "Search and data quality")}</legend>
