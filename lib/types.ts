@@ -111,6 +111,7 @@ export type Product = {
   id: string;
   gtin: string;
   slug: string;
+  legacySlugs?: string[];
   name: string;
   brand: string;
   category: CategorySlug;
