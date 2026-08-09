@@ -58,12 +58,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "ingredient_quality",
       "label": "Ingredient score",
-      "score": 70,
+      "score": 75,
       "grade": "good",
       "confidence": "high",
       "positives": [
@@ -74,7 +74,7 @@
         "Additives or flavorings detected."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "protein",
@@ -87,7 +87,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "low_sugar",
@@ -100,13 +100,13 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "family",
       "label": "Family score",
-      "score": 84,
-      "grade": "good",
+      "score": 86,
+      "grade": "excellent",
       "confidence": "high",
       "positives": [
         "Conservative assessment based on sugar, ingredients, and salt."
@@ -115,7 +115,7 @@
         "Check allergens: Milk, Almonds."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "vegan",
@@ -126,20 +126,23 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "overall_match",
       "label": "Overall score",
-      "score": 89,
+      "score": 87,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Combines the most important sub-scores for a quick decision."
+        "The overall score combines nutrition and ingredients without counting individual nutrients twice."
       ],
-      "negatives": [],
+      "negatives": [
+        "Sweeteners detected.",
+        "Additives or flavorings detected."
+      ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     }
   ]
 }

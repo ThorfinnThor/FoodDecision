@@ -53,12 +53,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "ingredient_quality",
       "label": "Zutatenbewertung",
-      "score": 92,
+      "score": 94,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -67,7 +67,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "protein",
@@ -80,7 +80,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "low_sugar",
@@ -93,12 +93,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "family",
       "label": "Bewertung für Familien",
-      "score": 96,
+      "score": 97,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -108,7 +108,7 @@
         "Allergene prüfen: Milch."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "vegan",
@@ -119,7 +119,7 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "overall_match",
@@ -128,11 +128,11 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Kombiniert die wichtigsten Teilbewertungen für eine schnelle Entscheidung."
+        "Das Gesamturteil kombiniert Nährwerte und Zutaten, ohne einzelne Nährwerte doppelt zu zählen."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     }
   ]
 }

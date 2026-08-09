@@ -22,13 +22,16 @@ export function DecisionSnapshot({ categoryProducts, product }: { categoryProduc
   const locale = product.locale;
   const summary = productDecisionSummary(product, categoryProducts);
   const primaryUse = summary.bestFor[0];
+  const peerCopy = summary.peerCount === 1
+    ? pick(locale, "Verglichen mit 1 Produkt derselben Kategorie und Bezugsbasis.", "Compared with 1 product in the same category and serving basis.")
+    : pick(locale, `Verglichen mit ${summary.peerCount} Produkten derselben Kategorie und Bezugsbasis.`, `Compared with ${summary.peerCount} products in the same category and serving basis.`);
 
   return (
     <section className="detail-section suitability-section">
       <div className="section-heading">
         <p className="eyebrow">{pick(locale, "Entscheidung auf einen Blick", "Decision snapshot")}</p>
         <h2>{pick(locale, "Wo dieses Produkt in seiner Kategorie steht", "Where this product stands in its category")}</h2>
-        <p>{pick(locale, `Verglichen mit ${summary.peerCount} Produkten derselben Kategorie und Bezugsbasis.`, `Compared with ${summary.peerCount} products in the same category and serving basis.`)}</p>
+        <p>{peerCopy}</p>
       </div>
       <div className="suitability-grid">
         <article>

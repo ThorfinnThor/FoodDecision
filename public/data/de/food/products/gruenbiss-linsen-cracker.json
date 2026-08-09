@@ -58,12 +58,12 @@
         "Salzgehalt ist für diese Kategorie auffällig."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "ingredient_quality",
       "label": "Zutatenbewertung",
-      "score": 92,
+      "score": 94,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -72,7 +72,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "protein",
@@ -85,7 +85,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "low_sugar",
@@ -94,16 +94,16 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Sehr niedriger Zuckerwert für diese Kategorie: 2.4 g pro 100 g."
+        "Sehr niedriger Zuckerwert für diese Kategorie: 2,4 g pro 100 g."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "family",
       "label": "Bewertung für Familien",
-      "score": 88,
+      "score": 89,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -111,7 +111,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "vegan",
@@ -124,20 +124,22 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "overall_match",
       "label": "Gesamtbewertung",
-      "score": 94,
+      "score": 91,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Kombiniert die wichtigsten Teilbewertungen für eine schnelle Entscheidung."
+        "Das Gesamturteil kombiniert Nährwerte und Zutaten, ohne einzelne Nährwerte doppelt zu zählen."
       ],
-      "negatives": [],
+      "negatives": [
+        "Salzgehalt ist für diese Kategorie auffällig."
+      ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     }
   ]
 }

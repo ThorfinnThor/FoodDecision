@@ -58,12 +58,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "ingredient_quality",
       "label": "Ingredient score",
-      "score": 92,
+      "score": 94,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -72,7 +72,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "protein",
@@ -85,7 +85,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "low_sugar",
@@ -98,12 +98,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "family",
       "label": "Family score",
-      "score": 96,
+      "score": 97,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -113,7 +113,7 @@
         "Check allergens: Gluten, Hazelnuts."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "vegan",
@@ -126,20 +126,20 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "overall_match",
       "label": "Overall score",
-      "score": 95,
+      "score": 96,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Combines the most important sub-scores for a quick decision."
+        "The overall score combines nutrition and ingredients without counting individual nutrients twice."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     }
   ]
 }

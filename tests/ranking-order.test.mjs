@@ -54,3 +54,12 @@ test("uses evidence ties for comparisons without inventing a name-based winner",
   assert.ok(compareGoalEvidence(lower, higher, "protein") > 0);
   assert.equal(compareGoalEvidence(lower, same, "protein"), 0);
 });
+
+test("prefers the more reliable product when overall scores tie", () => {
+  const reliable = pastaProduct("Reliable", 20);
+  const uncertain = pastaProduct("Uncertain", 20);
+  reliable.scores = reliable.scores.map((score) => score.type === "overall_match" ? { ...score, score: 80, confidence: "high" } : score);
+  uncertain.scores = uncertain.scores.map((score) => score.type === "overall_match" ? { ...score, score: 80, confidence: "medium" } : score);
+
+  assert.deepEqual([uncertain, reliable].sort((a, b) => compareRankedProducts(a, b, "overall_match")).map((item) => item.name), ["Reliable", "Uncertain"]);
+});

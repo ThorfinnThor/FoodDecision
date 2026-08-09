@@ -4,7 +4,7 @@
     "slug": "nordhafer-barista-ohne-zucker",
     "name": "Nordhafer Barista ohne Zucker",
     "brand": "Nordhafer",
-    "score": 82,
+    "score": 87,
     "category": "hafermilch",
     "filterValues": {
       "labels": [
@@ -25,7 +25,7 @@
     "slug": "oatly-style-haferdrink-classic",
     "name": "Oatly Style Haferdrink Classic",
     "brand": "Oatly Style",
-    "score": 70,
+    "score": 78,
     "category": "hafermilch",
     "filterValues": {
       "labels": [
@@ -44,7 +44,7 @@
     "slug": "kraftkern-proteinriegel-kakao",
     "name": "Kraftkern Proteinriegel Kakao",
     "brand": "Kraftkern",
-    "score": 89,
+    "score": 87,
     "category": "proteinriegel",
     "filterValues": {
       "labels": [
@@ -65,7 +65,7 @@
     "slug": "morgenfeld-basis-muesli",
     "name": "Morgenfeld Basis Müsli",
     "brand": "Morgenfeld",
-    "score": 95,
+    "score": 96,
     "category": "muesli",
     "filterValues": {
       "labels": [
@@ -107,7 +107,7 @@
     "slug": "gruenbiss-linsen-cracker",
     "name": "Gruenbiss Linsen Cracker",
     "brand": "Gruenbiss",
-    "score": 94,
+    "score": 91,
     "category": "vegane-snacks",
     "filterValues": {
       "labels": [

@@ -78,8 +78,22 @@ test("recalculates stored Supabase scores with the current rule version", () => 
   const product = mapSupabaseProduct(row);
 
   assert.equal(product.scores.length, 7);
-  assert.ok(product.scores.every((score) => score.ruleVersion === "2026.08.1"));
+  assert.ok(product.scores.every((score) => score.ruleVersion === "2026.08.2"));
   assert.notEqual(product.scores.find((score) => score.type === "overall_match")?.score, 1);
+});
+
+test("cleans stored packaging copy and derives nutrition conflicts during export", () => {
+  const row = productRow({ ...nutrition, sugar: 0 });
+  row.product_ingredients = [
+    { position: 0, ingredients: { name: "Glukosesirup" } },
+    { position: 1, ingredients: { name: "Trocken und lichtgeschützt lagern" } },
+  ];
+  const product = mapSupabaseProduct(row);
+
+  assert.deepEqual(product.ingredients, ["Glukosesirup"]);
+  assert.ok(product.qualityFlags.includes("ingredient_text_cleaned"));
+  assert.ok(product.qualityFlags.includes("ingredient_nutrition_conflict"));
+  assert.equal(product.scores.find((score) => score.type === "low_sugar")?.confidence, "medium");
 });
 
 test("rejects fixture exports in Vercel deployments", () => {

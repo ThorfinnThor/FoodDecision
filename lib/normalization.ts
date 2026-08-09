@@ -1,6 +1,7 @@
 import { calculateScores } from "./scoring.ts";
 import { categoryLabels, categoryScoringProfiles, localizedCategoryLabel } from "./catalog.ts";
 import { licensedProductImage } from "./image-license.ts";
+import { analyzeIngredients, cleanIngredientEntries } from "./ingredient-analysis.ts";
 import type {
   CategorySlug,
   MarketCode,
@@ -130,6 +131,11 @@ export function splitIngredientText(value: string) {
 }
 
 function ingredientNames(payload: Record<string, unknown>, locale: SiteLocale) {
+  const localizedText = locale === "de-DE" ? payload.ingredients_text_de : payload.ingredients_text_en;
+  const text = (typeof localizedText === "string" && localizedText) ||
+    (typeof payload.ingredients_text === "string" && payload.ingredients_text) || "";
+  if (text) return cleanIngredientEntries(splitIngredientText(text));
+
   if (Array.isArray(payload.ingredients)) {
     const parsed = payload.ingredients
       .map((item) => {
@@ -140,13 +146,9 @@ function ingredientNames(payload: Record<string, unknown>, locale: SiteLocale) {
         return null;
       })
       .filter((item): item is string => Boolean(item));
-    if (parsed.length) return unique(parsed);
+    if (parsed.length) return cleanIngredientEntries(unique(parsed));
   }
-
-  const localizedText = locale === "de-DE" ? payload.ingredients_text_de : payload.ingredients_text_en;
-  const text = (typeof localizedText === "string" && localizedText) ||
-    (typeof payload.ingredients_text === "string" && payload.ingredients_text) || "";
-  return splitIngredientText(text);
+  return [];
 }
 
 function numericValue(source: Record<string, unknown>, keys: string[]) {
@@ -226,6 +228,14 @@ function qualityFlags(input: {
   else if (input.nutritionCompleteness < 1) add("incomplete_nutrition", "warning");
   if (input.implausibleNutrition.length) add("implausible_nutrition", "warning");
   if (!input.ingredients.length) add("missing_ingredients", "warning");
+  else if (analyzeIngredients(input.ingredients).excludedEntries.length) add("ingredient_text_cleaned", "info");
+  if (
+    input.ingredients.length
+    && analyzeIngredients(input.ingredients).detected.addedSugar
+    && typeof input.payload.nutriments === "object"
+    && input.payload.nutriments !== null
+    && (numericValue(input.payload.nutriments as Record<string, unknown>, ["sugars_100g", "sugars_100ml"]) ?? Infinity) <= 0.5
+  ) add("ingredient_nutrition_conflict", "warning");
   if (!Array.isArray(input.payload.allergens_tags)) add("allergens_unverified", "info");
   if (!input.imageUrl) add("missing_image", "info");
   else if (!input.imageSourceAllowed) add("unlicensed_image_source", "warning");

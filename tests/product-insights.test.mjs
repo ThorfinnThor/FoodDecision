@@ -187,3 +187,17 @@ test("recommends only measurable, same-category improvements", () => {
 
   assert.equal(rankImprovingAlternatives(recommendations[0].product, oatProducts, "low_sugar").length, 0);
 });
+
+test("requires ingredient evidence for a best-overall alternative", () => {
+  const oatProducts = products.filter((product) => product.category === "hafermilch");
+  const current = oatProducts.find((product) => product.slug === "oatly-style-haferdrink-classic");
+  const candidate = oatProducts.find((product) => product.slug !== current?.slug);
+  assert.ok(current && candidate);
+  const withoutIngredients = {
+    ...candidate,
+    ingredients: [],
+    scores: candidate.scores.map((score) => score.type === "ingredient_quality" ? { ...score, score: null, confidence: "medium", missingData: ["ingredients"] } : score),
+  };
+
+  assert.equal(rankImprovingAlternatives(current, [withoutIngredients], "overall_match").length, 0);
+});

@@ -6,6 +6,7 @@ import { createHash } from "node:crypto";
 import { products as fixtureProducts } from "../../lib/data.ts";
 import { localizedCategoryCatalog, localizedCategoryLabel, localizedRankingPages } from "../../lib/catalog.ts";
 import { licensedProductImage } from "../../lib/image-license.ts";
+import { analyzeIngredients, cleanIngredientEntries } from "../../lib/ingredient-analysis.ts";
 import { hasDecisionReadyNutrition } from "../../lib/nutrition-quality.ts";
 import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
 import { assessDataFreshness } from "../../lib/data-freshness.ts";
@@ -200,6 +201,17 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
   const market = row.market ?? "DE";
   const locale = row.locale ?? (market === "US" ? "en-US" : "de-DE");
   const image = licensedProductImage(row.image_url, row.gtin);
+  const storedIngredients = row.product_ingredients
+    ?.slice()
+    .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
+    .flatMap((entry) => entry.ingredients?.name ?? []) ?? [];
+  const ingredients = cleanIngredientEntries(storedIngredients);
+  const ingredientAnalysis = analyzeIngredients(ingredients);
+  const qualityFlags = new Set(row.data_quality_flags?.map((flag) => flag.flag) ?? []);
+  if (ingredients.length < storedIngredients.length) qualityFlags.add("ingredient_text_cleaned");
+  if (nutrition && nutrition.sugar !== null && nutrition.sugar <= 0.5 && ingredientAnalysis.detected.addedSugar) {
+    qualityFlags.add("ingredient_nutrition_conflict");
+  }
 
   if (!category || !nutrition) {
     const missing = [!category ? "category" : null, !nutrition ? "nutrition" : null].filter(Boolean).join(" and ");
@@ -224,11 +236,7 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
       ? `${row.name} aus der Kategorie ${localizedCategoryLabel(category.slug, locale)}.`
       : `${row.name} in the ${localizedCategoryLabel(category.slug, locale)} category.`,
     labels: row.product_labels?.flatMap((entry) => entry.labels?.name ?? []) ?? [],
-    ingredients:
-      row.product_ingredients
-        ?.slice()
-        .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
-        .flatMap((entry) => entry.ingredients?.name ?? []) ?? [],
+    ingredients,
     allergens: row.product_allergens?.flatMap((entry) => entry.allergens?.name ?? []) ?? [],
     nutrition: {
       energyKcal: nutrition.energy_kcal,
@@ -257,7 +265,7 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
           sponsored: offer.sponsored,
         })) ?? [],
     publishability: row.publishability,
-    qualityFlags: row.data_quality_flags?.map((flag) => flag.flag) ?? [],
+    qualityFlags: [...qualityFlags],
   };
 
   return { ...product, scores: calculateScores(product) };

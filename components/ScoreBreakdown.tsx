@@ -20,7 +20,7 @@ export function ScoreBreakdown({ product }: { product: Product }) {
       <div className="section-heading">
         <p className="eyebrow">{pick(locale, "Transparent bewertet", "Transparent scoring")}</p>
         <h2>{pick(locale, "Warum dieses Produkt so bewertet wird", "Why this product received these scores")}</h2>
-        <p>{pick(locale, "Jede Teilbewertung basiert auf verfügbaren Produktdaten. Fehlende Angaben werden nicht als Null gewertet.", "Each component score uses available product data. Missing values are not treated as zero.")}</p>
+        <p>{pick(locale, "Jede Teilbewertung basiert auf verfügbaren Produktdaten. Fehlende Angaben werden im Gesamturteil konservativ mit 50 Punkten angesetzt und senken die Datensicherheit.", "Each component score uses available product data. Missing components are conservatively set to 50 points in the overall score and reduce data confidence.")}</p>
       </div>
       <div className="score-grid">
         {product.scores.map((score) => (
@@ -43,7 +43,7 @@ export function ScoreBreakdown({ product }: { product: Product }) {
       </div>
       <details className="method-note">
         <summary>{pick(locale, "So funktioniert der Score", "How the score works")}</summary>
-        <p>{pick(locale, "Die Bewertung kombiniert passende Regeln für Nährwerte, Zutaten und den gewählten Bedarf in dieser Kategorie.", "The assessment combines rules for nutrition, ingredients, and the selected goal within this category.")} {pick(locale, "Regelstand", "Rule version")}: {product.scores[0]?.ruleVersion ?? pick(locale, "aktuell", "current")}.</p>
+        <p>{pick(locale, "Das Gesamturteil besteht aus 65 Prozent Nährwerten und 35 Prozent Zutaten. Zucker, Protein und Familientauglichkeit bleiben als eigene Zielbewertungen sichtbar und werden nicht doppelt gezählt.", "The overall score consists of 65 percent nutrition and 35 percent ingredients. Sugar, protein, and family fit remain visible as separate goal scores and are not counted twice.")} {pick(locale, "Regelstand", "Rule version")}: {product.scores[0]?.ruleVersion ?? pick(locale, "aktuell", "current")}.</p>
       </details>
     </section>
   );

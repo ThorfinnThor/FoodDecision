@@ -12,6 +12,8 @@ const flagLabels: Record<string, string> = {
   unlicensed_image_source: "Bildquelle nicht zur Anzeige freigegeben",
   ranking_confidence_medium: "Mittlere Datensicherheit",
   salt_high: "Erhöhter Salzgehalt",
+  ingredient_text_cleaned: "Verpackungstext wurde aus der Zutatenliste entfernt",
+  ingredient_nutrition_conflict: "Zuckerwert und Zutatenliste widersprechen sich",
 };
 
 export function DataQualityNotice({ product }: { product: Product }) {
@@ -26,7 +28,7 @@ export function DataQualityNotice({ product }: { product: Product }) {
     stale: ["Älteren Quellenstand prüfen", "Older source data to verify"],
     unknown: ["Quellenalter unbekannt", "Source age unknown"],
   };
-  const englishFlags: Record<string, string> = { missing_brand: "Brand not confirmed", incomplete_nutrition: "Nutrition data is incomplete", implausible_nutrition: "Some nutrition values are implausible", missing_ingredients: "Ingredient list missing", allergens_unverified: "Allergens not fully verified", missing_image: "Product image missing", stale_source_data: "Source data may be outdated", unlicensed_image_source: "Image source is not eligible for display" };
+  const englishFlags: Record<string, string> = { missing_brand: "Brand not confirmed", incomplete_nutrition: "Nutrition data is incomplete", implausible_nutrition: "Some nutrition values are implausible", missing_ingredients: "Ingredient list missing", allergens_unverified: "Allergens not fully verified", missing_image: "Product image missing", stale_source_data: "Source data may be outdated", unlicensed_image_source: "Image source is not eligible for display", ingredient_text_cleaned: "Package text was removed from the ingredient list", ingredient_nutrition_conflict: "Sugar data conflicts with the ingredient list" };
 
   return (
     <section className="quality-notice">
@@ -49,7 +51,7 @@ export function DataQualityNotice({ product }: { product: Product }) {
       <dl className="freshness-facts">
         <div><dt>{en ? "Source updated" : "Quellenstand"}</dt><dd>{date(product.sourceUpdatedAt)}</dd></div>
         <div><dt>{en ? "Catalog import" : "Katalogimport"}</dt><dd>{date(product.importedAt)}</dd></div>
-        <div><dt>{en ? "Freshness" : "Datenfrische"}</dt><dd>{freshnessLabels[freshness.status][en ? 1 : 0]}{freshness.ageAtImportDays !== null ? <small>{en ? `${freshness.ageAtImportDays} days old at import` : `beim Import ${freshness.ageAtImportDays} Tage alt`}</small> : null}</dd></div>
+        <div><dt>{en ? "Freshness" : "Datenfrische"}</dt><dd>{freshnessLabels[freshness.status][en ? 1 : 0]}{freshness.ageAtImportDays !== null ? <small>{en ? `${freshness.ageAtImportDays} ${freshness.ageAtImportDays === 1 ? "day" : "days"} old at import` : `beim Import ${freshness.ageAtImportDays} ${freshness.ageAtImportDays === 1 ? "Tag" : "Tage"} alt`}</small> : null}</dd></div>
         <div><dt>{en ? "Scoring rules" : "Bewertungsregeln"}</dt><dd>{versions.length ? versions.join(", ") : (en ? "Not available" : "Nicht verfügbar")}</dd></div>
       </dl>
       {hasFlags ? (

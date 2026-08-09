@@ -363,6 +363,10 @@ export function alternativeReasons(current: Product, candidate: Product, goal: S
   const reasons: string[] = [];
   const goalDifference = (scoreByType(candidate, goal)?.score ?? 0) - (scoreByType(current, goal)?.score ?? 0);
   if (goalDifference >= 5) reasons.push(locale === "de-DE" ? `${goalDifference} Punkte stärker beim gewählten Ziel.` : `${goalDifference} points stronger for the selected goal.`);
+  const ingredientDifference = (scoreByType(candidate, "ingredient_quality")?.score ?? 0) - (scoreByType(current, "ingredient_quality")?.score ?? 0);
+  if ((goal === "overall_match" || goal === "ingredient_quality") && ingredientDifference >= 5) {
+    reasons.push(locale === "de-DE" ? `${ingredientDifference} Punkte stärker bei den Zutaten.` : `${ingredientDifference} points stronger for ingredients.`);
+  }
   if (current.nutrition.sugar !== null && candidate.nutrition.sugar !== null && candidate.nutrition.sugar < current.nutrition.sugar) {
     const difference = Number((current.nutrition.sugar - candidate.nutrition.sugar).toFixed(2));
     reasons.push(locale === "de-DE" ? `${difference} g weniger Zucker pro ${current.nutrition.basis}.` : `${difference} g less sugar per ${current.nutrition.basis}.`);
@@ -425,6 +429,7 @@ export function alternativeRecommendation(current: Product, candidate: Product, 
   ) return null;
   const currentGoal = scoreByType(current, goal);
   const candidateGoal = scoreByType(candidate, goal);
+  if (goal === "overall_match" && scoreByType(candidate, "ingredient_quality")?.score == null) return null;
   if (currentGoal?.score === null || currentGoal?.score === undefined || candidateGoal?.score === null || candidateGoal?.score === undefined) return null;
   const scoreDelta = candidateGoal.score - currentGoal.score;
   if (scoreDelta < 3 || candidateGoal.confidence === "low") return null;

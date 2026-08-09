@@ -71,6 +71,11 @@ export function compareGoalEvidence(a: Product, b: Product, scoreType: ScoreType
   const scoreDifference = compareNullable(scoreA?.score ?? null, scoreB?.score ?? null, "descending");
   if (scoreDifference !== 0) return scoreDifference;
 
+  if (scoreType === "overall_match") {
+    const confidenceDifference = confidenceRank[scoreB?.confidence ?? "low"] - confidenceRank[scoreA?.confidence ?? "low"];
+    if (confidenceDifference !== 0) return confidenceDifference;
+  }
+
   const aBreakers = goalTieBreakers(a, scoreType);
   const bBreakers = goalTieBreakers(b, scoreType);
   for (let index = 0; index < aBreakers.length; index += 1) {

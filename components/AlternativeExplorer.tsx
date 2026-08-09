@@ -30,6 +30,7 @@ export function AlternativeExplorer({
   const [goal, setGoal] = useState<AlternativeGoal>("overall_match");
   const options = recommendations[goal];
   const primary = options[0];
+  const currentGoalScore = current.scores.find((score) => score.type === goal)?.score ?? null;
   const path = (value: string) => localizedPath(current.locale, value);
   const c = (de: string, en: string) => pick(current.locale, de, en);
 
@@ -90,10 +91,22 @@ export function AlternativeExplorer({
         </div>
       ) : (
         <div className="alternative-empty-state">
-          <strong>{c("Keine belastbar bessere Alternative bestätigt", "No reliably better alternative confirmed")}</strong>
+          <strong>{currentGoalScore === null
+            ? c("Für dieses Ziel fehlt eine belastbare Bewertung", "No reliable score is available for this goal")
+            : currentGoalScore === 100
+            ? c("Für dieses Ziel bereits am Bewertungsmaximum", "Already at the scoring maximum for this goal")
+            : c("Keine belastbar bessere Alternative bestätigt", "No reliably better alternative confirmed")}</strong>
           <p>{c(
-            `Im aktuellen Katalog liegt kein anderes ${current.categoryLabel}-Produkt bei „${label(goal, current)}“ mindestens drei Punkte vorn. Das ist besser als eine erzwungene Empfehlung.`,
-            `No other ${current.categoryLabel} product in the current catalog leads by at least three points for “${label(goal, current)}.” That is better than forcing a recommendation.`,
+            currentGoalScore === null
+              ? `Die Angaben dieses Produkts reichen für „${label(goal, current)}“ nicht aus oder widersprechen sich. Deshalb zeigen wir keine rechnerische Empfehlung für dieses Ziel.`
+              : currentGoalScore === 100
+              ? `Dieses Produkt erreicht bei „${label(goal, current)}“ bereits 100 von 100 Punkten. Eine rechnerisch bessere Alternative ist deshalb nicht möglich.`
+              : `Im aktuellen Katalog liegt kein anderes Produkt aus der Kategorie ${current.categoryLabel} bei „${label(goal, current)}“ mindestens drei Punkte vorn und erfüllt zugleich die Anforderungen an die Datensicherheit.`,
+            currentGoalScore === null
+              ? `This product does not have sufficient or consistent data for “${label(goal, current).toLowerCase()},” so we do not show a numerical recommendation for this goal.`
+              : currentGoalScore === 100
+              ? `This product already reaches 100 out of 100 for “${label(goal, current)},” so a numerically better alternative is not possible.`
+              : `No other ${current.categoryLabel} product in the current catalog leads by at least three points for “${label(goal, current)}” while also meeting the data confidence requirements.`,
           )}</p>
           <Link className="text-link" href={path(`/category/${categoryRouteSlug(current.category, current.locale)}`)}>{c("Alle Produkte der Kategorie ansehen", "View all products in this category")} <span aria-hidden="true">→</span></Link>
         </div>

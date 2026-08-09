@@ -58,12 +58,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "ingredient_quality",
       "label": "Zutatenbewertung",
-      "score": 92,
+      "score": 94,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -72,7 +72,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "protein",
@@ -81,11 +81,11 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Solider Proteinwert: 12.4 g."
+        "Solider Proteinwert: 12,4 g."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "low_sugar",
@@ -94,16 +94,16 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Sehr niedriger Zuckerwert für diese Kategorie: 4.9 g pro 100 g."
+        "Sehr niedriger Zuckerwert für diese Kategorie: 4,9 g pro 100 g."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "family",
       "label": "Bewertung für Familien",
-      "score": 96,
+      "score": 97,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -113,7 +113,7 @@
         "Allergene prüfen: Gluten, Haselnüsse."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "vegan",
@@ -126,20 +126,20 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     },
     {
       "type": "overall_match",
       "label": "Gesamtbewertung",
-      "score": 95,
+      "score": 96,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Kombiniert die wichtigsten Teilbewertungen für eine schnelle Entscheidung."
+        "Das Gesamturteil kombiniert Nährwerte und Zutaten, ohne einzelne Nährwerte doppelt zu zählen."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.1"
+      "ruleVersion": "2026.08.2"
     }
   ]
 }

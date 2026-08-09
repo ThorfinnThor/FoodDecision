@@ -3,6 +3,7 @@ export type IngredientSignal = "addedSugar" | "additives" | "sweeteners" | "palm
 export type IngredientAnalysis = {
   hasData: boolean;
   ingredientCount: number;
+  excludedEntries: string[];
   detected: Record<IngredientSignal, boolean>;
   evidence: Record<IngredientSignal, string[]>;
 };
@@ -32,7 +33,28 @@ function normalize(value: string) {
     .trim();
 }
 
+const packagingTextPattern = /\b(?:trocken|lichtgeschuetzt|lagern|aufbewahren|mindestens haltbar|verpackung|rainforest alliance|barcode|store in|keep in|best before|packaging|may contain|kann spuren|spuren von|schalenfruechten enthalten)\b/i;
+
+function isLikelyIngredient(value: string) {
+  const normalized = normalize(value);
+  if (normalized.length < 2 || normalized.length > 100) return false;
+  if (/\d{6,}/.test(normalized) || packagingTextPattern.test(normalized)) return false;
+  if (/^(?:uten|palmal|ainforest alliance|ender\b)/i.test(normalized)) return false;
+  return true;
+}
+
+export function cleanIngredientEntries(ingredients: string[]) {
+  const cleaned = ingredients
+    .map((ingredient) => ingredient.replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .filter(isLikelyIngredient);
+  return [...new Map(cleaned.map((ingredient) => [normalize(ingredient), ingredient])).values()];
+}
+
 export function analyzeIngredients(ingredients: string[]): IngredientAnalysis {
+  const cleanedIngredients = cleanIngredientEntries(ingredients);
+  const cleanedKeys = new Set(cleanedIngredients.map(normalize));
+  const excludedEntries = ingredients.filter((ingredient) => !cleanedKeys.has(normalize(ingredient))).slice(0, 5);
   const evidence: Record<IngredientSignal, string[]> = {
     addedSugar: [],
     additives: [],
@@ -40,7 +62,7 @@ export function analyzeIngredients(ingredients: string[]): IngredientAnalysis {
     palmOil: [],
   };
 
-  for (const ingredient of ingredients) {
+  for (const ingredient of cleanedIngredients) {
     const normalized = normalize(ingredient);
     for (const signal of Object.keys(signalPatterns) as IngredientSignal[]) {
       if (signalPatterns[signal].test(normalized)) evidence[signal].push(ingredient);
@@ -52,8 +74,9 @@ export function analyzeIngredients(ingredients: string[]): IngredientAnalysis {
   }
 
   return {
-    hasData: ingredients.length > 0,
-    ingredientCount: ingredients.length,
+    hasData: cleanedIngredients.length > 0,
+    ingredientCount: cleanedIngredients.length,
+    excludedEntries,
     detected: {
       addedSugar: evidence.addedSugar.length > 0,
       additives: evidence.additives.length > 0,

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { analyzeIngredients, analyzeVeganStatus } from "../lib/ingredient-analysis.ts";
+import { analyzeIngredients, analyzeVeganStatus, cleanIngredientEntries } from "../lib/ingredient-analysis.ts";
 import { hasDecisionReadyNutrition } from "../lib/nutrition-quality.ts";
 import { products } from "../lib/data.ts";
 import { productTraits } from "../lib/product-insights.ts";
@@ -20,6 +20,14 @@ test("detects German and US ingredient signals with evidence", () => {
   const genericGermanSweetener = analyzeIngredients(["Vollkornhaferflocken", "Süßungsmittel", "Kakaomasse"]);
   assert.equal(genericGermanSweetener.detected.sweeteners, true);
   assert.deepEqual(genericGermanSweetener.evidence.sweeteners, ["Süßungsmittel"]);
+});
+
+test("removes obvious packaging copy before ingredient scoring", () => {
+  const raw = ["Milcherweiß", "Glukosesirup", "Aroma", "Rainforest Alliance", "Riegel trocken und lichtgeschützt lagern", "Ender 4 311596637409"];
+  assert.deepEqual(cleanIngredientEntries(raw), ["Milcherweiß", "Glukosesirup", "Aroma"]);
+  const analysis = analyzeIngredients(raw);
+  assert.equal(analysis.ingredientCount, 3);
+  assert.equal(analysis.excludedEntries.length, 3);
 });
 
 test("treats vegan labels conservatively when allergen data conflicts", () => {
@@ -49,9 +57,28 @@ test("uses the shared bilingual analysis for Finder traits and ingredient scores
   assert.equal(traits.palmOilFree, false);
 
   const ingredientScore = calculateScores(american).find((score) => score.type === "ingredient_quality");
-  assert.equal(ingredientScore?.ruleVersion, "2026.08.1");
+  assert.equal(ingredientScore?.ruleVersion, "2026.08.2");
   assert.ok(ingredientScore?.negatives.some((reason) => /Added sugar/i.test(reason)));
   assert.ok(ingredientScore?.negatives.some((reason) => /Additives or flavorings/i.test(reason)));
+});
+
+test("does not reward missing ingredients and lowers confidence for contradictory sugar data", () => {
+  const fixture = products.find((product) => product.publishability === "ranking_eligible");
+  assert.ok(fixture);
+  const base = Object.fromEntries(Object.entries(fixture).filter(([key]) => key !== "scores"));
+  const complete = { ...base, ingredients: ["Hafer", "Kakao"], nutrition: { ...base.nutrition, sugar: 2 } };
+  const missing = { ...complete, ingredients: [] };
+  const conflict = { ...complete, ingredients: ["Glukosesirup", "Kakao"], nutrition: { ...complete.nutrition, sugar: 0 } };
+  const completeOverall = calculateScores(complete).find((score) => score.type === "overall_match");
+  const missingOverall = calculateScores(missing).find((score) => score.type === "overall_match");
+  const conflictSugar = calculateScores(conflict).find((score) => score.type === "low_sugar");
+
+  assert.ok(completeOverall?.score !== null && missingOverall?.score !== null);
+  assert.ok(missingOverall.score < completeOverall.score);
+  assert.equal(missingOverall.confidence, "medium");
+  assert.equal(conflictSugar?.score, null);
+  assert.equal(conflictSugar?.confidence, "medium");
+  assert.ok(conflictSugar?.negatives.some((reason) => /widerspricht|conflicts/i.test(reason)));
 });
 
 test("defines nutrition readiness from the four values required by the nutrition score", () => {

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T08:16:47.875Z",
+  "generatedAt": "2026-08-09T09:59:48.954Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locale": "de-DE",
@@ -233,57 +233,57 @@
     {
       "path": "public/data/de/food/products/index-1.json",
       "bytes": 2855,
-      "sha256": "84dedd43ce33c95d92ca0e8347b88d57445598fcc0bc08ad67ad3478302d1b52"
+      "sha256": "450bed817d531b5e4b3a8fdef1431cb25e32378a19be6fb553cab79c2b16ed7c"
     },
     {
       "path": "public/data/de/search-index-1.json",
       "bytes": 2425,
-      "sha256": "e7105e57ca4a0e1ddfbd52ce1396bf397208207024f798b3bbf03307f80b1d00"
+      "sha256": "cc209f6bbfeb38f55ce3af02820c5554b0d2731ee52b90b53490c365eb2c4970"
     },
     {
       "path": "public/data/de/food/products/nordhafer-barista-ohne-zucker.json",
-      "bytes": 3497,
-      "sha256": "14fe32e63593bc5a637d3a9df91f4734fad4f53d9139fc76d83e0ee1c0300d8f"
+      "bytes": 3523,
+      "sha256": "8e306e7fe7a148c63cde97d9cb86867aeba0c6808f161a11175262f001d85f63"
     },
     {
       "path": "public/data/de/food/products/oatly-style-haferdrink-classic.json",
-      "bytes": 3363,
-      "sha256": "fff296cb0824cedaac29589bc8762e45ac77f621eb730282245b449ca020ef40"
+      "bytes": 3389,
+      "sha256": "bb3cd0d24bc136f7624d2e8e3a4b92f0bb3a0f710dd668534f4b23c67dd57433"
     },
     {
       "path": "public/data/de/food/products/kraftkern-proteinriegel-kakao.json",
-      "bytes": 3527,
-      "sha256": "eba31a8a95fed7236ea994b22ebc6a6f0b175c64aed7cb4bfc54b3979ae7e9c1"
+      "bytes": 3640,
+      "sha256": "1195a34d4fab97388f4596e83d41155754d481ae144b2141f3768e913d740127"
     },
     {
       "path": "public/data/de/food/products/morgenfeld-basis-muesli.json",
-      "bytes": 3520,
-      "sha256": "3f8fdd91e02ea75ce47a96cc38b196dd39113e9b0edb1ef85769fd0ead2f870d"
+      "bytes": 3541,
+      "sha256": "c793cbb56b5cedaafaf2cc6929fd07ed9aa452c718835deb00208ab237f3d480"
     },
     {
       "path": "public/data/de/food/products/fjordgut-skyr-natur.json",
-      "bytes": 3360,
-      "sha256": "463ac2ba58d7bc73725dbff933f2fa2963cb8f432e53d8fcd6d522072a7e31ba"
+      "bytes": 3381,
+      "sha256": "a5dd1b4166d46769dfb6087f5a6ff43e24d4cd38bf49ef1313b84940b07b9595"
     },
     {
       "path": "public/data/de/food/products/gruenbiss-linsen-cracker.json",
-      "bytes": 3525,
-      "sha256": "f27dc8b718053bee191f43d950295897ea42656e9b557c3d7be46b18654e7a5c"
+      "bytes": 3611,
+      "sha256": "f35f2615479e736538ac269f2107d10629404f7cc071d6b22e39d9398d83685d"
     },
     {
       "path": "public/data/de/food/categories/hafermilch.json",
       "bytes": 1331,
-      "sha256": "0f3f50f26278a0789bee4d63f41ce9017e3bf5ac4dc0242d52bbdbc3ba7f9a81"
+      "sha256": "4e846e85081b5c1efdc25cd9dc0402cc89e865fac38ce313806fac1456f53e2c"
     },
     {
       "path": "public/data/de/food/categories/proteinriegel.json",
       "bytes": 875,
-      "sha256": "34d5d3cfa3f5bcbd20a249c20e5b1f8d2cea2f14d9ead3b33b7cb2a7d41de5c1"
+      "sha256": "eec44c3912953c8a317e149e3de92dbbcbdd5fea1c0c9dd5933f75baeba53136"
     },
     {
       "path": "public/data/de/food/categories/muesli.json",
       "bytes": 868,
-      "sha256": "f182e77d5aa66a4b53a41540d719b69a380b388158c7f4a4cc4052918bd5356d"
+      "sha256": "c82b2bd5052562265a66b63b83111e473455b69cfa2cbede88dd3194c1ebe44f"
     },
     {
       "path": "public/data/de/food/categories/joghurt-skyr.json",
@@ -293,7 +293,7 @@
     {
       "path": "public/data/de/food/categories/vegane-snacks.json",
       "bytes": 815,
-      "sha256": "2bc15e78b59f9ba5cc9b21857009349d4353282e9d92e503c9998631f2379236"
+      "sha256": "8e34f69f772e0822623e6ed9d951c25acca9a01b0985e47b3ecf28c400eeb2e1"
     },
     {
       "path": "public/data/de/food/categories/fruehstueckscerealien.json",
@@ -363,32 +363,32 @@
     {
       "path": "public/data/de/rankings/wenig-zucker-hafermilch.json",
       "bytes": 944,
-      "sha256": "5cacb422bfec751673277d7cc73d9ce175db1c90c896a68378bb497cb80f1bf0"
+      "sha256": "5eb4b55c2f2ac83327e4ce656566a957d2237fea1202df6a7b6c63f26cdbb0b9"
     },
     {
       "path": "public/data/de/rankings/beste-wahl-hafermilch.json",
       "bytes": 950,
-      "sha256": "ee7ec61a9079e922fb99f58a3aba5912c281feb49b46722975dff0bc33789d6a"
+      "sha256": "ea9cf9713fcbcbe0519d8b54f788e6d13320d7029d3f63c5d6fb610c7414946d"
     },
     {
       "path": "public/data/de/rankings/proteinreich-proteinriegel.json",
       "bytes": 946,
-      "sha256": "a659f964b8abca3cae9ce68b618f69a22176876b0679a324e271a7588dba3713"
+      "sha256": "bc66917a54a7341e3ea89dcab3ac2c246e8eb39a714209d1d680d452d7561cd6"
     },
     {
       "path": "public/data/de/rankings/wenig-zucker-proteinriegel.json",
       "bytes": 950,
-      "sha256": "3fd423894c6b2869a4486f67822d9a34403cdca892be71343214a61e06e73053"
+      "sha256": "5fd2be575c41757c3a2d69ac63b113bba1558e56b697c5ee645e6a4f00ee7230"
     },
     {
       "path": "public/data/de/rankings/wenig-zucker-muesli.json",
       "bytes": 929,
-      "sha256": "e8c41bf0ab552479c57d1413e30fc82d93b44bbed9a98cf1cf5562a3b2636f24"
+      "sha256": "2e539ed17e45ab8079117c061702d9acc7d6f7d9e53878d5b63a646983d66fc8"
     },
     {
       "path": "public/data/de/rankings/beste-wahl-muesli.json",
       "bytes": 945,
-      "sha256": "457c033c305bfbac96b7da09cda8fca6b3f7e5dfdad66904339c85c160019cb3"
+      "sha256": "a6b07fca50136ce43b0bc3c041c87c153c81e65d879fc458d284e2f942a0085f"
     },
     {
       "path": "public/data/de/rankings/proteinreich-joghurt-skyr.json",
@@ -403,12 +403,12 @@
     {
       "path": "public/data/de/rankings/vegan-vegane-snacks.json",
       "bytes": 859,
-      "sha256": "67e70ba460a1a4a4fcadf9688b946b7dd9ac16160183a2e244b74a73b9300286"
+      "sha256": "44fc9be9066c1d77cb98a5db290483ea8e5dd308f814285a91cab17f876055bd"
     },
     {
       "path": "public/data/de/rankings/beste-wahl-vegane-snacks.json",
       "bytes": 898,
-      "sha256": "c580a3ca1610aacf8602d0cd59cdd7b6a6cdb31914667e9fbd55fe382d60ec2a"
+      "sha256": "0ceb0025d802c0768f3399f330ddb36abd34bca8c13f73f3df50de2829be8155"
     },
     {
       "path": "public/data/de/rankings/wenig-zucker-fruehstueckscerealien.json",
@@ -543,12 +543,12 @@
     {
       "path": "public/data/de/comparisons/nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic.json",
       "bytes": 1122,
-      "sha256": "d7f0eb9f4b935954e7e29fdb793716f64a876ab535d4594598bff0fabe8f9f64"
+      "sha256": "0ad78354fe4d43d6d5a30d6d5a599a48d6240c827b323d2d9d25e05eb22e22b8"
     },
     {
       "path": "public/data/de/quality-report.json",
       "bytes": 8282,
-      "sha256": "49254fe5b5ae5d32eb587ee5bc6959987b44199e60c5d5874798da4be2c31158"
+      "sha256": "71db7095a81ae1b0c92be817d6f86916277653516f001464e3f1653ff9c6c461"
     }
   ]
 }
