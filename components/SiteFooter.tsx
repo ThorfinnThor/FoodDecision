@@ -18,6 +18,9 @@ export function SiteFooter({ locale }: { locale: SiteLocale }) {
         <nav aria-label="Footer Navigation">
           <Link href={path("/finder")}>Finder</Link>
           <Link href={path("/products")}>{pick(locale, "Produkte", "Products")}</Link>
+          <Link href={path("/brands")}>{pick(locale, "Marken", "Brands")}</Link>
+          <Link href={path("/ingredients")}>{pick(locale, "Zutaten", "Ingredients")}</Link>
+          <Link href={path("/nutrition")}>{pick(locale, "Nährwerte", "Nutrition")}</Link>
           <Link href={path("/compare")}>{pick(locale, "Vergleiche", "Compare")}</Link>
           <Link href={path("/methodology")}>{pick(locale, "Methodik", "Methodology")}</Link>
           <Link href={path("/data-quality")}>{pick(locale, "Datenabdeckung", "Data coverage")}</Link>
