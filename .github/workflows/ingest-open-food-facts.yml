@@ -141,6 +141,10 @@ jobs:
           CATALOG_AUDIT_MARKET: ${{ steps.plan.outputs.market }}
         run: npm run audit:catalog-quality
 
+      - name: Audit ranking integrity
+        if: ${{ inputs.import_mode != 'dry-run' }}
+        run: npm run audit:ranking-integrity
+
       - name: Validate SEO publication gates
         run: npm run seo:validate
 

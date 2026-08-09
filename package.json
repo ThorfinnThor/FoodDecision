@@ -8,8 +8,8 @@
   "scripts": {
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
     "next:dev": "next dev",
-    "build": "npm run export:static-data && npm run seo:validate && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
-    "next:build": "npm run export:static-data && npm run seo:validate && next build",
+    "build": "npm run export:static-data && npm run audit:ranking-integrity && npm run seo:validate && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "next:build": "npm run export:static-data && npm run audit:ranking-integrity && npm run seo:validate && next build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
@@ -22,9 +22,11 @@
     "normalize:off": "node --experimental-strip-types scripts/normalize/open-food-facts.ts",
     "review:product-data": "node --experimental-strip-types scripts/review/product-data-reports.ts",
     "resolve:catalog-plan": "node --experimental-strip-types scripts/ingest/resolve-plan.mjs",
-    "audit:catalog-quality": "node --experimental-strip-types scripts/audit/catalog-quality.ts"
+    "audit:catalog-quality": "node --experimental-strip-types scripts/audit/catalog-quality.ts",
+    "audit:ranking-integrity": "node --experimental-strip-types scripts/audit/ranking-integrity.ts"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "drizzle-orm": "0.45.2",
     "next": "16.2.6",
     "react": "19.2.6",

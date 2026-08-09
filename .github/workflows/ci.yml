@@ -31,6 +31,9 @@ jobs:
       - name: Audit catalog data structure
         run: npm run audit:catalog-quality
 
+      - name: Audit ranking integrity
+        run: npm run audit:ranking-integrity
+
       - name: Validate SEO publication gates
         run: npm run seo:validate
 

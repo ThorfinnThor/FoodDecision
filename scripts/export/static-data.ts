@@ -11,6 +11,7 @@ import { hasDecisionReadyNutrition } from "../../lib/nutrition-quality.ts";
 import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
 import { assessDataFreshness } from "../../lib/data-freshness.ts";
 import { calculateScores, scoreByType } from "../../lib/scoring.ts";
+import { compareRankedProducts } from "../../lib/ranking-order.ts";
 import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
 type ExportSource = "fixtures" | "supabase";
@@ -382,7 +383,7 @@ export function comparisonPairs(products: Product[]) {
     const candidates = products
       .filter((product) => product.category === category.slug && (product.publishability === "ranking_eligible" || product.publishability === "published"))
       .filter((product) => typeof scoreByType(product, "overall_match")?.score === "number")
-      .sort((a, b) => (scoreByType(b, "overall_match")?.score ?? -1) - (scoreByType(a, "overall_match")?.score ?? -1))
+      .sort((a, b) => compareRankedProducts(a, b, "overall_match"))
       .slice(0, 3);
     if (candidates.length < 2) continue;
     pairs.push(`${candidates[0].slug}-vs-${candidates[1].slug}`);
@@ -447,11 +448,8 @@ async function exportStaticData() {
     for (const ranking of rankings) {
       const items = products
             .filter((product) => product.category === ranking.category && product.publishability === "ranking_eligible")
-            .sort(
-              (a, b) =>
-                (scoreByType(b, ranking.sortScore)?.score ?? -1) -
-                (scoreByType(a, ranking.sortScore)?.score ?? -1),
-            )
+            .filter((product) => typeof scoreByType(product, ranking.sortScore)?.score === "number")
+            .sort((a, b) => compareRankedProducts(a, b, ranking.sortScore))
             .map(productSummary);
       files.push(
         await writeJson(`${prefix}/rankings/${ranking.attribute}-${ranking.category}.json`, {

@@ -72,21 +72,35 @@ test("rejects oversized, non-JSON, and cross-origin API requests", () => {
   assert.equal(validateJsonRequest(sameOrigin), null);
 });
 
-test("publishes bilingual privacy disclosures and local controls", async () => {
-  const [page, controls, footer, newsletter, migration] = await Promise.all([
+test("publishes bilingual privacy disclosures and consent controlled analytics", async () => {
+  const [page, controls, analytics, sanitizer, footer, newsletter, migration, eventRoute, layout] = await Promise.all([
     readFile(new URL("../app/[locale]/privacy/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/PrivacyControls.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/ConsentAwareAnalytics.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../lib/analytics.ts", import.meta.url), "utf8"),
     readFile(new URL("../components/SiteFooter.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/newsletter/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../supabase/migrations/0010_remove_inactive_newsletter.sql", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/events/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/[locale]/layout.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /Die Website fordert keinen Zugriff auf Kamera oder Mikrofon an/);
   assert.match(page, /The website does not request camera or microphone access/);
   assert.match(page, /Ungültige Eingaben werden nicht gespeichert/);
   assert.match(page, /standardmäßig deaktiviert/);
+  assert.match(page, /Vercel Web Analytics/);
+  assert.match(page, /URL Parameter und Barcodes werden weder an Vercel noch an Supabase übertragen/);
   assert.match(controls, /Alle lokalen Daten löschen/);
   assert.match(controls, /Do Not Track/);
+  assert.match(analytics, /analyticsEnabled/);
+  assert.match(analytics, /sanitizeAnalyticsEvent/);
+  assert.match(sanitizer, /url\.search = ""/);
+  assert.match(sanitizer, /url\.hash = ""/);
+  assert.match(analytics, /enabled \? <Analytics/);
+  assert.match(layout, /ConsentAwareAnalytics/);
+  assert.match(eventRoute, /alternative_compared/);
+  assert.match(eventRoute, /saved_collection_cleared/);
   assert.match(footer, /\/privacy/);
   assert.match(page, /NEXT_PUBLIC_OPERATOR_NAME/);
   assert.match(page, /NEXT_PUBLIC_PRIVACY_CONTACT/);

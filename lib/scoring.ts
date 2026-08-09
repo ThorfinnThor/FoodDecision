@@ -11,9 +11,18 @@ import { categoryScoringProfiles } from "./catalog.ts";
 import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
 
 const RULE_VERSION = "2026.08.2";
+export const OVERALL_SCORE_WEIGHTS = { nutrition: 0.65, ingredientQuality: 0.35 } as const;
 
 function clamp(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+export function calculateOverallScoreValue(nutritionScore: number | null, ingredientScore: number | null) {
+  if (nutritionScore === null && ingredientScore === null) return null;
+  return clamp(
+    (nutritionScore ?? 50) * OVERALL_SCORE_WEIGHTS.nutrition +
+    (ingredientScore ?? 50) * OVERALL_SCORE_WEIGHTS.ingredientQuality,
+  );
 }
 
 export function gradeForScore(score: number | null): ScoreGrade {
@@ -282,7 +291,10 @@ function overallMatchScore(product: Omit<Product, "scores">, scores: ProductScor
 
   const missingScores = weighted.filter(([item]) => item?.score === null || item?.score === undefined);
   const missingData = [...new Set(missingScores.flatMap(([item]) => item?.missingData.length ? item.missingData : [item?.type ?? "scores"]))];
-  const score = clamp(weighted.reduce((sum, [item, weight]) => sum + (item?.score ?? 50) * weight, 0));
+  const score = calculateOverallScoreValue(
+    scores.find((item) => item.type === "nutrition")?.score ?? null,
+    scores.find((item) => item.type === "ingredient_quality")?.score ?? null,
+  );
   const hasConflict = hasSugarIngredientConflict(product);
   const ingredientScore = scores.find((item) => item.type === "ingredient_quality");
   const nutrition = scores.find((item) => item.type === "nutrition");

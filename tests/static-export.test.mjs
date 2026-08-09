@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   assertDeploymentExportPolicy,
@@ -141,4 +142,10 @@ test("generates a bounded prepared comparison library within categories", () => 
     categoryCounts.set(first.category, (categoryCounts.get(first.category) ?? 0) + 1);
   }
   assert.ok([...categoryCounts.values()].every((count) => count <= 2));
+});
+
+test("generated rankings exclude unknown goal scores and use evidence tie breakers", async () => {
+  const exporter = await readFile(new URL("../scripts/export/static-data.ts", import.meta.url), "utf8");
+  assert.match(exporter, /typeof scoreByType\(product, ranking\.sortScore\)\?\.score === "number"/);
+  assert.match(exporter, /compareRankedProducts\(a, b, ranking\.sortScore\)/);
 });

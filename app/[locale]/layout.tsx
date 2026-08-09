@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { localeConfigs, localeFromSegment, pick, supportedLocales } from "@/lib/i18n";
 import { siteUrl } from "@/lib/seo";
 import { BRAND_NAME } from "@/lib/brand";
+import { ConsentAwareAnalytics } from "@/components/ConsentAwareAnalytics";
 import "../globals.css";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -42,7 +43,7 @@ export default async function RootLayout({ children, params }: Readonly<{
   if (!locale) notFound();
   return (
     <html data-scroll-behavior="smooth" lang={localeConfigs[locale].htmlLang}>
-      <body>{children}<SiteFooter locale={locale} /></body>
+      <body>{children}<SiteFooter locale={locale} /><ConsentAwareAnalytics /></body>
     </html>
   );
 }
