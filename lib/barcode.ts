@@ -3,9 +3,17 @@ export type BarcodeIndexItem = {
 };
 
 const supportedLengths = new Set([8, 12, 13, 14]);
+export type BarcodeValidationReason = "characters" | "length" | "checksum";
 
 export function normalizeBarcode(value: string) {
   return value.replace(/\D/g, "").slice(0, 14);
+}
+
+export function barcodeValidationReason(value: string): BarcodeValidationReason | null {
+  const compact = value.trim().replace(/[\s-]+/g, "");
+  if (compact && /\D/.test(compact)) return "characters";
+  if (!supportedLengths.has(compact.length)) return "length";
+  return barcodeCheckDigitIsValid(compact) ? null : "checksum";
 }
 
 export function barcodeCheckDigitIsValid(value: string) {
