@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { normalizeText } from "@/lib/product-insights";
 import { compareRankedProducts } from "@/lib/ranking-order";
+import { scoreByType } from "@/lib/scoring";
 import { pick } from "@/lib/i18n";
 import type { Category, Product, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
@@ -21,6 +22,7 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("q") ?? "";
+  const [queryInput, setQueryInput] = useState(query);
   const categoryValue = searchParams.get("category") ?? "all";
   const category = categories.some((item) => item.slug === categoryValue) ? categoryValue : "all";
   const sortValue = searchParams.get("sort");
@@ -30,18 +32,31 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
   const page = Number.isFinite(pageValue) && pageValue > 0 ? pageValue : 1;
   const pageSize = 24;
 
-  const updateUrl = (updates: Record<string, string | null>, history: "push" | "replace" = "replace") => {
-    const next = new URLSearchParams(searchParams.toString());
+  useEffect(() => {
+    const timer = window.setTimeout(() => setQueryInput(query), 0);
+    return () => window.clearTimeout(timer);
+  }, [query]);
+
+  const updateUrl = useCallback((updates: Record<string, string | null>, history: "push" | "replace" = "replace") => {
+    const next = new URLSearchParams(window.location.search);
     Object.entries(updates).forEach(([key, value]) => {
       if (!value) next.delete(key);
       else next.set(key, value);
     });
     const href = `${pathname}${next.size ? `?${next.toString()}` : ""}`;
     router[history](href, { scroll: false });
-  };
+  }, [pathname, router]);
+
+  useEffect(() => {
+    if (queryInput === query) return;
+    const timer = window.setTimeout(() => {
+      updateUrl({ q: queryInput.trim() ? queryInput : null, page: null });
+    }, 180);
+    return () => window.clearTimeout(timer);
+  }, [query, queryInput, updateUrl]);
 
   const filtered = useMemo(() => {
-    const needle = normalizeText(query.trim());
+    const needle = normalizeText(queryInput.trim());
     return products
       .filter((product) => category === "all" || product.category === category)
       .filter((product) => !needle || normalizeText([product.name, product.brand, ...product.ingredients].join(" ")).includes(needle))
@@ -52,24 +67,52 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
         const scoreType = sort === "overall" ? "overall_match" : sort;
         return compareRankedProducts(a, b, scoreType);
       });
-  }, [category, locale, onlyComplete, products, query, sort]);
+  }, [category, locale, onlyComplete, products, queryInput, sort]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, pageCount);
   const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const overallScoreCounts = useMemo(() => {
+    const counts = new Map<number, number>();
+    if (sort !== "overall") return counts;
+    for (const product of filtered) {
+      const score = scoreByType(product, "overall_match")?.score;
+      if (score !== null && score !== undefined) counts.set(score, (counts.get(score) ?? 0) + 1);
+    }
+    return counts;
+  }, [filtered, sort]);
   const resetPage = (updates: Record<string, string | null>) => updateUrl({ ...updates, page: null });
 
   return (
     <div className="catalog-browser">
       <div className="catalog-toolbar">
-        <label className="catalog-search"><span>{pick(locale, "Produkte durchsuchen", "Search products")}</span><input onChange={(event) => resetPage({ q: event.target.value.trim() ? event.target.value : null })} placeholder={pick(locale, "Produkt, Marke oder Zutat", "Product, brand, or ingredient")} type="search" value={query} /></label>
+        <label className="catalog-search"><span>{pick(locale, "Produkte durchsuchen", "Search products")}</span><input onChange={(event) => setQueryInput(event.target.value)} placeholder={pick(locale, "Produkt, Marke oder Zutat", "Product, brand, or ingredient")} type="search" value={queryInput} /></label>
         {categories.length ? <label><span>{pick(locale, "Kategorie", "Category")}</span><select onChange={(event) => resetPage({ category: event.target.value === "all" ? null : event.target.value })} value={category}><option value="all">{pick(locale, "Alle Kategorien", "All categories")}</option>{categories.map((item) => <option key={item.slug} value={item.slug}>{item.label}</option>)}</select></label> : null}
         <label><span>{pick(locale, "Sortierung", "Sort")}</span><select onChange={(event) => resetPage({ sort: event.target.value === "overall" ? null : event.target.value })} value={sort}><option value="overall">{pick(locale, "Bestes Gesamturteil", "Best overall")}</option><option value="low_sugar">{pick(locale, "Wenig Zucker", "Lower sugar")}</option><option value="protein">{pick(locale, "Viel Protein", "Higher protein")}</option><option value="name">{pick(locale, "Name von A bis Z", "Name from A to Z")}</option></select></label>
         <label className="toolbar-check"><input checked={onlyComplete} onChange={(event) => resetPage({ complete: event.target.checked ? "1" : null })} type="checkbox" /><span>{pick(locale, "Ohne Qualitätshinweis", "No quality warnings")}</span></label>
       </div>
 
       <div className="catalog-result-line"><strong>{filtered.length} {pick(locale, "Produkte", "products")}</strong><span>{pick(locale, "Seite", "Page")} {currentPage} {pick(locale, "von", "of")} {pageCount}</span></div>
-      {visible.length ? <div className="product-grid">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <div className="empty-state"><h3>{pick(locale, "Keine Produkte gefunden", "No products found")}</h3><p>{pick(locale, "Versuche einen kürzeren Suchbegriff oder entferne einen Filter.", "Try a shorter search or remove a filter.")}</p></div>}
+      {sort === "overall" && filtered.length ? <p className="catalog-sort-note">{pick(locale, "Gleiche Gesamtwerte werden nach Datensicherheit, Nährwertscore, Zutatenqualität, Zucker und Protein geordnet.", "Equal overall scores are ordered by data confidence, nutrition score, ingredient quality, sugar, and protein.")}</p> : null}
+      {visible.length ? <div className="product-grid">{visible.map((product) => {
+        const overall = scoreByType(product, "overall_match");
+        const nutrition = scoreByType(product, "nutrition")?.score;
+        const ingredients = scoreByType(product, "ingredient_quality")?.score;
+        const isTie = overall?.score !== null && overall?.score !== undefined && (overallScoreCounts.get(overall.score) ?? 0) > 1;
+        const confidence = overall?.confidence === "high"
+          ? pick(locale, "hohe Datensicherheit", "high confidence")
+          : overall?.confidence === "medium"
+            ? pick(locale, "mittlere Datensicherheit", "medium confidence")
+            : pick(locale, "niedrige Datensicherheit", "low confidence");
+        const tieDetails = [
+          confidence,
+          nutrition === null || nutrition === undefined ? null : `${pick(locale, "Nährwerte", "nutrition")} ${nutrition}`,
+          ingredients === null || ingredients === undefined ? null : `${pick(locale, "Zutaten", "ingredients")} ${ingredients}`,
+          product.nutrition.sugar === null ? null : `${product.nutrition.sugar} g ${pick(locale, "Zucker", "sugar")}`,
+          product.nutrition.protein === null ? null : `${product.nutrition.protein} g ${pick(locale, "Protein", "protein")}`,
+        ].filter((item): item is string => Boolean(item));
+        return <ProductCard contextMetric={isTie ? { label: pick(locale, "Gleichstand aufgelöst durch", "Tie broken by"), value: tieDetails.join(" · ") } : undefined} key={product.id} product={product} />;
+      })}</div> : <div className="empty-state"><h3>{pick(locale, "Keine Produkte gefunden", "No products found")}</h3><p>{pick(locale, "Versuche einen kürzeren Suchbegriff oder entferne einen Filter.", "Try a shorter search or remove a filter.")}</p><button className="secondary-command" onClick={() => { setQueryInput(""); updateUrl({ q: null, category: null, sort: null, complete: null, page: null }); }} type="button">{pick(locale, "Suche und Filter zurücksetzen", "Reset search and filters")}</button></div>}
 
       {pageCount > 1 ? <nav className="pagination" aria-label="Produktseiten">
         <button disabled={currentPage === 1} onClick={() => updateUrl({ page: currentPage - 1 > 1 ? String(currentPage - 1) : null }, "push")} type="button">{pick(locale, "Zurück", "Previous")}</button>
