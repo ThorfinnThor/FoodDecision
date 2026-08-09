@@ -71,3 +71,52 @@ test("removes starter metadata and preview dependencies", async () => {
   assert.doesNotMatch(`${page}\n${layout}\n${packageJson}\n${header}\n${footer}`, /Food Decision Engine|codex-preview|_sites-preview|react-loading-skeleton/);
   assert.doesNotMatch(page, /Eine Zahl reicht nicht|One number is not enough|NewsletterSignup/);
 });
+
+test("renders useful catalog discovery hubs without making unvalidated SEO claims", async () => {
+  const [brandsResponse, ingredientsResponse, nutritionResponse] = await Promise.all([
+    render("/de/brands"),
+    render("/de/ingredients"),
+    render("/de/nutrition"),
+  ]);
+  assert.equal(brandsResponse.status, 200);
+  assert.equal(ingredientsResponse.status, 200);
+  assert.equal(nutritionResponse.status, 200);
+
+  const [brands, ingredients, nutrition] = await Promise.all([
+    brandsResponse.text(),
+    ingredientsResponse.text(),
+    nutritionResponse.text(),
+  ]);
+  assert.match(brands, /Marken im aktuellen Katalog/);
+  assert.match(ingredients, /Häufig genannte Zutaten/);
+  assert.match(nutrition, /Nährwerte im richtigen Kontext/);
+  assert.match(brands, /name="robots" content="noindex, follow"/);
+  assert.match(ingredients, /name="robots" content="noindex, follow"/);
+  assert.match(nutrition, /name="robots" content="noindex, follow"/);
+});
+
+test("connects product, brand, ingredient, and nutrition detail views", async () => {
+  const [productResponse, brandResponse, ingredientResponse, nutritionResponse] = await Promise.all([
+    render("/de/product/nordhafer-barista-ohne-zucker"),
+    render("/de/brand/nordhafer"),
+    render("/de/ingredient/wasser"),
+    render("/de/nutrition/zucker"),
+  ]);
+  assert.equal(productResponse.status, 200);
+  assert.equal(brandResponse.status, 200);
+  assert.equal(ingredientResponse.status, 200);
+  assert.equal(nutritionResponse.status, 200);
+
+  const [product, brand, ingredient, nutrition] = await Promise.all([
+    productResponse.text(),
+    brandResponse.text(),
+    ingredientResponse.text(),
+    nutritionResponse.text(),
+  ]);
+  assert.match(product, /href="\/de\/brand\/nordhafer"/);
+  assert.match(product, /href="\/de\/ingredient\/wasser"/);
+  assert.match(brand, /Jedes Produkt zählt für sich/);
+  assert.match(ingredient, /Was diese Seite aussagt/);
+  assert.match(nutrition, /Niedrigere Werte zuerst/);
+  assert.match(nutrition, /Dieser Einzelwert ersetzt keinen vollständigen Produktscore/);
+});

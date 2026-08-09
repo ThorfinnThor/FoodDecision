@@ -72,6 +72,15 @@ export default async function Home({ params }: Props) {
 
       <section className="priority-band" aria-labelledby="priority-title"><div className="section-inner"><div className="priority-heading"><span id="priority-title">{pick(locale, "Was ist dir wichtig?", "What matters to you?")}</span><Link href={path("/finder")}>{pick(locale, "Alle Kriterien", "All criteria")}</Link></div><div className="priority-chips">{priorities.map(([de, en, goal]) => <Link href={`${path("/finder")}?goal=${goal}`} key={goal}>{pick(locale, de, en)}</Link>)}</div></div></section>
 
+      <section className="section discovery-entry-section">
+        <div className="section-heading split-heading"><div><p className="eyebrow">{pick(locale, "Den Katalog anders entdecken", "Explore the catalog another way")}</p><h2>{pick(locale, "Finde den Einstieg, der zu deiner Frage passt", "Start with the question you want to answer")}</h2></div><p>{pick(locale, "Suche über Marken, wiederkehrende Zutaten oder einen einzelnen Nährwert und wechsle anschließend direkt in Kategorie, Finder oder Produktvergleich.", "Explore brands, recurring ingredients, or a single nutrient, then move directly into a category, the finder, or a product comparison.")}</p></div>
+        <div className="discovery-entry-grid">
+          <Link href={path("/brands")}><span>01</span><strong>{pick(locale, "Marken prüfen", "Review brands")}</strong><p>{pick(locale, "Produkte einer Marke nach Kategorie vergleichen, ohne die Marke pauschal zu bewerten.", "Compare a brand's products by category without applying a blanket judgment.")}</p><b>{pick(locale, "Zu den Marken", "Browse brands")}</b></Link>
+          <Link href={path("/ingredients")}><span>02</span><strong>{pick(locale, "Zutaten nachverfolgen", "Trace ingredients")}</strong><p>{pick(locale, "Sieh, in welchen Produkten und Kategorien ein Zutatenbegriff genannt wird.", "See which products and categories mention an ingredient term.")}</p><b>{pick(locale, "Zu den Zutaten", "Browse ingredients")}</b></Link>
+          <Link href={path("/nutrition")}><span>03</span><strong>{pick(locale, "Nährwerte einordnen", "Understand nutrition")}</strong><p>{pick(locale, "Vergleiche Zucker, Protein, Kalorien, Ballaststoffe und Salz im passenden Kontext.", "Compare sugar, protein, calories, fiber, and salt in the right context.")}</p><b>{pick(locale, "Zum Nährwertkompass", "Open nutrition compass")}</b></Link>
+        </div>
+      </section>
+
       <section className="section" id="categories">
         <div className="section-heading split-heading"><div><p className="eyebrow">{pick(locale, "Nach Kategorie entdecken", "Explore by category")}</p><h2>{pick(locale, "Vergleiche Produkte im richtigen Kontext", "Compare products in the right context")}</h2></div><p>{pick(locale, "Jede Produktgruppe nutzt passende Zielwerte, damit die Bewertung fair und nützlich bleibt.", "Each category uses appropriate reference values so comparisons stay fair and useful.")}</p></div>
         <div className="category-grid">{availableCategories.map((category) => (
