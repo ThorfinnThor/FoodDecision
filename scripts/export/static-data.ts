@@ -12,6 +12,7 @@ import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
 import { assessDataFreshness } from "../../lib/data-freshness.ts";
 import { calculateScores, scoreByType } from "../../lib/scoring.ts";
 import { compareRankedProducts } from "../../lib/ranking-order.ts";
+import { inferBrandFromProductName, normalizeBrandName, normalizeListingName, slugify } from "../../lib/normalization.ts";
 import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
 type ExportSource = "fixtures" | "supabase";
@@ -209,6 +210,12 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
   const ingredients = cleanIngredientEntries(storedIngredients);
   const ingredientAnalysis = analyzeIngredients(ingredients);
   const qualityFlags = new Set(row.data_quality_flags?.map((flag) => flag.flag) ?? []);
+  const cleanedName = normalizeListingName(row.name) ?? row.name;
+  const canonicalSlug = cleanedName === row.name ? row.slug : `${slugify(cleanedName)}-${slugify(row.gtin).slice(-8)}`;
+  const storedBrand = row.brands?.name ?? null;
+  const cleanedBrand = normalizeBrandName(storedBrand) ?? inferBrandFromProductName(cleanedName);
+  if (cleanedName !== row.name) qualityFlags.add("retail_listing_text_removed");
+  if (storedBrand && !normalizeBrandName(storedBrand)) qualityFlags.add("invalid_brand_removed");
   if (ingredients.length < storedIngredients.length) qualityFlags.add("ingredient_text_cleaned");
   if (nutrition && nutrition.sugar !== null && nutrition.sugar <= 0.5 && ingredientAnalysis.detected.addedSugar) {
     qualityFlags.add("ingredient_nutrition_conflict");
@@ -222,9 +229,10 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
   const product: Omit<Product, "scores"> = {
     id: row.id,
     gtin: row.gtin,
-    slug: row.slug,
-    name: row.name,
-    brand: row.brands?.name ?? (locale === "de-DE" ? "Unbekannte Marke" : "Unknown brand"),
+    slug: canonicalSlug,
+    legacySlugs: canonicalSlug === row.slug ? [] : [row.slug],
+    name: cleanedName,
+    brand: cleanedBrand ?? (locale === "de-DE" ? "Unbekannte Marke" : "Unknown brand"),
     category: category.slug,
     categoryLabel: localizedCategoryLabel(category.slug, locale),
     market,
@@ -234,8 +242,8 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
     imageLicense: image.imageLicense,
     imageSourceUrl: image.imageSourceUrl,
     description: locale === "de-DE"
-      ? `${row.name} aus der Kategorie ${localizedCategoryLabel(category.slug, locale)}.`
-      : `${row.name} in the ${localizedCategoryLabel(category.slug, locale)} category.`,
+      ? `${cleanedName} aus der Kategorie ${localizedCategoryLabel(category.slug, locale)}.`
+      : `${cleanedName} in the ${localizedCategoryLabel(category.slug, locale)} category.`,
     labels: row.product_labels?.flatMap((entry) => entry.labels?.name ?? []) ?? [],
     ingredients,
     allergens: row.product_allergens?.flatMap((entry) => entry.allergens?.name ?? []) ?? [],
