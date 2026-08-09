@@ -197,7 +197,7 @@ type RankedProductRow = {
     salt: number | null;
     saturated_fat: number | null;
   }> | null;
-  product_ingredients?: Array<{ id: string }>;
+  product_ingredients?: Array<{ ingredient_id: string }>;
   product_scores?: Array<{
     score_type: ScoreType;
     score: number | null;
@@ -230,7 +230,7 @@ function rankableProduct(product: RankedProductRow): RankableProduct {
 
 async function rebuildRankings(rankingRows: RankingPageRow[]) {
   const products = await supabaseRequest<RankedProductRow[]>(
-    `products?select=id,name,slug,locale,product_categories(categories(slug)),nutrition_facts(sugar,protein,salt,saturated_fat),product_ingredients(id),product_scores(score_type,score,confidence)&market=eq.${market}&publishability=eq.ranking_eligible`,
+    `products?select=id,name,slug,locale,product_categories(categories(slug)),nutrition_facts(sugar,protein,salt,saturated_fat),product_ingredients(ingredient_id),product_scores(score_type,score,confidence)&market=eq.${market}&publishability=eq.ranking_eligible`,
   );
 
   for (const ranking of rankingRows) {

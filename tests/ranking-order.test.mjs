@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { compareGoalEvidence, compareRankedProducts } from "../lib/ranking-order.ts";
 import { calculateScores } from "../lib/scoring.ts";
@@ -75,4 +76,10 @@ test("sorts compact Supabase ranking records with the same evidence rules", () =
   });
   const records = [compact("Erbsenpasta", 21), compact("Linsenpasta", 26), compact("Edamamepasta", 41.5)];
   assert.deepEqual(records.sort((a, b) => compareRankedProducts(a, b, "protein")).map((item) => item.name), ["Edamamepasta", "Linsenpasta", "Erbsenpasta"]);
+});
+
+test("loads ingredient counts through the product_ingredients relation key", async () => {
+  const normalizer = await readFile(new URL("../scripts/normalize/open-food-facts.ts", import.meta.url), "utf8");
+  assert.match(normalizer, /product_ingredients\(ingredient_id\)/);
+  assert.doesNotMatch(normalizer, /product_ingredients\(id\)/);
 });
