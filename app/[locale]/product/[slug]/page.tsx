@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { AlternativeExplorer } from "@/components/AlternativeExplorer";
 import { DataQualityNotice } from "@/components/DataQualityNotice";
 import { DecisionSnapshot } from "@/components/DecisionSnapshot";
@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> { c
 
 export default async function ProductPage({ params }: Props) {
   const values = await params; const locale = requireLocale(values.locale); const catalog = getCatalog(locale); const product = catalog.getProduct(values.slug); if (!product) notFound();
+  if (values.slug !== product.slug) permanentRedirect(localizedPath(locale, `/product/${product.slug}`));
   const path = (value = "/") => localizedPath(locale, value); const c = (de: string, en: string) => pick(locale, de, en);
   const categoryProducts = catalog.getProductsByCategory(product.category);
   const alternativeSets = Object.fromEntries(alternativeGoalOrder.map((goal) => [goal, rankImprovingAlternatives(product, categoryProducts, goal, 3)])) as Record<AlternativeGoal, AlternativeRecommendation[]>;
