@@ -31,7 +31,7 @@ The local preview is available at `http://localhost:3000`.
 ## Included Shape
 
 - `app/` contains the routes for home, products, product detail, category,
-  ranking, comparison, Finder, brands, ingredients, nutrition, methodology,
+  ranking, comparison, Finder, brand and ingredient directories, nutrition topics, methodology,
   barcode lookup, preferences, favorites, shopping lists, sitemap, and robots.
 - `lib/` contains fixture products, scoring rules, and typed product contracts.
 - `components/` contains reusable product, score, quality, comparison, Finder,
@@ -78,6 +78,17 @@ the decision. Visitors can submit a bounded product-data correction without an
 account or contact details. Reports are validated against the current catalog
 and written through a server-only endpoint to the RLS-protected
 `product_data_reports` review queue.
+
+The catalog can also be explored through `/brands`, `/ingredients`, and
+`/nutrition` in both markets. Brand pages never assign a blanket score to a
+brand. Ingredient pages report only where a term occurs in a published
+ingredient list and explicitly avoid health or allergen claims. Nutrition pages
+keep categories and 100 g versus 100 ml reference bases separate, render a
+bounded set of leading products, and link into the Finder for deeper filtering.
+These discovery routes stay `noindex,follow` until their demand and page
+definitions are approved in the SEO registries. Brand and ingredient aggregates
+are cached once per static catalog so product detail rendering remains bounded
+as the live catalog grows.
 
 Production responses set a Content Security Policy, HSTS, clickjacking and MIME
 protections, and a restrictive Permissions Policy. Camera permission is disabled
