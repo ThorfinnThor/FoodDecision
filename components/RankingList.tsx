@@ -10,6 +10,13 @@ export function RankingList({ locale, products, scoreType }: { locale: SiteLocal
   const [visible, setVisible] = useState(25);
   return <><div className="ranking-list">{products.slice(0, visible).map((product, index) => {
     const metric = rankingMetric(product, scoreType);
-    return <div className="ranking-row" key={product.id}><span className="rank-number">{index + 1}</span><ProductCard product={product} scoreType={scoreType} contextMetric={metric} /></div>;
+    return <div className="ranking-row" key={product.id}>
+      <div className="rank-position" aria-label={pick(locale, `Platz ${index + 1} von ${products.length}`, `Rank ${index + 1} of ${products.length}`)}>
+        <span>{pick(locale, "Platz", "Rank")}</span>
+        <strong>{index + 1}</strong>
+        <small>{pick(locale, `von ${products.length}`, `of ${products.length}`)}</small>
+      </div>
+      <ProductCard product={product} scoreType={scoreType} contextMetric={metric} showScore={false} />
+    </div>;
   })}</div>{visible < products.length ? <button className="load-more-button" onClick={() => setVisible((count) => count + 25)} type="button">{pick(locale, "Weitere Platzierungen laden", "Load more rankings")}</button> : null}</>;
 }

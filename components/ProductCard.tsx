@@ -12,12 +12,14 @@ export function ProductCard({
   matchReasons,
   scoreType = "overall_match",
   contextMetric,
+  showScore = true,
 }: {
   product: Product;
   matchScore?: number;
   matchReasons?: string[];
   scoreType?: ScoreType;
   contextMetric?: { label: string; value: string };
+  showScore?: boolean;
 }) {
   const path = (value: string) => localizedPath(product.locale, value);
   const score = scoreByType(product, scoreType) ?? scoreByType(product, "overall_match") ?? product.scores[0];
@@ -46,7 +48,11 @@ export function ProductCard({
             <p className="product-meta">{product.brand} · {product.categoryLabel}</p>
             <h3><Link href={path(`/product/${product.slug}`)}>{product.name}</Link></h3>
           </div>
-          {matchScore !== undefined ? <span className="match-score"><small>Match</small><strong>{matchScore}%</strong></span> : score ? <ScorePill score={score} compact locale={product.locale} /> : null}
+          {matchScore !== undefined
+            ? <span className="match-score"><small>Match</small><strong>{matchScore}%</strong></span>
+            : showScore && score
+              ? <ScorePill score={score} compact locale={product.locale} />
+              : null}
         </div>
         {contextMetric ? <div className="product-context-metric"><span>{contextMetric.label}</span><strong>{contextMetric.value}</strong></div> : null}
         <ul className="benefit-list">

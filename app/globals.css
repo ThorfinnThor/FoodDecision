@@ -370,8 +370,10 @@ main { min-height: 70vh; }
 .ranking-context h2 { font-size: 24px; margin: 0; }
 .ranking-context > p { color: var(--color-text-700); line-height: 1.65; }
 .ranking-list { display: grid; gap: 20px; }
-.ranking-row { align-items: start; display: grid; gap: 16px; grid-template-columns: 48px minmax(0, 1fr); }
-.rank-number { align-items: center; background: var(--color-text-900); border-radius: var(--radius-sm); color: #fff; display: inline-flex; font-weight: 800; height: 48px; justify-content: center; width: 48px; }
+.ranking-row { align-items: start; display: grid; gap: 16px; grid-template-columns: 68px minmax(0, 1fr); }
+.rank-position { align-items: center; background: var(--color-text-900); border-radius: var(--radius-sm); color: #fff; display: grid; justify-items: center; min-height: 86px; padding: 10px 5px; }
+.rank-position span, .rank-position small { font-size: 11px; line-height: 1.2; }
+.rank-position strong { font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1; }
 .ranking-row .product-card { display: grid; grid-template-columns: 230px minmax(0, 1fr); }
 .ranking-row .product-card-media { height: 100%; min-height: 260px; }
 .ranking-page-hero { padding-bottom: 48px; }
@@ -380,7 +382,9 @@ main { min-height: 70vh; }
 .ranking-answer-copy h2 a:hover { color: var(--color-primary-700); }
 .ranking-answer-lead { color: var(--color-text-700); font-size: 18px; line-height: 1.65; max-width: 720px; }
 .ranking-answer-signals { align-items: stretch; display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
-.ranking-answer-signals .score-pill { background: var(--color-primary-50); border: 1px solid #dcebd1; border-radius: var(--radius-sm); min-width: 150px; padding: 12px 16px; }
+.ranking-position-summary { background: var(--color-primary-50); border: 1px solid #dcebd1; border-radius: var(--radius-sm); display: grid; gap: 4px; min-width: 190px; padding: 12px 16px; }
+.ranking-position-summary span, .ranking-position-summary small { color: var(--color-text-500); font-size: 12px; }
+.ranking-position-summary strong { font-size: 20px; font-variant-numeric: tabular-nums; }
 .ranking-primary-metric { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-sm); display: grid; gap: 5px; min-width: 150px; padding: 12px 16px; }
 .ranking-primary-metric span { color: var(--color-text-500); font-size: 12px; }
 .ranking-primary-metric strong { font-size: 20px; font-variant-numeric: tabular-nums; }
@@ -546,8 +550,9 @@ main { min-height: 70vh; }
   .finder-stage { border-radius: var(--radius-md); padding: 20px 16px; }
   .choice-grid { grid-template-columns: 1fr; }
   .finder-controls { position: sticky; bottom: 0; background: #fff; z-index: 5; }
-  .ranking-row { grid-template-columns: 40px minmax(0, 1fr); }
-  .rank-number { height: 40px; width: 40px; }
+  .ranking-row { gap: 10px; grid-template-columns: 54px minmax(0, 1fr); }
+  .rank-position { min-height: 76px; padding: 8px 3px; }
+  .rank-position strong { font-size: 22px; }
   .ranking-row .product-card { display: block; }
   .ranking-row .product-card-media { min-height: 240px; }
   .ranking-answer-band { display: flex; flex-direction: column; padding: 8px 16px 48px; }

@@ -210,8 +210,8 @@ export default async function RankingPage({ params }: Props) {
         </div>
         <p>{pick(
           locale,
-          "Jede Platzierung nutzt dieselbe Regel für diese Kategorie. Öffne ein Produkt für Nährwerte, Zutaten, Allergene und alle Teilbewertungen.",
-          "Every position uses the same rule for this category. Open a product for nutrition, ingredients, allergens, and all component scores.",
+          "Die Zahl links ist die Platzierung. Auf der Karte steht der wichtigste Vergleichswert. Bei Gleichstand entscheiden die transparenten Detailregeln. Den allgemeinen Produktscore findest du auf der Produktseite.",
+          "The number on the left is the position. The card shows the main comparison value. Transparent detail rules resolve ties. The general product score remains on the product page.",
         )}</p>
       </div>
       <RankingList locale={locale} products={items} scoreType={ranking.sortScore} />

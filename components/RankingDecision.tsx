@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { localizedPath, pick } from "@/lib/i18n";
 import { rankingMetric, type RankingInsights } from "@/lib/ranking-insights";
-import { scoreByType } from "@/lib/scoring";
 import type { RankingPage, SiteLocale } from "@/lib/types";
 import { ProductVisual } from "./ProductVisual";
-import { ScorePill } from "./ScorePill";
 
 export function RankingDecision({
   locale,
@@ -17,7 +15,6 @@ export function RankingDecision({
 }) {
   const path = (value: string) => localizedPath(locale, value);
   const product = insights.topPick;
-  const score = scoreByType(product, ranking.sortScore);
   const metric = rankingMetric(product, ranking.sortScore);
 
   return <>
@@ -29,7 +26,11 @@ export function RankingDecision({
         <h2 id="ranking-answer-title"><Link href={path(`/product/${product.slug}`)}>{product.name}</Link></h2>
         <p className="ranking-answer-lead">{insights.answer}</p>
         <div className="ranking-answer-signals">
-          {score ? <ScorePill score={score} locale={locale} /> : null}
+          <div className="ranking-position-summary">
+            <span>{pick(locale, "Platzierung", "Position")}</span>
+            <strong>{pick(locale, `Platz 1 von ${insights.stats.eligibleProducts}`, `Rank 1 of ${insights.stats.eligibleProducts}`)}</strong>
+            <small>{pick(locale, "in diesem Ranking", "in this ranking")}</small>
+          </div>
           <div className="ranking-primary-metric"><span>{metric.label}</span><strong>{metric.value}</strong></div>
         </div>
         <ul className="ranking-reason-list">

@@ -85,11 +85,11 @@ function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter((value): value is string => Boolean(value)))];
 }
 
-function confidencePhrase(confidence: ScoreConfidence, locale: SiteLocale) {
+function confidenceLabel(confidence: ScoreConfidence, locale: SiteLocale) {
   const labels: Record<ScoreConfidence, [string, string]> = {
-    high: ["hoher", "high"],
-    medium: ["mittlerer", "medium"],
-    low: ["niedriger", "low"],
+    high: ["hoch", "high"],
+    medium: ["mittel", "medium"],
+    low: ["niedrig", "low"],
   };
   return pick(locale, ...labels[confidence]);
 }
@@ -132,23 +132,23 @@ function benchmarkSentence(
 
 function runnerUpSentence(locale: SiteLocale, ranking: RankingPage, topPick: Product, runnerUp: Product | null) {
   if (!runnerUp) return "";
+  const topMetric = rankingMetric(topPick, ranking.sortScore);
+  const secondMetric = rankingMetric(runnerUp, ranking.sortScore);
+  if (topMetric.rawValue !== null && secondMetric.rawValue !== null && topMetric.rawValue !== secondMetric.rawValue) {
+    return pick(
+      locale,
+      `${topPick.name} liegt mit ${topMetric.value} vor ${runnerUp.name} mit ${secondMetric.value}.`,
+      `${topPick.name} ranks ahead of ${runnerUp.name} with ${topMetric.value} versus ${secondMetric.value}.`,
+    );
+  }
   const topScore = scoreByType(topPick, ranking.sortScore)?.score;
   const secondScore = scoreByType(runnerUp, ranking.sortScore)?.score;
   if (topScore === null || topScore === undefined || secondScore === null || secondScore === undefined) return "";
   if (topScore === secondScore) {
-    const topMetric = rankingMetric(topPick, ranking.sortScore);
-    const secondMetric = rankingMetric(runnerUp, ranking.sortScore);
-    if (topMetric.rawValue !== null && secondMetric.rawValue !== null && topMetric.rawValue !== secondMetric.rawValue) {
-      return pick(
-        locale,
-        `${topPick.name} und ${runnerUp.name} erreichen beide ${topScore}/100. Der exakte Wert löst den Gleichstand: ${topMetric.value} gegenüber ${secondMetric.value}.`,
-        `${topPick.name} and ${runnerUp.name} both score ${topScore}/100. The exact value breaks the tie: ${topMetric.value} versus ${secondMetric.value}.`,
-      );
-    }
     return pick(
       locale,
-      `${topPick.name} und ${runnerUp.name} erreichen beide ${topScore}/100. Die Detailwerte entscheiden, welches Produkt besser zu dir passt.`,
-      `${topPick.name} and ${runnerUp.name} both score ${topScore}/100. Their detailed values determine which one fits you better.`,
+      `${topPick.name} und ${runnerUp.name} haben denselben Vergleichswert. Datensicherheit, Datenvollständigkeit und danach der Produktname bestimmen die stabile Reihenfolge.`,
+      `${topPick.name} and ${runnerUp.name} have the same comparison value. Data confidence, data completeness, and then product name keep the order stable.`,
     );
   }
   return pick(
@@ -161,12 +161,12 @@ function runnerUpSentence(locale: SiteLocale, ranking: RankingPage, topPick: Pro
 function methodCopy(locale: SiteLocale, ranking: RankingPage) {
   const scoreSpecific: Record<ScoreType, [string, string]> = {
     low_sugar: [
-      "Der Zuckerwert pro 100 g oder 100 ml wird mit passenden Schwellen für die Kategorie verglichen. Weniger Zucker verbessert den Score und löst Gleichstände.",
-      "Sugar per 100 g or 100 ml is compared with thresholds suited to the category. Less sugar improves the score and breaks ties.",
+      "Die Produkte stehen nach ihrem Zuckerwert pro 100 g oder 100 ml. Innerhalb derselben Bewertungsstufe steht der niedrigere exakte Wert weiter oben.",
+      "Products are ordered by sugar per 100 g or 100 ml. Within the same rating level, the lower exact value ranks higher.",
     ],
     protein: [
-      "Der Proteingehalt pro 100 g oder 100 ml wird relativ zur Produktgruppe bewertet. Mehr Protein verbessert den Score und löst Gleichstände.",
-      "Protein per 100 g or 100 ml is assessed relative to the product category. More protein improves the score and breaks ties.",
+      "Die Produkte stehen nach ihrem Proteingehalt pro 100 g oder 100 ml. Innerhalb derselben Bewertungsstufe steht der höhere exakte Wert weiter oben.",
+      "Products are ordered by protein per 100 g or 100 ml. Within the same rating level, the higher exact value ranks higher.",
     ],
     ingredient_quality: [
       "Zutatenlänge, erkannter zugesetzter Zucker und erkannte Zusatzstoffe fließen in die Zutatenbewertung ein.",
@@ -298,12 +298,12 @@ export function buildRankingInsights(
   const confidenceCoverage = Math.round((highConfidence / rankedProducts.length) * 100);
   const metric = rankingMetric(topPick, ranking.sortScore);
   const confidence = rankingScore?.confidence ?? "low";
-  const scoreReason = rankingScore?.score === null || rankingScore?.score === undefined
+  const metricReason = metric.rawValue === null
     ? null
     : pick(
         locale,
-        `${rankingScore.label}: ${rankingScore.score}/100 bei ${confidencePhrase(confidence, locale)} Datensicherheit.`,
-        `${rankingScore.label}: ${rankingScore.score}/100 with ${confidencePhrase(confidence, locale)} data confidence.`,
+        `Vergleichswert: ${metric.value}. Datensicherheit: ${confidenceLabel(confidence, locale)}.`,
+        `Comparison value: ${metric.value}. Data confidence: ${confidenceLabel(confidence, locale)}.`,
       );
   const answer = rankedProducts.length === 1
     ? pick(
@@ -322,7 +322,7 @@ export function buildRankingInsights(
     runnerUp,
     answer,
     benchmark: runnerUpComparison || benchmark,
-    topReasons: unique([scoreReason, ...(rankingScore?.positives ?? []), benchmark]).slice(0, 3),
+    topReasons: unique([metricReason, ...(rankingScore?.positives ?? []), benchmark]).slice(0, 3),
     tradeoffs: tradeoffReasons(locale, topPick, ranking, categoryProducts),
     method: methodCopy(locale, ranking),
     questions: decisionQuestions(locale, ranking, rankedProducts.length, generatedAt),

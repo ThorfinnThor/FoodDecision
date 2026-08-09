@@ -25,6 +25,7 @@ test("builds German ranking claims from product and category data", () => {
   assert.equal(insights.questions.length, 3);
   assert.equal(insights.stats.eligibleProducts, ranked.length);
   assert.match(rankingMetric(insights.topPick, ranking.sortScore).value, /g \/ 100ml/);
+  assert.doesNotMatch(insights.topReasons.join(" "), /\d+\/100/);
 });
 
 test("uses US English labels and category-relative units", () => {
@@ -44,6 +45,7 @@ test("uses US English labels and category-relative units", () => {
   assert.match(insights.answer, ranked.length === 1 ? /only ranking-eligible product/ : /eligible products/);
   assert.equal(rankingMetric(insights.topPick, ranking.sortScore).label, "Protein");
   assert.match(rankingMetric(insights.topPick, ranking.sortScore).value, /g \/ 100g/);
+  assert.doesNotMatch(insights.topReasons.join(" "), /\d+\/100/);
 });
 
 test("keeps ranking indexability under explicit registry control", () => {

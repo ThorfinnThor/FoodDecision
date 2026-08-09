@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
+async function render(path = "/de") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/de", {
+    new Request(`http://localhost${path}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -22,6 +22,24 @@ async function render() {
     },
   );
 }
+
+test("makes ranking position clearer than a capped criterion score", async () => {
+  const response = await render("/de/best/proteinreich/proteinriegel");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /Platz 1 von/);
+  assert.match(html, /class="rank-position"/);
+  assert.match(html, /Den allgemeinen Produktscore findest du auf der Produktseite/);
+  assert.doesNotMatch(html, /class="score-pill[^>]*"/);
+});
+
+test("uses the same plain ranking language in US English", async () => {
+  const response = await render("/en-us/best/high-protein/protein-bars");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /Rank 1 of/);
+  assert.match(html, /The general product score remains on the product page/);
+});
 
 test("server-renders the Compare Your Food experience", async () => {
   const response = await render();
