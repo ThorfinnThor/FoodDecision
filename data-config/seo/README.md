@@ -2,6 +2,8 @@
 
 These files control programmatic SEO publication. Page templates may render without being indexable.
 
+GEO and LLM readiness is documented in `docs/geo-llm-readiness-2026-08-10.md`. Machine-readable directories support retrieval, but they never bypass keyword approval, page quality thresholds, or the `noindex` publication gate defined here.
+
 The `/de/best` and `/en-us/best` directories expose useful ranking pages to
 people before search publication. Directory visibility never changes a page's
 indexing state.

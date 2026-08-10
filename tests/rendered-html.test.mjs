@@ -41,6 +41,38 @@ test("uses the same plain ranking language in US English", async () => {
   assert.match(html, /The general product score remains on the product page/);
 });
 
+test("renders citable ranking answers and matching dataset provenance", async () => {
+  const response = await render("/de/best/proteinreich/proteinriegel");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+
+  assert.match(html, /Direkte Antwort/);
+  assert.match(html, /Was zeigt dieses Ranking/);
+  assert.match(html, /Katalogstand/);
+  assert.match(html, /Vergleichsmenge/);
+  assert.match(html, /Quellen und Redaktionsrichtlinie/);
+  assert.match(html, /"@type":"Dataset"/);
+  assert.match(html, /opendatacommons\.org\/licenses\/odbl/);
+});
+
+test("renders a bilingual editorial and source policy", async () => {
+  const [deResponse, enResponse] = await Promise.all([
+    render("/de/editorial-policy"),
+    render("/en-us/editorial-policy"),
+  ]);
+  assert.equal(deResponse.status, 200);
+  assert.equal(enResponse.status, 200);
+
+  const [de, en] = await Promise.all([deResponse.text(), enResponse.text()]);
+  assert.match(de, /So veröffentlichen wir verlässliche Vergleiche/);
+  assert.match(de, /Zahlungen verändern keine Scores oder Platzierungen/);
+  assert.match(de, /llms-full\.txt/);
+  assert.match(de, /name="robots" content="noindex, follow"/);
+  assert.match(en, /How we publish reliable comparisons/);
+  assert.match(en, /Payments never change scores or positions/);
+  assert.match(en, /Machine-readable access/);
+});
+
 test("server-renders the Compare Your Food experience", async () => {
   const response = await render();
   assert.equal(response.status, 200);

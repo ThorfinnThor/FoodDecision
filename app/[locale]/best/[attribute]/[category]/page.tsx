@@ -24,6 +24,7 @@ import {
 } from "@/lib/seo";
 import { getCatalog } from "@/lib/static-data";
 import { BRAND_NAME } from "@/lib/brand";
+import { openDatabaseLicenseUrl, openFoodFactsUrl } from "@/lib/geo";
 
 type Props = {
   params: Promise<{ locale: string; attribute: string; category: string }>;
@@ -133,6 +134,7 @@ export default async function RankingPage({ params }: Props) {
     .filter((candidate) => candidate.attribute === ranking.attribute && candidate.category !== ranking.category)
     .filter((candidate) => catalog.rankedProducts(candidate.category, candidate.sortScore).length >= candidate.minProductsRequired)
     .slice(0, 4);
+  const catalogDate = new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(catalog.manifest.generatedAt));
 
   const breadcrumbData = {
     "@context": "https://schema.org",
@@ -167,11 +169,37 @@ export default async function RankingPage({ params }: Props) {
       acceptedAnswer: { "@type": "Answer", text: item.answer },
     })),
   };
+  const datasetData = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: ranking.title,
+    description: insights.answer,
+    url: absoluteUrl(canonical),
+    inLanguage: locale,
+    dateModified: catalog.manifest.generatedAt,
+    creator: { "@type": "Organization", name: BRAND_NAME, url: absoluteUrl("/") },
+    isBasedOn: openFoodFactsUrl,
+    citation: openFoodFactsUrl,
+    license: openDatabaseLicenseUrl,
+    measurementTechnique: insights.method.map((item) => item.body).join(" "),
+    variableMeasured: [
+      { "@type": "PropertyValue", name: pick(locale, "Geeignete Produkte", "Eligible products"), value: insights.stats.eligibleProducts },
+      { "@type": "PropertyValue", name: insights.stats.benchmarkLabel, value: insights.stats.benchmarkValue },
+      { "@type": "PropertyValue", name: pick(locale, "Hohe Datensicherheit", "High confidence"), value: `${insights.stats.highConfidenceCoverage}%` },
+      { "@type": "PropertyValue", name: pick(locale, "Zutatenabdeckung", "Ingredient coverage"), value: `${insights.stats.ingredientCoverage}%` },
+    ],
+    includedInDataCatalog: {
+      "@type": "DataCatalog",
+      name: pick(locale, `${BRAND_NAME} Lebensmittelkatalog`, `${BRAND_NAME} food catalog`),
+      url: absoluteUrl(path("/data-quality")),
+    },
+  };
 
   return <main>
     <StructuredData data={breadcrumbData} />
     <StructuredData data={itemListData} />
     <StructuredData data={faqData} />
+    <StructuredData data={datasetData} />
     <SiteHeader locale={locale} />
 
     <nav className="breadcrumb" aria-label={pick(locale, "Brotkrumen", "Breadcrumb")}>
@@ -186,6 +214,27 @@ export default async function RankingPage({ params }: Props) {
       <p className="eyebrow">{pick(locale, "Datenbasierte Entscheidung", "Data-based decision")}</p>
       <h1>{definition?.h1 ?? ranking.title}</h1>
       <p>{definition?.editorialSummary ?? ranking.intro}</p>
+    </section>
+
+    <section className="ranking-answer-band" aria-labelledby="ranking-answer-title">
+      <div className="ranking-answer-copy">
+        <p className="eyebrow">{pick(locale, "Direkte Antwort", "Direct answer")}</p>
+        <h2 id="ranking-answer-title">{pick(locale, "Was zeigt dieses Ranking?", "What does this ranking show?")}</h2>
+        <p>{insights.answer}</p>
+      </div>
+      <dl className="ranking-provenance">
+        <div><dt>{pick(locale, "Quelle", "Source")}</dt><dd><a href={openFoodFactsUrl} rel="noreferrer" target="_blank">Open Food Facts</a></dd></div>
+        <div><dt>{pick(locale, "Katalogstand", "Catalog date")}</dt><dd>{catalogDate}</dd></div>
+        <div><dt>{pick(locale, "Vergleichsmenge", "Comparison set")}</dt><dd>{items.length === 1
+          ? pick(locale, "1 geeignetes Produkt", "1 eligible product")
+          : pick(locale, `${items.length} geeignete Produkte`, `${items.length} eligible products`)}</dd></div>
+        <div><dt>{pick(locale, "Regel", "Rule")}</dt><dd>{pick(locale, "Gleiche Bezugsbasis, keine Schätzwerte", "Same reference basis, no estimates")}</dd></div>
+      </dl>
+      <p className="ranking-source-note">{pick(
+        locale,
+        "Produktdaten können unvollständig sein. Die aktuelle Verpackung hat Vorrang.",
+        "Product data may be incomplete. The current package label takes precedence.",
+      )} <Link href={path("/editorial-policy")}>{pick(locale, "Quellen und Redaktionsrichtlinie", "Sources and editorial policy")}</Link></p>
     </section>
 
     <RankingDecision locale={locale} ranking={ranking} insights={insights} />
