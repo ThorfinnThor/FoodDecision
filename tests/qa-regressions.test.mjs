@@ -50,3 +50,28 @@ test("legacy product slugs resolve and redirect to a clean canonical URL", async
   assert.match(catalogSource, /product\.legacySlugs\?\.includes\(slug\)/);
   assert.match(productPage, /permanentRedirect\(localizedPath/);
 });
+
+test("remote product images use the optimizer, a visible fallback, and cached responsive variants", async () => {
+  const [visual, scanner, config] = await Promise.all([
+    readFile(new URL("../components/ProductVisual.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/BarcodeLookup.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../next.config.ts", import.meta.url), "utf8"),
+  ]);
+  assert.doesNotMatch(visual, /unoptimized/);
+  assert.doesNotMatch(scanner, /unoptimized/);
+  assert.match(visual, /product-image-placeholder/);
+  assert.match(visual, /onError=\{\(\) => setFailedUrl/);
+  assert.match(visual, /priority=\{priority\}/);
+  assert.match(config, /minimumCacheTTL: 604800/);
+});
+
+test("secondary alternatives have a clear heading and scannable score gains", async () => {
+  const [source, css] = await Promise.all([
+    readFile(new URL("../components/AlternativeExplorer.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.match(source, /Weitere passende Alternativen/);
+  assert.match(source, /These products also improve your selected goal/);
+  assert.match(css, /\.alternative-more-heading/);
+  assert.match(css, /border-top: 2px solid var\(--color-primary-500\)/);
+});
