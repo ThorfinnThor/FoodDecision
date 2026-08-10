@@ -40,6 +40,9 @@ test("publishes a full bilingual ranking directory without inventing data", () =
   assert.match(content, /United States market and US English/);
   assert.match(content, /Catalog generated:/);
   assert.match(content, /eligible products/);
+  assert.match(content, /Editorial answer:/);
+  assert.match(content, /Supporting sources:/);
+  assert.match(content, /U\.S\. Food and Drug Administration|Deutsche Gesellschaft für Ernährung/);
   assert.match(content, /Product data may be incomplete|current package label/i);
   assert.doesNotMatch(content, /medical recommendation/i);
 });
