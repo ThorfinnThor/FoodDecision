@@ -20,6 +20,7 @@ export function MobileMenu({ locale }: { locale: SiteLocale }) {
         <LocaleSwitcher locale={locale} />
         <Link href={path("/products")} onClick={close}>{pick(locale, "Produkte", "Products")}</Link>
         <Link href={`${path()}#categories`} onClick={close}>{pick(locale, "Kategorien", "Categories")}</Link>
+        <Link href={path("/best")} onClick={close}>{pick(locale, "Rankings", "Rankings")}</Link>
         <Link href={path("/brands")} onClick={close}>{pick(locale, "Marken", "Brands")}</Link>
         <Link href={path("/ingredients")} onClick={close}>{pick(locale, "Zutaten", "Ingredients")}</Link>
         <Link href={path("/nutrition")} onClick={close}>{pick(locale, "Nährwerte", "Nutrition")}</Link>
