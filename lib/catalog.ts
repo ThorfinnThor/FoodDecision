@@ -131,9 +131,9 @@ export const categoryCatalog: Category[] = [
   },
   {
     slug: "cracker",
-    label: "Cracker",
-    intent: "Cracker mit weniger Zucker, Salz und verständlichen Zutaten.",
-    description: "Cracker werden nach Zucker, Protein, Salz, gesättigten Fettsäuren und Zutatenqualität verglichen.",
+    label: "Cracker und Knäckebrot",
+    intent: "Cracker und Knäckebrot mit weniger Zucker, Salz und verständlichen Zutaten.",
+    description: "Cracker und Knäckebrot werden nach Zucker, Protein, Salz, gesättigten Fettsäuren und Zutatenqualität verglichen.",
     rankingAttributes: ["wenig-zucker", "gute-zutaten"],
   },
 ];
@@ -203,8 +203,8 @@ const rankingBlueprints: Array<{
   { attribute: "familie", category: "suppen", title: "Geeignete Suppen für Familien", sortScore: "family" },
   { attribute: "beste-wahl", category: "tiefkuehlgerichte", title: "Beste Tiefkühlgerichte im Gesamtvergleich", sortScore: "overall_match" },
   { attribute: "familie", category: "tiefkuehlgerichte", title: "Geeignete Tiefkühlgerichte für Familien", sortScore: "family" },
-  { attribute: "wenig-zucker", category: "cracker", title: "Cracker mit wenig Zucker", sortScore: "low_sugar" },
-  { attribute: "gute-zutaten", category: "cracker", title: "Cracker mit verständlichen Zutaten", sortScore: "ingredient_quality" },
+  { attribute: "wenig-zucker", category: "cracker", title: "Cracker und Knäckebrot mit wenig Zucker", sortScore: "low_sugar" },
+  { attribute: "gute-zutaten", category: "cracker", title: "Cracker und Knäckebrot mit verständlichen Zutaten", sortScore: "ingredient_quality" },
 ];
 
 export const defaultRankingPages: RankingPage[] = rankingBlueprints.map((ranking) => ({
@@ -236,7 +236,7 @@ const englishCategories: Record<CategorySlug, Pick<Category, "label" | "intent" 
   pastasaucen: { label: "Pasta sauces", intent: "Pasta sauces with less sugar, sodium, and unnecessary additives.", description: "Pasta sauces are compared by sugar, sodium, saturated fat, protein, and ingredient quality." },
   suppen: { label: "Soups", intent: "Soups with balanced nutrition and clearly disclosed ingredients.", description: "Soups are compared by sugar, protein, sodium, saturated fat, and ingredient quality." },
   tiefkuehlgerichte: { label: "Frozen meals", intent: "Convenient frozen meals with transparent strengths and limitations.", description: "Frozen meals are compared by sugar, protein, sodium, saturated fat, and ingredient quality." },
-  cracker: { label: "Crackers", intent: "Crackers with less sugar, sodium, and understandable ingredients.", description: "Crackers are compared by sugar, protein, sodium, saturated fat, and ingredient quality." },
+  cracker: { label: "Crackers and crispbread", intent: "Crackers and crispbread with less sugar, sodium, and understandable ingredients.", description: "Crackers and crispbread are compared by sugar, protein, sodium, saturated fat, and ingredient quality." },
 };
 
 export function localizedCategoryCatalog(locale: SiteLocale): Category[] {
@@ -285,8 +285,8 @@ const englishRankingTitles: Record<string, string> = {
   "familie:suppen": "Soups suitable for families",
   "beste-wahl:tiefkuehlgerichte": "Best frozen meals overall",
   "familie:tiefkuehlgerichte": "Frozen meals suitable for families",
-  "wenig-zucker:cracker": "Crackers with less sugar",
-  "gute-zutaten:cracker": "Crackers with understandable ingredients",
+  "wenig-zucker:cracker": "Crackers and crispbread with less sugar",
+  "gute-zutaten:cracker": "Crackers and crispbread with understandable ingredients",
 };
 
 export function localizedRankingPages(locale: SiteLocale): RankingPage[] {

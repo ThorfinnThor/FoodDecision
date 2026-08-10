@@ -38,7 +38,7 @@ test("uses canonical Open Food Facts taxonomy sources for narrow categories", ()
   );
   assert.deepEqual(
     crackers?.sources.map((source) => source.offCategory),
-    ["crackers", "wheat-crackers"],
+    ["crackers", "wheat-crackers", "crispbread"],
   );
 });
 
@@ -48,7 +48,7 @@ test("keeps a multi-source category within its configured page budget", () => {
   assert.deepEqual(allocateSourcePageSizes(50, kidsSnacks.sources), [25, 9, 8, 8]);
   assert.equal(allocateSourcePageSizes(50, kidsSnacks.sources).reduce((sum, value) => sum + value, 0), 50);
   assert.deepEqual(allocateSourcePageSizes(2, kidsSnacks.sources), [1, 1, 0, 0]);
-  assert.deepEqual(allocateSourcePageSizes(50, crackers.sources), [25, 25]);
+  assert.deepEqual(allocateSourcePageSizes(50, crackers.sources), [10, 10, 30]);
 });
 
 test("enforces request spacing across pages, sources, and categories", () => {

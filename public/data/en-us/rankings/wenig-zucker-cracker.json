@@ -1,9 +1,9 @@
 {
   "attribute": "wenig-zucker",
   "category": "cracker",
-  "title": "Crackers with less sugar",
+  "title": "Crackers and crispbread with less sugar",
   "sortScore": "low_sugar",
-  "intro": "Crackers with less sugar: products are compared using the same transparent rule for their category, and data gaps remain visible.",
+  "intro": "Crackers and crispbread with less sugar: products are compared using the same transparent rule for their category, and data gaps remain visible.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "US",

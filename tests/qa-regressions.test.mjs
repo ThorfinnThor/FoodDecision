@@ -8,7 +8,8 @@ test("catalog search has independent input state and an explicit reset action", 
   assert.match(source, /const \[queryInput, setQueryInput\]/);
   assert.match(source, /window\.setTimeout/);
   assert.match(source, /Suche und Filter zurücksetzen/);
-  assert.match(source, /Equal overall scores are ordered by data confidence/);
+  assert.match(source, /data quality and component scores keep the order stable/);
+  assert.doesNotMatch(source, /Tie broken by|Gleichstand aufgelöst durch/);
 });
 
 test("Finder rejects negative limits and caps excessive boundary values", () => {

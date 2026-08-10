@@ -1,9 +1,9 @@
 {
   "attribute": "wenig-zucker",
   "category": "cracker",
-  "title": "Cracker mit wenig Zucker",
+  "title": "Cracker und Knäckebrot mit wenig Zucker",
   "sortScore": "low_sugar",
-  "intro": "Cracker mit wenig Zucker: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
+  "intro": "Cracker und Knäckebrot mit wenig Zucker: Produkte werden mit derselben transparenten Regel für ihre Kategorie verglichen. Datenlücken bleiben sichtbar.",
   "indexable": false,
   "minProductsRequired": 20,
   "market": "DE",

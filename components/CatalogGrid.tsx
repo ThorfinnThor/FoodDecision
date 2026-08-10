@@ -4,7 +4,6 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { normalizeText } from "@/lib/product-insights";
 import { compareRankedProducts } from "@/lib/ranking-order";
-import { scoreByType } from "@/lib/scoring";
 import { pick } from "@/lib/i18n";
 import type { Category, Product, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
@@ -72,15 +71,6 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, pageCount);
   const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  const overallScoreCounts = useMemo(() => {
-    const counts = new Map<number, number>();
-    if (sort !== "overall") return counts;
-    for (const product of filtered) {
-      const score = scoreByType(product, "overall_match")?.score;
-      if (score !== null && score !== undefined) counts.set(score, (counts.get(score) ?? 0) + 1);
-    }
-    return counts;
-  }, [filtered, sort]);
   const resetPage = (updates: Record<string, string | null>) => updateUrl({ ...updates, page: null });
 
   return (
@@ -93,26 +83,8 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
       </div>
 
       <div className="catalog-result-line"><strong>{filtered.length} {pick(locale, "Produkte", "products")}</strong><span>{pick(locale, "Seite", "Page")} {currentPage} {pick(locale, "von", "of")} {pageCount}</span></div>
-      {sort === "overall" && filtered.length ? <p className="catalog-sort-note">{pick(locale, "Gleiche Gesamtwerte werden nach Datensicherheit, Nährwertscore, Zutatenqualität, Zucker und Protein geordnet.", "Equal overall scores are ordered by data confidence, nutrition score, ingredient quality, sugar, and protein.")}</p> : null}
-      {visible.length ? <div className="product-grid">{visible.map((product) => {
-        const overall = scoreByType(product, "overall_match");
-        const nutrition = scoreByType(product, "nutrition")?.score;
-        const ingredients = scoreByType(product, "ingredient_quality")?.score;
-        const isTie = overall?.score !== null && overall?.score !== undefined && (overallScoreCounts.get(overall.score) ?? 0) > 1;
-        const confidence = overall?.confidence === "high"
-          ? pick(locale, "hohe Datensicherheit", "high confidence")
-          : overall?.confidence === "medium"
-            ? pick(locale, "mittlere Datensicherheit", "medium confidence")
-            : pick(locale, "niedrige Datensicherheit", "low confidence");
-        const tieDetails = [
-          confidence,
-          nutrition === null || nutrition === undefined ? null : `${pick(locale, "Nährwerte", "nutrition")} ${nutrition}`,
-          ingredients === null || ingredients === undefined ? null : `${pick(locale, "Zutaten", "ingredients")} ${ingredients}`,
-          product.nutrition.sugar === null ? null : `${product.nutrition.sugar} g ${pick(locale, "Zucker", "sugar")}`,
-          product.nutrition.protein === null ? null : `${product.nutrition.protein} g ${pick(locale, "Protein", "protein")}`,
-        ].filter((item): item is string => Boolean(item));
-        return <ProductCard contextMetric={isTie ? { label: pick(locale, "Gleichstand aufgelöst durch", "Tie broken by"), value: tieDetails.join(" · ") } : undefined} key={product.id} product={product} />;
-      })}</div> : <div className="empty-state"><h3>{pick(locale, "Keine Produkte gefunden", "No products found")}</h3><p>{pick(locale, "Versuche einen kürzeren Suchbegriff oder entferne einen Filter.", "Try a shorter search or remove a filter.")}</p><button className="secondary-command" onClick={() => { setQueryInput(""); updateUrl({ q: null, category: null, sort: null, complete: null, page: null }); }} type="button">{pick(locale, "Suche und Filter zurücksetzen", "Reset search and filters")}</button></div>}
+      {sort === "overall" && filtered.length ? <p className="catalog-sort-note">{pick(locale, "Bei gleichem Gesamturteil sorgen Datenqualität und Teilbewertungen für eine stabile Reihenfolge.", "When overall scores are equal, data quality and component scores keep the order stable.")}</p> : null}
+      {visible.length ? <div className="product-grid">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <div className="empty-state"><h3>{pick(locale, "Keine Produkte gefunden", "No products found")}</h3><p>{pick(locale, "Versuche einen kürzeren Suchbegriff oder entferne einen Filter.", "Try a shorter search or remove a filter.")}</p><button className="secondary-command" onClick={() => { setQueryInput(""); updateUrl({ q: null, category: null, sort: null, complete: null, page: null }); }} type="button">{pick(locale, "Suche und Filter zurücksetzen", "Reset search and filters")}</button></div>}
 
       {pageCount > 1 ? <nav className="pagination" aria-label="Produktseiten">
         <button disabled={currentPage === 1} onClick={() => updateUrl({ page: currentPage - 1 > 1 ? String(currentPage - 1) : null }, "push")} type="button">{pick(locale, "Zurück", "Previous")}</button>

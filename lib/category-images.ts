@@ -165,13 +165,13 @@ export const categoryImages = {
     objectPosition: "center 52%",
   },
   cracker: {
-    src: "/images/categories/crackers.jpg",
-    alt: { "de-DE": "Mehrere helle Cracker auf weißem Hintergrund", "en-US": "Several light crackers on a white background" },
-    creator: "Evan-Amos",
-    sourceUrl: "https://commons.wikimedia.org/wiki/File:Saltine-Crackers.JPG",
+    src: "/images/categories/crackers-crispbread.jpg",
+    alt: { "de-DE": "Mehrere Scheiben rundes Knäckebrot", "en-US": "Several round slices of crispbread" },
+    creator: "Cymydog Naakka",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Knaeckebroed.jpg",
     license: "Public domain",
     licenseUrl: "https://creativecommons.org/publicdomain/mark/1.0/",
-    objectPosition: "center 50%",
+    objectPosition: "center 48%",
   },
 } as const satisfies Record<CategorySlug, CategoryImage>;
 

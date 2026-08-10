@@ -102,6 +102,7 @@ export const categoryJobs = [
     sources: [
       { id: "crackers", offCategory: "crackers" },
       { id: "wheat-crackers", offCategory: "wheat-crackers" },
+      { id: "crispbread", offCategory: "crispbread", weight: 3 },
     ],
   },
 ];

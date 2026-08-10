@@ -13,8 +13,12 @@ schedules, production regression floors, and category growth targets.
   summary first.
 - Category product targets are planning signals. Missing a target produces a
   warning, not a failed deployment.
-- Cron expressions use UTC. Germany runs Monday, Wednesday, and Friday; the US
-  runs Tuesday, Thursday, and Saturday.
+- Cron expressions use UTC. The core and discovery waves run for Germany on
+  Monday, Wednesday, and Friday and for the US on Tuesday, Thursday, and
+  Saturday. The everyday basics wave runs for both markets on Sunday.
+- The `cracker` category intentionally combines crackers and crispbread. Open
+  Food Facts has very limited German cracker coverage, while crispbread is a
+  close substitute with the same scoring profile and decision context.
 
 ## Manual Backfill
 
