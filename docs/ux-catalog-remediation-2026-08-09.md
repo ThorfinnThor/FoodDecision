@@ -24,9 +24,8 @@
 - A one-page dry run accepted 40 products even though one of the three sources
   temporarily returned HTTP 503. Partial source failures therefore do not
   discard useful results.
-- Replaced the generic cracker image with a public-domain crispbread photo by
-  Cymydog Naakka from Wikimedia Commons. Attribution remains visible on the
-  image credits page.
+- Kept the commercially reusable public-domain cracker photo by Evan-Amos from
+  Wikimedia Commons. Attribution remains visible on the image credits page.
 
 ## Verification scope
 
