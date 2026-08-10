@@ -40,5 +40,47 @@
     "status": "candidate",
     "targetPageType": "ranking",
     "notes": "Requires demand validation and SERP review before indexation."
+  },
+  {
+    "id": "us-food-oat-milk-low-sugar",
+    "keyword": "low sugar oat milk",
+    "locale": "en-US",
+    "market": "US",
+    "intent": "ranking",
+    "cluster": "oat-milk",
+    "priority": 80,
+    "evidence": [],
+    "validated": false,
+    "status": "candidate",
+    "targetPageType": "ranking",
+    "notes": "Requires US demand validation and SERP review before indexation."
+  },
+  {
+    "id": "us-food-high-protein-bars",
+    "keyword": "high protein bars",
+    "locale": "en-US",
+    "market": "US",
+    "intent": "ranking",
+    "cluster": "protein-bars",
+    "priority": 75,
+    "evidence": [],
+    "validated": false,
+    "status": "candidate",
+    "targetPageType": "ranking",
+    "notes": "Requires US demand validation and SERP review before indexation."
+  },
+  {
+    "id": "us-food-best-muesli",
+    "keyword": "best muesli",
+    "locale": "en-US",
+    "market": "US",
+    "intent": "ranking",
+    "cluster": "muesli",
+    "priority": 65,
+    "evidence": [],
+    "validated": false,
+    "status": "candidate",
+    "targetPageType": "ranking",
+    "notes": "Requires US demand validation and SERP review before indexation."
   }
 ]
