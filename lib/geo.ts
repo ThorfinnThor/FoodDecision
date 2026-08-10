@@ -8,6 +8,7 @@ import {
 import { absoluteUrl, siteUrl } from "./seo.ts";
 import { getCatalog } from "./static-data.ts";
 import type { SiteLocale } from "./types.ts";
+import { seoEditorialContent } from "./seo-editorial.ts";
 
 export const openFoodFactsUrl = "https://world.openfoodfacts.org";
 export const openDatabaseLicenseUrl = "https://opendatacommons.org/licenses/odbl/1-0/";
@@ -88,6 +89,9 @@ Canonical site: ${siteUrl}
 }
 
 export function buildLlmsFull() {
+  const editorialDirectory = seoEditorialContent.map((content) =>
+    `- [${content.answerTitle}](${absoluteUrl(content.path)})\n  - Editorial answer: ${content.answer}\n  - Editorial review: ${content.reviewedAt}, ${content.author.name}.\n  - Supporting sources: ${content.sources.map((source) => `${source.publisher}: ${source.url}`).join("; ")}`,
+  ).join("\n");
   const localeSections = supportedLocales.map((locale) => {
     const catalog = getCatalog(locale);
     const rankings = rankingEntries(locale);
@@ -124,6 +128,7 @@ Canonical site: ${siteUrl}
 - Overall rankings combine the nutrition score at 65 percent and the ingredient score at 35 percent.
 - Stable tie resolution uses the exact comparison value, data confidence, data completeness, and then product name.
 - Products with missing or conflicting values do not gain an advantage.
+- Curated launch rankings add a reviewed editorial answer, decision criteria, limitations, and supporting public sources.
 
 ## Provenance and independence
 
@@ -132,6 +137,10 @@ Canonical site: ${siteUrl}
 - Product images: CC BY-SA where a valid image source and license are present.
 - Ranking rules are versioned in the application and applied equally within each category.
 - Affiliate availability and paid placements do not alter scores or ordering.
+
+## Reviewed editorial guides
+
+${editorialDirectory}
 
 ${localeSections.join("\n\n")}
 `;
