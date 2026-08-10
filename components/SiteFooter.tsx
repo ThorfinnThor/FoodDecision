@@ -24,6 +24,7 @@ export function SiteFooter({ locale }: { locale: SiteLocale }) {
           <Link href={path("/nutrition")}>{pick(locale, "Nährwerte", "Nutrition")}</Link>
           <Link href={path("/compare")}>{pick(locale, "Vergleiche", "Compare")}</Link>
           <Link href={path("/methodology")}>{pick(locale, "Methodik", "Methodology")}</Link>
+          <Link href={path("/editorial-policy")}>{pick(locale, "Redaktionsrichtlinie", "Editorial policy")}</Link>
           <Link href={path("/data-quality")}>{pick(locale, "Datenabdeckung", "Data coverage")}</Link>
           <Link href={path("/privacy")}>{pick(locale, "Datenschutz", "Privacy")}</Link>
           <Link href={path("/image-credits")}>{pick(locale, "Bildnachweise", "Photo credits")}</Link>
