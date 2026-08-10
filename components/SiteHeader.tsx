@@ -17,6 +17,7 @@ export function SiteHeader({ locale }: { locale: SiteLocale }) {
         <nav className="desktop-nav" aria-label={pick(locale, "Hauptnavigation", "Main navigation")}>
           <Link href={path("/products")}>{pick(locale, "Produkte", "Products")}</Link>
           <Link href={`${path()}#categories`}>{pick(locale, "Kategorien", "Categories")}</Link>
+          <Link href={path("/best")}>{pick(locale, "Rankings", "Rankings")}</Link>
           <Link href={path("/compare")}>{pick(locale, "Vergleiche", "Compare")}</Link>
           <Link href={path("/methodology")}>{pick(locale, "So funktioniert's", "Methodology")}</Link>
         </nav>
