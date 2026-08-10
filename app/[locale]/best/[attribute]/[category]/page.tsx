@@ -61,12 +61,13 @@ function seoDecision(
   ranking: NonNullable<ReturnType<typeof resolve>["ranking"]>,
   items: ReturnType<typeof resolve>["items"],
 ) {
-  return evaluateSeoPage(getSeoPageDefinition(path), {
+  const definition = getSeoPageDefinition(path);
+  return evaluateSeoPage(definition, {
     resultCount: items.length,
     dataCompleteness: averageDataCompleteness(items),
     uniqueInsightCount: countUniqueInsights(items),
-    title: ranking.title,
-    h1: ranking.title,
+    title: definition?.seoTitle ?? ranking.title,
+    h1: definition?.h1 ?? ranking.title,
   });
 }
 
@@ -76,11 +77,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!ranking || !insights) return { robots: { index: false, follow: false } };
 
   const canonical = localizedPath(locale, `/best/${values.attribute}/${values.category}`);
+  const definition = getSeoPageDefinition(canonical);
   const decision = seoDecision(canonical, ranking, items);
-  const description = insights.answer;
+  const description = definition?.seoDescription ?? insights.answer;
 
   return {
-    title: `${ranking.title} | ${BRAND_NAME}`,
+    title: `${definition?.seoTitle ?? ranking.title} | ${BRAND_NAME}`,
     description,
     alternates: {
       canonical,
@@ -121,6 +123,7 @@ export default async function RankingPage({ params }: Props) {
   if (!category) notFound();
 
   const canonical = path(`/best/${values.attribute}/${values.category}`);
+  const definition = getSeoPageDefinition(canonical);
   const categoryPath = path(`/category/${categoryRouteSlug(category.slug, locale)}`);
   const relatedRankings = catalog.rankingPages
     .filter((candidate) => candidate.category === ranking.category && candidate.attribute !== ranking.attribute)
@@ -181,8 +184,8 @@ export default async function RankingPage({ params }: Props) {
 
     <section className="subpage-hero ranking-page-hero">
       <p className="eyebrow">{pick(locale, "Datenbasierte Entscheidung", "Data-based decision")}</p>
-      <h1>{ranking.title}</h1>
-      <p>{ranking.intro}</p>
+      <h1>{definition?.h1 ?? ranking.title}</h1>
+      <p>{definition?.editorialSummary ?? ranking.intro}</p>
     </section>
 
     <RankingDecision locale={locale} ranking={ranking} insights={insights} />
