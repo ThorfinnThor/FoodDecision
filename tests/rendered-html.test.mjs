@@ -52,7 +52,13 @@ test("renders citable ranking answers and matching dataset provenance", async ()
   assert.match(html, /Vergleichsmenge/);
   assert.match(html, /Quellen und Redaktionsrichtlinie/);
   assert.match(html, /"@type":"Dataset"/);
+  assert.match(html, /"@type":"Article"/);
+  assert.match(html, /"wordCount":6\d{2}/);
   assert.match(html, /opendatacommons\.org\/licenses\/odbl/);
+  assert.match(html, /Welcher Proteinriegel liefert besonders viel Protein/);
+  assert.match(html, /Vier Kriterien für eine bessere Entscheidung/);
+  assert.match(html, /Deutsche Gesellschaft für Ernährung/);
+  assert.match(html, /Compare Your Food Redaktion/);
 });
 
 test("renders a bilingual editorial and source policy", async () => {
