@@ -60,6 +60,7 @@ test("remote product images use the optimizer, a visible fallback, and cached re
   assert.doesNotMatch(visual, /unoptimized/);
   assert.doesNotMatch(scanner, /unoptimized/);
   assert.match(visual, /product-image-placeholder/);
+  assert.match(scanner, /scanner-image-placeholder/);
   assert.match(visual, /onError=\{\(\) => setFailedUrl/);
   assert.match(visual, /priority=\{priority\}/);
   assert.match(config, /minimumCacheTTL: 604800/);
