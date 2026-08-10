@@ -2,6 +2,10 @@
 
 These files control programmatic SEO publication. Page templates may render without being indexable.
 
+The `/de/best` and `/en-us/best` directories expose useful ranking pages to
+people before search publication. Directory visibility never changes a page's
+indexing state.
+
 ## Source Of Truth
 
 - `keywords.json` stores demand hypotheses and human approval.
@@ -18,6 +22,10 @@ These files control programmatic SEO publication. Page templates may render with
 6. Inspect `generated/seo/build-report.json` locally. It is intentionally not committed.
 
 A page enters the sitemap only when registry approval and every automated quality threshold pass. Unknown pages and finder query combinations default to `noindex,follow`.
+
+`status: review` marks a curated launch candidate. It remains `noindex,follow`
+until its keyword is approved, its page is published, the production domain is
+configured, and all automated thresholds pass.
 
 Demand evidence and review are market-specific. German pages use the `/de`
 route family and German search intent; US English pages use `/en-us` and US
