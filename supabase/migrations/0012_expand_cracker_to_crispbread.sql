@@ -1,1 +1,33 @@
-şë+ı¸§ı¶¬{®%ŠwµßŸİzÿìµÚ.´ê^­«b¢yè¶—«š+my
+update categories
+set label = 'Cracker und KnÃ¤ckebrot',
+    intent = 'Cracker und KnÃ¤ckebrot mit weniger Zucker, Salz und verstÃ¤ndlichen Zutaten.',
+    description = 'Cracker und KnÃ¤ckebrot werden nach Zucker, Protein, Salz, gesÃ¤ttigten FettsÃ¤uren und ZutatenqualitÃ¤t verglichen.'
+where slug = 'cracker';
+
+update ranking_pages
+set title = case attribute
+      when 'wenig-zucker' then 'Cracker und KnÃ¤ckebrot mit wenig Zucker'
+      when 'gute-zutaten' then 'Cracker und KnÃ¤ckebrot mit verstÃ¤ndlichen Zutaten'
+      else title
+    end,
+    intro = case attribute
+      when 'wenig-zucker' then 'Cracker und KnÃ¤ckebrot nach Zuckerwert.'
+      when 'gute-zutaten' then 'Cracker und KnÃ¤ckebrot nach ZutatenqualitÃ¤t.'
+      else intro
+    end
+where category_slug = 'cracker'
+  and market = 'DE';
+
+update ranking_pages
+set title = case attribute
+      when 'wenig-zucker' then 'Crackers and crispbread with less sugar'
+      when 'gute-zutaten' then 'Crackers and crispbread with understandable ingredients'
+      else title
+    end,
+    intro = case attribute
+      when 'wenig-zucker' then 'Crackers and crispbread ranked by sugar content.'
+      when 'gute-zutaten' then 'Crackers and crispbread ranked by ingredient quality.'
+      else intro
+    end
+where category_slug = 'cracker'
+  and market = 'US';
