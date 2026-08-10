@@ -10,6 +10,7 @@ import {
 } from "../../lib/seo.ts";
 import { getCatalog, staticManifest } from "../../lib/static-data.ts";
 import type { SiteLocale } from "../../lib/types.ts";
+import { evaluateEditorialContent, getSeoEditorialContent } from "../../lib/seo-editorial.ts";
 
 type ReportEntry = {
   id: string;
@@ -18,6 +19,7 @@ type ReportEntry = {
   resultCount: number;
   dataCompleteness: number;
   uniqueInsightCount: number;
+  editorialWordCount: number;
   indexable: boolean;
   qualityReady: boolean;
   qualityBlockers: string[];
@@ -62,7 +64,12 @@ export async function validateSeo() {
       uniqueInsightCount: countUniqueInsights(items),
       title: ranking?.title ?? "",
       h1: ranking?.title ?? "",
+      editorialWordCount: 0,
+      editorialBlockers: [] as string[],
     };
+    const editorialQuality = evaluateEditorialContent(getSeoEditorialContent(definition.path));
+    context.editorialWordCount = editorialQuality.wordCount;
+    context.editorialBlockers = editorialQuality.blockers;
     const decision = evaluateSeoPage(definition, context);
     const qualityBlockers = decision.reasons.filter((reason) => !publicationReasons.has(reason));
     const publicationBlockers = decision.reasons.filter((reason) => publicationReasons.has(reason));
@@ -73,6 +80,7 @@ export async function validateSeo() {
       resultCount: context.resultCount,
       dataCompleteness: Number(context.dataCompleteness.toFixed(3)),
       uniqueInsightCount: context.uniqueInsightCount,
+      editorialWordCount: context.editorialWordCount,
       indexable: decision.indexable,
       qualityReady: qualityBlockers.length === 0,
       qualityBlockers,

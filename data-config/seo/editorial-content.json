@@ -1,0 +1,440 @@
+[
+  {
+    "path": "/de/best/wenig-zucker/hafermilch",
+    "locale": "de-DE",
+    "reviewedAt": "2026-08-10",
+    "author": { "name": "Compare Your Food Redaktion", "role": "Datenredaktion" },
+    "answerTitle": "Welche Hafermilch enthält wenig Zucker?",
+    "answer": "Für einen zuckerarmen Haferdrink zählt zuerst der deklarierte Zuckerwert pro 100 ml. Dieser Wert allein beantwortet die Kaufentscheidung aber nicht vollständig. Protein, Calcium und zugesetzte Vitamine können je nach Verwendung ebenfalls wichtig sein. Unser Ranking trennt deshalb die klare Sortierregel von der anschließenden Einordnung der übrigen Produktdaten.",
+    "introduction": [
+      "Haferdrinks können auch ohne zugesetzten Haushaltszucker mehrere Gramm Zucker pro 100 ml enthalten. Bei der Herstellung wird ein Teil der Haferstärke in kleinere Zuckerbausteine zerlegt. Die Angabe ungesüßt bedeutet daher nicht automatisch, dass auf der Nährwerttabelle null Gramm Zucker stehen. Für einen fairen Produktvergleich verwenden wir den tatsächlich ausgewiesenen Gesamtzucker und nicht nur Werbeaussagen auf der Vorderseite.",
+      "Die Rangliste beantwortet eine eng definierte Frage: Welcher rankingfähige Haferdrink weist innerhalb des deutschen Katalogs am wenigsten Zucker pro 100 ml aus? Sie ist keine allgemeine Gesundheitsbewertung und keine Aussage darüber, welcher Drink für jede Person am besten geeignet ist. Wer Haferdrink regelmäßig als Ersatz für Milch nutzt, sollte zusätzlich Protein, Calcium, Vitamin B12, Vitamin D, Jod und die Zutatenliste prüfen. Nicht alle dieser Angaben liegen in Open Food Facts vollständig vor. Fehlende Werte werden deshalb nicht ergänzt oder geschätzt."
+    ],
+    "criteria": [
+      {
+        "title": "Zucker richtig vergleichen",
+        "body": "Vergleiche immer dieselbe Bezugsmenge. Auf dieser Seite sind das 100 ml. Ein Glas mit 200 ml enthält entsprechend die doppelte Menge. Der Gesamtzucker auf der Nährwerttabelle kann sowohl natürlich entstandenen Zucker aus der Verarbeitung als auch zugesetzten Zucker umfassen. Ob Zucker, Sirup oder ein anderer süßender Bestandteil zugesetzt wurde, lässt sich nur zusammen mit der Zutatenliste beurteilen."
+      },
+      {
+        "title": "Protein und Anreicherung mitdenken",
+        "body": "Ein sehr niedriger Zuckerwert sagt nichts über den Proteingehalt aus. Haferdrinks enthalten häufig weniger Protein als Kuhmilch oder angereicherte Sojadrinks. Wer den Drink regelmäßig nutzt, kann außerdem auf Calcium und zugesetzte Vitamine achten. Unser Datensatz zeigt nur Werte, die von der Quelle bereitgestellt werden. Ein fehlender Eintrag bedeutet nicht, dass der Nährstoff sicher fehlt. Die aktuelle Verpackung bleibt entscheidend."
+      },
+      {
+        "title": "Zutaten nach dem eigenen Zweck auswählen",
+        "body": "Für Kaffee kann eine Barista Rezeptur wegen Schaum und Stabilität praktisch sein, enthält aber oft Öl oder weitere Stabilisatoren. Für Müsli kann eine kurze Zutatenliste wichtiger sein. Aromen, Säureregulatoren und zugesetztes Öl sind nicht automatisch ein Ausschlussgrund. Sie verändern jedoch die Produkteigenschaften und sollten sichtbar in die persönliche Entscheidung einfließen."
+      },
+      {
+        "title": "Allergien und individuelle Ernährung beachten",
+        "body": "Hafer kann durch Verarbeitung mit glutenhaltigem Getreide in Kontakt kommen. Menschen mit Zöliakie müssen auf eine ausdrücklich glutenfreie Kennzeichnung achten. Auch Allergene und mögliche Spurenhinweise gehören auf der aktuellen Packung geprüft. Das Ranking ersetzt keine individuelle Ernährungsberatung und leitet aus fehlenden Allergenangaben keine Sicherheit ab."
+      }
+    ],
+    "limitations": [
+      "Die Reihenfolge berücksichtigt für dieses Ranking nur den Zuckerwert pro 100 ml. Preis, Geschmack, Schaumeigenschaften und Verfügbarkeit sind nicht Teil der Platzierung.",
+      "Open Food Facts wird gemeinschaftlich gepflegt. Angaben können fehlen, veraltet sein oder von einer älteren Verpackung stammen. Deshalb zeigen wir Katalogdatum und Datensicherheit offen an.",
+      "Die Bezeichnung ungesüßt und der gemessene Gesamtzucker beantworten unterschiedliche Fragen. Die Zutatenliste und die Nährwerttabelle sollten gemeinsam gelesen werden."
+    ],
+    "faq": [
+      {
+        "question": "Ist ungesüßter Haferdrink immer zuckerfrei?",
+        "answer": "Nein. Ungesüßt bedeutet in der Regel, dass kein süßender Bestandteil zugesetzt wurde. Bei der Verarbeitung von Hafer kann dennoch Zucker aus Stärke entstehen. Maßgeblich für den Vergleich ist die Zuckerangabe auf der Nährwerttabelle."
+      },
+      {
+        "question": "Warum sortiert das Ranking nicht nach zugesetztem Zucker?",
+        "answer": "Die strukturierte Datenquelle enthält den Gesamtzucker zuverlässiger als eine einheitliche Angabe zum zugesetzten Zucker. Die Zutatenbewertung weist erkannte Zucker und Sirupe zusätzlich aus. Wo die Zutatenliste fehlt, behaupten wir nicht, dass kein Zucker zugesetzt wurde."
+      },
+      {
+        "question": "Ist der Haferdrink auf Platz 1 automatisch die beste Wahl?",
+        "answer": "Nein. Platz 1 hat im aktuellen Katalog den besten belastbaren Zuckerwert. Je nach Nutzung können Protein, Calcium, Vitaminanreicherung, Allergene, Zutaten, Geschmack und Preis wichtiger sein."
+      },
+      {
+        "question": "Warum stehen manche bekannten Produkte nicht im Ranking?",
+        "answer": "Ein Produkt braucht eine passende Bezugsbasis, einen verwertbaren Zuckerwert und ausreichende Datenqualität. Produkte ohne diese Voraussetzungen bleiben außerhalb der Rangliste, bis die benötigten Angaben belastbar vorliegen."
+      }
+    ],
+    "sources": [
+      {
+        "publisher": "Verbraucherzentrale",
+        "title": "Milchalternativen unter der Lupe",
+        "url": "https://www.verbraucherzentrale.de/wissen/lebensmittel/kennzeichnung-und-inhaltsstoffe/hafer-kokos-mandel-reis-soja-milchalternativen-unter-der-lupe-62593",
+        "note": "Einordnung von Nährwertunterschieden, Anreicherung und der Aussage ungesüßt."
+      },
+      {
+        "publisher": "Deutsche Gesellschaft für Ernährung",
+        "title": "Quantitative Empfehlung zur Zuckerzufuhr",
+        "url": "https://www.dge.de/wissenschaft/stellungnahmen-und-positionspapiere/stellungnahmen/quantitative-recommendation-on-sugar-intake-in-germany/",
+        "note": "Fachliche Einordnung freier Zucker in der gesamten Ernährung."
+      },
+      {
+        "publisher": "Open Food Facts",
+        "title": "Offene Produktdatenbank",
+        "url": "https://world.openfoodfacts.org/",
+        "note": "Quelle der dargestellten Produktdaten und Produktbilder."
+      }
+    ]
+  },
+  {
+    "path": "/de/best/proteinreich/proteinriegel",
+    "locale": "de-DE",
+    "reviewedAt": "2026-08-10",
+    "author": { "name": "Compare Your Food Redaktion", "role": "Datenredaktion" },
+    "answerTitle": "Welcher Proteinriegel liefert besonders viel Protein?",
+    "answer": "Das Ranking vergleicht den deklarierten Proteingehalt pro 100 g und macht damit unterschiedlich große Riegel direkt vergleichbar. Für die tatsächliche Portion ist zusätzlich das Gewicht eines Riegels entscheidend. Ein hoher Proteinwert allein sagt außerdem noch nichts über Zucker, gesättigte Fettsäuren, Salz, Zutaten oder persönliche Verträglichkeit aus.",
+    "introduction": [
+      "Proteinriegel tragen ihre wichtigste Zahl häufig gut sichtbar auf der Verpackung. Dabei kann sich die Angabe auf den ganzen Riegel, auf eine Portion oder auf 100 g beziehen. Diese Werte dürfen nicht ungeprüft nebeneinandergestellt werden. Unsere Reihenfolge verwendet Protein pro 100 g, weil diese Bezugsbasis im Katalog am einheitlichsten verfügbar ist. So wird ein kleiner Riegel nicht allein wegen seiner Größe benachteiligt und ein großer Riegel nicht allein wegen mehr Gramm pro Packung bevorzugt.",
+      "Für die Kaufentscheidung sollte danach auf die tatsächlich gegessene Portion umgerechnet werden. Ein Riegel mit 30 g Protein pro 100 g liefert bei 50 g Gewicht 15 g Protein. Gleichzeitig können Zucker, Zuckeralkohole, Süßungsmittel, gesättigte Fettsäuren und Salz deutlich variieren. Das Proteinranking ist deshalb ein Werkzeug für eine konkrete Frage und kein pauschales Urteil über die gesamte Rezeptur. Auf den Produktseiten bleiben die weiteren Teilbewertungen und Datenlücken sichtbar."
+    ],
+    "criteria": [
+      {
+        "title": "Protein pro 100 g und pro Riegel trennen",
+        "body": "Der Wert pro 100 g eignet sich für den direkten Vergleich. Für den Alltag ist die Portion oft aussagekräftiger. Multipliziere den Wert pro 100 g mit dem Riegelgewicht und teile durch 100. Ein Riegel mit hoher Proteindichte kann wegen einer kleinen Portion trotzdem weniger Protein liefern als ein größerer Riegel mit etwas niedrigerem Vergleichswert."
+      },
+      {
+        "title": "Zucker und Süßungsmittel separat prüfen",
+        "body": "Ein niedriger Gesamtzucker kann durch eine Rezeptur mit Zuckeralkoholen oder Süßungsmitteln erreicht werden. Diese Stoffe sind nicht dasselbe wie Zucker und werden in der Zutatenliste erkennbar. Größere Mengen bestimmter Zuckeralkohole können bei empfindlichen Personen Verdauungsbeschwerden auslösen. Das Ranking bewertet Protein und zeigt erkannte Zutatenhinweise getrennt, damit ein Vorteil nicht automatisch alle anderen Aspekte überdeckt."
+      },
+      {
+        "title": "Proteinquelle und Allergene beachten",
+        "body": "Molkenprotein, Milcheiweiß, Soja, Erbse und andere Quellen unterscheiden sich in Rezeptur, Geschmack und Eignung. Für Personen mit Allergien oder veganer Ernährung ist die Proteinmenge allein nicht ausreichend. Milch, Soja, Erdnüsse und Schalenfrüchte gehören zu den häufigen relevanten Angaben. Verlasse dich immer auf die aktuelle Allergenkennzeichnung der Verpackung."
+      },
+      {
+        "title": "Den Riegel im Tageskontext sehen",
+        "body": "Ein Proteinriegel kann unterwegs praktisch sein, ist aber nicht automatisch notwendig. Die Deutsche Gesellschaft für Ernährung weist darauf hin, dass Erwachsene im üblichen Breitensport nicht grundsätzlich mehr Protein benötigen. Hülsenfrüchte, Getreide, Milchprodukte, Eier, Fisch oder Fleisch können den Bedarf ebenfalls decken. Das Ranking hilft beim Vergleich innerhalb der Produktkategorie und gibt keine persönliche Zufuhrempfehlung."
+      }
+    ],
+    "limitations": [
+      "Die Platzierung folgt Protein pro 100 g. Preis pro Riegel, Portionsgröße, Geschmack und individuelle Proteinziele verändern die Reihenfolge nicht.",
+      "Die Qualität einer Proteinquelle und die Verdaulichkeit lassen sich aus den verfügbaren Produktdaten nicht zuverlässig bestimmen. Dafür wird kein Ersatzwert vergeben.",
+      "Eine hohe Platzierung ist keine Empfehlung, möglichst viel Protein zu essen. Der persönliche Bedarf hängt unter anderem von Körpergewicht, Alter, Aktivität und Gesundheit ab."
+    ],
+    "faq": [
+      {
+        "question": "Wie viel Protein liefert ein einzelner Riegel?",
+        "answer": "Das hängt vom Riegelgewicht ab. Bei 30 g Protein pro 100 g enthält ein 50 g schwerer Riegel 15 g Protein. Prüfe das Nettogewicht und die Portionsangabe auf der aktuellen Verpackung."
+      },
+      {
+        "question": "Warum gewinnt nicht automatisch der Riegel mit dem besten Gesamtscore?",
+        "answer": "Diese Seite beantwortet gezielt die Frage nach der Proteindichte. Der Gesamtscore kombiniert dagegen Nährwerte und Zutaten. Deshalb können Proteinranking und Gesamturteil zu unterschiedlichen Reihenfolgen führen."
+      },
+      {
+        "question": "Sind Riegel mit wenig Zucker immer die bessere Wahl?",
+        "answer": "Nicht automatisch. Weniger Zucker kann sinnvoll sein, doch Süßungsmittel, Zuckeralkohole, gesättigte Fettsäuren, Salz, Allergene und Portionsgröße bleiben relevant. Die Zutatenliste erklärt, wie der Geschmack erreicht wird."
+      },
+      {
+        "question": "Brauche ich nach dem Training einen Proteinriegel?",
+        "answer": "Das lässt sich nicht pauschal beantworten. Viele Menschen können ihren Proteinbedarf über normale Lebensmittel decken. Bei besonderen Trainingszielen oder medizinischen Fragen ist eine qualifizierte Ernährungsberatung sinnvoll."
+      }
+    ],
+    "sources": [
+      {
+        "publisher": "Deutsche Gesellschaft für Ernährung",
+        "title": "Referenzwerte für Protein",
+        "url": "https://www.dge.de/wissenschaft/referenzwerte/protein/",
+        "note": "Referenzwerte, Proteinquellen und Einordnung des Bedarfs im Breitensport."
+      },
+      {
+        "publisher": "Bundeszentrum für Ernährung",
+        "title": "Proteine in der Ernährung",
+        "url": "https://www.bzfe.de/essen-und-gesundheit/naehrstoffe/proteine",
+        "note": "Grundlagen zu Proteinquellen und zur Kennzeichnung proteinreicher Produkte."
+      },
+      {
+        "publisher": "Open Food Facts",
+        "title": "Offene Produktdatenbank",
+        "url": "https://world.openfoodfacts.org/",
+        "note": "Quelle der dargestellten Produktdaten und Produktbilder."
+      }
+    ]
+  },
+  {
+    "path": "/de/best/beste-wahl/muesli",
+    "locale": "de-DE",
+    "reviewedAt": "2026-08-10",
+    "author": { "name": "Compare Your Food Redaktion", "role": "Datenredaktion" },
+    "answerTitle": "Woran erkennt man ein ausgewogenes Müsli?",
+    "answer": "Ein sinnvolles Gesamturteil für Müsli braucht mehrere Perspektiven. Zucker, Protein, Salz und gesättigte Fettsäuren werden zusammen mit der Zutatenbewertung betrachtet. Vollkorn und Ballaststoffe sind für die Kaufentscheidung wichtig, liegen in offenen Produktdaten aber nicht für jedes Müsli vollständig vor. Diese Lücken bleiben sichtbar und werden nicht als null interpretiert.",
+    "introduction": [
+      "Müsli ist keine einheitliche Produktgruppe. Schlichte Flockenmischungen, Nussmüsli, Früchtemüsli, Granola und knusprig gebackene Varianten können sehr unterschiedliche Nährwerte und Zutaten haben. Eine Rangliste, die nur nach Zucker sortiert, würde Protein, Salz, gesättigte Fettsäuren und die Rezeptur ignorieren. Eine reine Zutatenbewertung würde wiederum die tatsächlich ausgewiesenen Nährwerte ausblenden. Das Gesamturteil verbindet beide Ebenen mit festen Gewichten.",
+      "Die Seite soll eine Vorauswahl erleichtern, nicht jede Frühstückssituation auf eine einzige Zahl reduzieren. Trockenfrüchte bringen natürlichen Zucker mit, Nüsse können den Fettgehalt erhöhen und zugleich Protein sowie Ballaststoffe beitragen. Knuspermüsli kann zugesetzten Zucker oder Sirup enthalten. Entscheidend ist deshalb, welche Ziele dir wichtig sind und wie vollständig die Daten eines Produkts sind. Bei fehlenden Angaben setzt das Gesamtsystem einen neutralen Wert an und senkt die Datensicherheit, statt aus einer Lücke einen Vorteil zu machen."
+    ],
+    "criteria": [
+      {
+        "title": "Vollkorn und Ballaststoffe suchen",
+        "body": "Vollkornflocken liefern mehr Ballaststoffe und weitere Bestandteile des ganzen Korns als stark ausgemahlene Getreideprodukte. Die DGE empfiehlt, einen relevanten Anteil der Getreideprodukte als Vollkorn zu wählen. Prüfe deshalb die ersten Zutaten und die Ballaststoffangabe, sofern sie vorhanden ist. Begriffe wie Mehrkorn oder eine dunkle Farbe garantieren keinen hohen Vollkornanteil."
+      },
+      {
+        "title": "Gesamtzucker und Zutaten gemeinsam lesen",
+        "body": "Der Gesamtzucker kann aus Trockenfrüchten, anderen Zutaten und zugesetzten süßenden Bestandteilen stammen. Eine Zahl allein zeigt die Herkunft nicht. Zucker, Honig, Sirup und Fruchtsaftkonzentrat in der Zutatenliste liefern zusätzlichen Kontext. Bei Trockenfrüchten kann ein höherer Zuckerwert mit einer sonst einfachen Rezeptur zusammenfallen. Das Gesamturteil betrachtet deshalb Nährwert und Zutaten getrennt."
+      },
+      {
+        "title": "Portionen realistisch einschätzen",
+        "body": "Die Nährwerte werden pro 100 g verglichen, gegessen wird aber eine individuelle Portion. Wer 80 g statt 40 g verwendet, nimmt die doppelte Menge an Zucker, Protein, Salz und Energie aus dem Müsli auf. Milch, Pflanzendrink, Joghurt, Obst oder Nüsse verändern die gesamte Mahlzeit zusätzlich. Die Rangliste bewertet nur das trockene Produkt, nicht das fertige Frühstück."
+      },
+      {
+        "title": "Datenqualität als Teil des Urteils verstehen",
+        "body": "Ein Produkt mit lückenhafter Zutatenliste kann nicht genauso sicher beurteilt werden wie ein vollständig dokumentiertes Produkt. Fehlende Werte werden im Gesamtscore konservativ behandelt. Das schützt vor künstlich hohen Platzierungen durch Datenlücken. Die Datensicherheit zeigt, wie belastbar die sichtbare Bewertung mit dem aktuellen Katalog ist."
+      }
+    ],
+    "limitations": [
+      "Das Gesamturteil bewertet das trockene Produkt pro 100 g. Persönliche Portionsgröße und weitere Bestandteile des Frühstücks sind nicht eingerechnet.",
+      "Ballaststoffe und Vollkornanteil sind in Open Food Facts nicht für alle Produkte vollständig verfügbar. Sie können deshalb noch nicht mit einem einheitlichen Gewicht in jede Platzierung einfließen.",
+      "Geschmack, Preis, Biozertifizierung und individuelle Allergien sind keine pauschalen Qualitätsmerkmale und werden nicht in eine allgemeine Rangfolge gezwungen."
+    ],
+    "faq": [
+      {
+        "question": "Ist Müsli mit Trockenfrüchten wegen des Zuckers automatisch schlecht?",
+        "answer": "Nein. Trockenfrüchte erhöhen häufig den Gesamtzucker, liefern aber auch andere Bestandteile. Entscheidend sind Menge, übrige Rezeptur, Portion und persönliche Ziele. Die Zutatenliste zeigt, ob zusätzlich Zucker oder Sirup eingesetzt wurde."
+      },
+      {
+        "question": "Warum zählt Ballaststoff nicht immer direkt im Score?",
+        "answer": "Die Angabe fehlt bei einem Teil der offenen Produktdaten. Eine Wertung nur für vollständig erfasste Produkte würde Lücken unfair behandeln. Wir zeigen vorhandene Ballaststoffwerte, schätzen fehlende Werte aber nicht."
+      },
+      {
+        "question": "Was ist der Unterschied zwischen Ranking und Produktscore?",
+        "answer": "Das Ranking ordnet alle geeigneten Produkte nach demselben Gesamturteil. Der Produktscore erklärt dieses Urteil auf der Detailseite mit Teilwerten, Gründen und Datensicherheit."
+      },
+      {
+        "question": "Ist Platz 1 das beste Müsli für Kinder?",
+        "answer": "Nicht automatisch. Alter, Portionsgröße, Allergien und die gesamte Mahlzeit müssen berücksichtigt werden. Diese Rangliste richtet sich an eine allgemeine Kaufentscheidung und ersetzt keine individuelle Empfehlung für Kinder."
+      }
+    ],
+    "sources": [
+      {
+        "publisher": "Deutsche Gesellschaft für Ernährung",
+        "title": "Vollkorn ist die beste Wahl",
+        "url": "https://www.dge.de/gesunde-ernaehrung/gut-essen-und-trinken/vollkorn/",
+        "note": "Einordnung von Vollkornprodukten und Ballaststoffen in der Ernährung."
+      },
+      {
+        "publisher": "Deutsche Gesellschaft für Ernährung",
+        "title": "Referenzwerte für Ballaststoffe",
+        "url": "https://www.dge.de/wissenschaft/referenzwerte/ballaststoffe/",
+        "note": "Fachliche Grundlage für die Bedeutung und Quellen von Ballaststoffen."
+      },
+      {
+        "publisher": "Open Food Facts",
+        "title": "Offene Produktdatenbank",
+        "url": "https://world.openfoodfacts.org/",
+        "note": "Quelle der dargestellten Produktdaten und Produktbilder."
+      }
+    ]
+  },
+  {
+    "path": "/en-us/best/low-sugar/oat-milk",
+    "locale": "en-US",
+    "reviewedAt": "2026-08-10",
+    "author": { "name": "Compare Your Food editorial team", "role": "Data editorial team" },
+    "answerTitle": "Which oat milk is low in sugar?",
+    "answer": "A low sugar oat milk comparison starts with total sugar on the Nutrition Facts label using the same reference amount. Sugar alone does not settle the full choice. Protein, calcium, vitamin D, added sugars, ingredients, and intended use can matter too. This ranking keeps the ordering rule separate from those additional considerations.",
+    "introduction": [
+      "Oat milk can contain total sugar even when the package says unsweetened. Processing may break some oat starch into smaller sugars, while a separate added sugars line on a United States label describes sugars introduced during processing. These are related but different pieces of information. We rank eligible products by the disclosed total sugar value on a common basis and use the ingredient list to add context where reliable data is available.",
+      "The ranking answers one focused question: which eligible oat milk in the United States catalog discloses the least sugar per 100 ml? It is not a complete health rating and does not claim that one product is best for everyone. The FDA advises consumers comparing plant based milk alternatives to consider protein, vitamin D, calcium, potassium, saturated fat, and added sugars. Open Food Facts does not consistently contain every one of those fields. We show the values we have, mark gaps, and ask readers to verify the current package."
+    ],
+    "criteria": [
+      {
+        "title": "Compare the same amount",
+        "body": "This page uses grams of total sugar per 100 ml so products can be ordered consistently. A United States Nutrition Facts label usually emphasizes one serving, so convert carefully when checking the package. A 240 ml serving contains 2.4 times the amount shown per 100 ml. Serving size matters when translating a comparison value into what you actually drink."
+      },
+      {
+        "title": "Read total and added sugars correctly",
+        "body": "Total sugars include all sugars reported in the product. Added sugars identify sugars introduced during processing under United States labeling rules. An unsweetened statement should be checked against both the Added Sugars line and the ingredient list. When the source lacks a reliable added sugars field, this site does not infer a value from marketing language."
+      },
+      {
+        "title": "Check protein and fortification",
+        "body": "Oat milk may provide much less protein than dairy milk or fortified soy beverages. Calcium, vitamin D, vitamin A, vitamin B12, and potassium can also differ. If oat milk regularly replaces dairy, compare those nutrients on the current label. A missing value in our catalog means the source did not provide a usable value. It does not prove that the nutrient is absent."
+      },
+      {
+        "title": "Match ingredients to the use",
+        "body": "Barista products may include oil, stabilizers, or acidity regulators to improve foam and texture. Those ingredients can be useful for coffee but unnecessary for another use. Flavorings, gums, and oils are not treated as automatic reasons to reject a product. They are disclosed so the buyer can decide whether the formulation fits the intended use."
+      }
+    ],
+    "limitations": [
+      "Position is determined by total sugar per 100 ml. Price, taste, foam performance, availability, and fortification do not change the order on this page.",
+      "Open Food Facts is community maintained. A value can be incomplete, outdated, or taken from an older package. The current label should always be the final reference.",
+      "This comparison is for general shopping information. It does not determine whether a product is appropriate for an infant, a child, or a person with a medical condition."
+    ],
+    "faq": [
+      {
+        "question": "Does unsweetened oat milk always have zero sugar?",
+        "answer": "No. Unsweetened generally means no sweetening ingredient was added, but sugars can still result from the oats and processing. Check total sugars, added sugars, and the ingredient list together."
+      },
+      {
+        "question": "Why does the ranking use total sugar instead of added sugar?",
+        "answer": "Total sugar is more consistently available in the current structured catalog. Added sugar remains useful and should be checked on the United States label, but missing values are not estimated for the ranking."
+      },
+      {
+        "question": "Is the top ranked oat milk the most nutritious one?",
+        "answer": "Not necessarily. It has the strongest reliable result for this sugar criterion. Protein, fortification, saturated fat, ingredients, allergens, taste, and price can lead to a different choice."
+      },
+      {
+        "question": "Why is a familiar brand missing?",
+        "answer": "A product needs a compatible reference basis, a usable sugar value, and sufficient publication quality. Products that do not meet those requirements stay outside the ranking until the data is reliable enough."
+      }
+    ],
+    "sources": [
+      {
+        "publisher": "U.S. Food and Drug Administration",
+        "title": "Milk and plant based milk alternatives",
+        "url": "https://www.fda.gov/consumers/consumer-updates/milk-and-plant-based-milk-alternatives-know-nutrient-difference",
+        "note": "Guidance on protein, fortification, saturated fat, and added sugars when comparing alternatives."
+      },
+      {
+        "publisher": "U.S. Food and Drug Administration",
+        "title": "How to understand and use the Nutrition Facts label",
+        "url": "https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label",
+        "note": "Official explanation of serving size, nutrients, and percent Daily Value."
+      },
+      {
+        "publisher": "Open Food Facts",
+        "title": "Open food product database",
+        "url": "https://world.openfoodfacts.org/",
+        "note": "Source of the displayed product data and product images."
+      }
+    ]
+  },
+  {
+    "path": "/en-us/best/high-protein/protein-bars",
+    "locale": "en-US",
+    "reviewedAt": "2026-08-10",
+    "author": { "name": "Compare Your Food editorial team", "role": "Data editorial team" },
+    "answerTitle": "Which protein bars provide the most protein?",
+    "answer": "This ranking compares disclosed protein per 100 g, which makes bars of different sizes directly comparable. The amount in one bar still depends on package weight. Sugar, added sugars, sweeteners, saturated fat, sodium, ingredients, and allergens should be checked separately before choosing a product.",
+    "introduction": [
+      "Protein bars often place a large protein number on the front of the package, but that number may describe one bar, one serving, or 100 g. Those figures cannot be compared without a shared basis. Our ranking uses protein per 100 g because that is the most consistent structured value available across the catalog. The position therefore represents protein density, not the absolute amount in every package.",
+      "A dense protein bar is not automatically the best overall snack. A small bar can rank highly while providing fewer total grams than a larger serving. Products can also differ in added sugars, sugar alcohols, sweeteners, saturated fat, sodium, protein source, and allergens. The product page separates the protein criterion from the overall assessment so readers can see why two useful questions may produce different orders."
+    ],
+    "criteria": [
+      {
+        "title": "Convert density into protein per bar",
+        "body": "Use protein per 100 g for a fair product comparison, then calculate the amount in the bar you will eat. Multiply protein per 100 g by the bar weight and divide by 100. A product with 30 g per 100 g provides 15 g in a 50 g bar. This second calculation is essential when package sizes differ."
+      },
+      {
+        "title": "Check added sugars and sweeteners",
+        "body": "The Nutrition Facts label separates total sugars and added sugars. A low sugar number can also reflect the use of sugar alcohols or high intensity sweeteners, which appear in the ingredient list. The ranking does not treat one approach as automatically best. It keeps the protein order clear and exposes ingredient signals for a more personal decision."
+      },
+      {
+        "title": "Review protein source and allergens",
+        "body": "Whey, milk protein, soy, pea, and other sources can create different textures and dietary constraints. Milk, soy, peanuts, and tree nuts are common relevant allergens in this category. A high position never overrides an allergy warning. Always read the current package because formulations and manufacturing statements can change."
+      },
+      {
+        "title": "Use the bar in context",
+        "body": "Protein is one part of a complete eating pattern. The FDA Daily Value for protein is a general labeling reference, not a personal prescription. Individual needs vary with age, body size, activity, and health. A bar can be convenient, but this ranking does not claim that a supplement style snack is necessary or superior to protein from regular foods."
+      }
+    ],
+    "limitations": [
+      "The order follows protein per 100 g. Price, taste, bar weight, protein quality, and personal targets do not alter this ranking.",
+      "The available product data cannot reliably measure amino acid profile, digestibility, or how filling a bar will be. We do not invent substitute scores for those qualities.",
+      "This page provides general product comparison information. It does not prescribe a protein intake or replace medical or nutrition advice."
+    ],
+    "faq": [
+      {
+        "question": "How much protein is in one bar?",
+        "answer": "Multiply the listed protein per 100 g by the weight of one bar and divide by 100. For example, 30 g per 100 g becomes 15 g in a 50 g bar."
+      },
+      {
+        "question": "Why is the highest protein bar not always highest overall?",
+        "answer": "The protein ranking answers one narrow question. The overall assessment also considers category specific nutrition and ingredient quality, so the two orders can differ without contradicting each other."
+      },
+      {
+        "question": "Does low sugar mean a bar has no sweeteners?",
+        "answer": "No. A bar can contain little sugar and still use sugar alcohols or other sweeteners. Read the ingredient list and consider personal tolerance as well as the Nutrition Facts label."
+      },
+      {
+        "question": "Do I need a protein bar after a workout?",
+        "answer": "Not everyone does. Many people can meet protein needs through meals and regular foods. Individual training or health goals are better discussed with a qualified professional."
+      }
+    ],
+    "sources": [
+      {
+        "publisher": "U.S. Food and Drug Administration",
+        "title": "How to understand and use the Nutrition Facts label",
+        "url": "https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label",
+        "note": "Official guidance on serving size and comparison of nutrient amounts."
+      },
+      {
+        "publisher": "U.S. Food and Drug Administration",
+        "title": "Added sugars on the Nutrition Facts label",
+        "url": "https://www.fda.gov/food/nutrition-facts-label/added-sugars-nutrition-facts-label",
+        "note": "Explanation of total sugars, added sugars, and percent Daily Value."
+      },
+      {
+        "publisher": "Open Food Facts",
+        "title": "Open food product database",
+        "url": "https://world.openfoodfacts.org/",
+        "note": "Source of the displayed product data and product images."
+      }
+    ]
+  },
+  {
+    "path": "/en-us/best/best-overall/muesli",
+    "locale": "en-US",
+    "reviewedAt": "2026-08-10",
+    "author": { "name": "Compare Your Food editorial team", "role": "Data editorial team" },
+    "answerTitle": "What makes a strong overall muesli choice?",
+    "answer": "A useful overall muesli comparison needs more than one nutrient. Our assessment combines category specific nutrition, including sugar, protein, sodium, and saturated fat, with ingredient quality. Whole grains and fiber also matter to buyers, but those fields are not complete for every product in the open catalog. Missing values remain visible rather than being treated as zero.",
+    "introduction": [
+      "Muesli covers a broad range of foods. Simple rolled grain blends, fruit muesli, nut mixes, granola, and crunchy baked products can have very different recipes. Sorting only by sugar would ignore protein, sodium, saturated fat, and ingredients. Sorting only by ingredient count would ignore the nutrition values that a product actually discloses. The overall assessment combines nutrition and ingredient evidence using one published rule for every eligible product.",
+      "The result is a shopping aid, not a universal definition of a perfect breakfast. Dried fruit can raise total sugar while nuts may raise fat and also contribute protein or fiber. Granola can use oil, syrups, or added sugars for texture. The serving eaten at home may be very different from 100 g, and milk, yogurt, fruit, or toppings change the meal. We keep those limits visible and show data confidence so a sparse record cannot quietly outrank a well documented one."
+    ],
+    "criteria": [
+      {
+        "title": "Look for whole grains and fiber",
+        "body": "Whole grain oats and other whole grains retain more of the grain than refined ingredients. Dietary fiber is an important comparison field when it is available. Check the first ingredients and the fiber line on the Nutrition Facts label. Marketing terms such as multigrain do not by themselves state how much whole grain a product contains."
+      },
+      {
+        "title": "Read sugar with the ingredient list",
+        "body": "Total sugars can come from dried fruit as well as added sweeteners. Added sugars on a United States label provide extra context, while the ingredient list can reveal sugar, honey, syrups, or concentrated juice. A fruit based product and a heavily sweetened crunchy product may have similar total sugar for different reasons, so the overall assessment keeps nutrition and ingredients separate."
+      },
+      {
+        "title": "Translate 100 g into your serving",
+        "body": "The catalog compares products per 100 g, but a bowl may contain much less or more. A 50 g portion provides half of each per 100 g amount. Milk, plant based beverages, yogurt, fresh fruit, nuts, and seeds then change the final meal. This ranking evaluates the packaged dry product only."
+      },
+      {
+        "title": "Use confidence before a close call",
+        "body": "A product with a complete nutrition panel and ingredient list can be assessed more securely than one with missing fields. Missing nutrition or ingredients receive conservative treatment in the overall score and reduce confidence. This prevents absent data from acting like a perfect zero. When two products are close, the one with stronger source coverage is the more defensible comparison."
+      }
+    ],
+    "limitations": [
+      "The overall assessment applies to the dry product per 100 g. Personal serving size and the rest of the breakfast are outside the score.",
+      "Fiber and whole grain information are incomplete in some Open Food Facts records, so they cannot yet receive an identical explicit weight for every product.",
+      "Taste, price, organic certification, and individual allergies are not forced into one general quality number. The current package remains the final source for allergens."
+    ],
+    "faq": [
+      {
+        "question": "Is muesli with dried fruit automatically a poor choice?",
+        "answer": "No. Dried fruit often raises total sugar, but the rest of the recipe and the portion still matter. Check whether sugars or syrups are also added and compare fiber, protein, and ingredients."
+      },
+      {
+        "question": "Why is fiber not always a direct score component?",
+        "answer": "The field is missing from part of the open catalog. We display available fiber values but do not estimate absent ones. A future scoring version can add a stronger fiber component when coverage is sufficient."
+      },
+      {
+        "question": "How is the ranking different from a product page?",
+        "answer": "The ranking applies one ordering rule across all eligible muesli products. A product page explains one result in detail with component scores, reasons, confidence, ingredients, and alternatives."
+      },
+      {
+        "question": "Is the first product best for children?",
+        "answer": "Not automatically. Age, serving size, allergies, and the complete meal matter. This is a general catalog comparison and not an individualized recommendation for children."
+      }
+    ],
+    "sources": [
+      {
+        "publisher": "U.S. Food and Drug Administration",
+        "title": "Daily Value on Nutrition Facts labels",
+        "url": "https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels",
+        "note": "Reference for dietary fiber, added sugars, saturated fat, sodium, and protein labeling."
+      },
+      {
+        "publisher": "U.S. Food and Drug Administration",
+        "title": "How to understand and use the Nutrition Facts label",
+        "url": "https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label",
+        "note": "Official guidance on servings, nutrient amounts, and percent Daily Value."
+      },
+      {
+        "publisher": "Open Food Facts",
+        "title": "Open food product database",
+        "url": "https://world.openfoodfacts.org/",
+        "note": "Source of the displayed product data and product images."
+      }
+    ]
+  }
+]

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RankingDecision } from "@/components/RankingDecision";
+import { EditorialRankingGuide } from "@/components/EditorialRankingGuide";
 import { RankingList } from "@/components/RankingList";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StructuredData } from "@/components/StructuredData";
@@ -25,6 +26,7 @@ import {
 import { getCatalog } from "@/lib/static-data";
 import { BRAND_NAME } from "@/lib/brand";
 import { openDatabaseLicenseUrl, openFoodFactsUrl } from "@/lib/geo";
+import { evaluateEditorialContent, getSeoEditorialContent } from "@/lib/seo-editorial";
 
 type Props = {
   params: Promise<{ locale: string; attribute: string; category: string }>;
@@ -63,12 +65,15 @@ function seoDecision(
   items: ReturnType<typeof resolve>["items"],
 ) {
   const definition = getSeoPageDefinition(path);
+  const editorialQuality = evaluateEditorialContent(getSeoEditorialContent(path));
   return evaluateSeoPage(definition, {
     resultCount: items.length,
     dataCompleteness: averageDataCompleteness(items),
     uniqueInsightCount: countUniqueInsights(items),
     title: definition?.seoTitle ?? ranking.title,
     h1: definition?.h1 ?? ranking.title,
+    editorialWordCount: editorialQuality.wordCount,
+    editorialBlockers: editorialQuality.blockers,
   });
 }
 
@@ -125,6 +130,7 @@ export default async function RankingPage({ params }: Props) {
 
   const canonical = path(`/best/${values.attribute}/${values.category}`);
   const definition = getSeoPageDefinition(canonical);
+  const editorial = getSeoEditorialContent(canonical);
   const categoryPath = path(`/category/${categoryRouteSlug(category.slug, locale)}`);
   const relatedRankings = catalog.rankingPages
     .filter((candidate) => candidate.category === ranking.category && candidate.attribute !== ranking.attribute)
@@ -163,12 +169,29 @@ export default async function RankingPage({ params }: Props) {
   const faqData = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: insights.questions.map((item) => ({
+    mainEntity: [...(editorial?.faq ?? []), ...insights.questions].map((item) => ({
       "@type": "Question",
       name: item.question,
       acceptedAnswer: { "@type": "Answer", text: item.answer },
     })),
   };
+  const articleData = editorial ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: definition?.h1 ?? ranking.title,
+    description: editorial.answer,
+    inLanguage: locale,
+    mainEntityOfPage: absoluteUrl(canonical),
+    dateModified: editorial.reviewedAt,
+    datePublished: editorial.reviewedAt,
+    isAccessibleForFree: true,
+    wordCount: evaluateEditorialContent(editorial).wordCount,
+    author: { "@type": "Organization", name: editorial.author.name, url: absoluteUrl(path("/editorial-policy")) },
+    publisher: { "@type": "Organization", name: BRAND_NAME, url: absoluteUrl("/") },
+    image: insights.topPick.imageUrl && insights.topPick.imageLicense ? insights.topPick.imageUrl : undefined,
+    citation: editorial.sources.map((source) => source.url),
+    about: [category.label, ranking.title],
+  } : null;
   const datasetData = {
     "@context": "https://schema.org",
     "@type": "Dataset",
@@ -200,6 +223,7 @@ export default async function RankingPage({ params }: Props) {
     <StructuredData data={itemListData} />
     <StructuredData data={faqData} />
     <StructuredData data={datasetData} />
+    {articleData ? <StructuredData data={articleData} /> : null}
     <SiteHeader locale={locale} />
 
     <nav className="breadcrumb" aria-label={pick(locale, "Brotkrumen", "Breadcrumb")}>
@@ -251,6 +275,8 @@ export default async function RankingPage({ params }: Props) {
         <div><dt>{pick(locale, "Zutatenabdeckung", "Ingredient coverage")}</dt><dd>{insights.stats.ingredientCoverage}%</dd></div>
       </dl>
     </section>
+
+    {editorial ? <EditorialRankingGuide content={editorial} locale={locale} products={items} scoreType={ranking.sortScore} /> : null}
 
     <section className="section ranking-results-section" aria-labelledby="complete-ranking-title">
       <div className="section-heading split-heading">

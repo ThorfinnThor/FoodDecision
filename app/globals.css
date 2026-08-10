@@ -413,6 +413,51 @@ main { min-height: 70vh; }
 .ranking-related-links a { align-items: center; background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-sm); display: flex; font-weight: 700; gap: 14px; justify-content: space-between; min-height: 62px; padding: 16px 18px; }
 .ranking-related-links a:hover { border-color: var(--color-primary-500); color: var(--color-primary-700); }
 .ranking-related-links a span { color: var(--color-primary-700); }
+.ranking-editorial { border-bottom: 1px solid var(--color-border); border-top: 1px solid var(--color-border); margin: 72px auto; max-width: var(--container-max); padding: 64px 32px; }
+.ranking-editorial h2 { font-size: 38px; line-height: 1.15; margin: 6px 0 16px; }
+.ranking-editorial h3 { font-size: 28px; line-height: 1.2; margin: 6px 0 12px; }
+.ranking-editorial h4 { font-size: 19px; line-height: 1.3; margin: 0 0 9px; }
+.ranking-editorial-header { align-items: start; display: grid; gap: 56px; grid-template-columns: minmax(0, 1fr) 280px; }
+.ranking-editorial-answer { color: var(--color-text-800); font-size: 19px; line-height: 1.65; margin: 0; max-width: 820px; }
+.ranking-editorial-byline { border-left: 1px solid var(--color-border); display: grid; gap: 18px; margin: 4px 0 0; padding-left: 24px; }
+.ranking-editorial-byline div { display: grid; gap: 4px; }
+.ranking-editorial-byline dt { color: var(--color-text-500); font-size: 12px; font-weight: 750; }
+.ranking-editorial-byline dd { color: var(--color-text-900); font-size: 14px; font-weight: 700; line-height: 1.45; margin: 0; }
+.ranking-editorial-intro { column-gap: 40px; columns: 2; margin-top: 40px; }
+.ranking-editorial-intro p { break-inside: avoid; color: var(--color-text-700); line-height: 1.75; margin: 0 0 18px; }
+.ranking-leader-comparison, .ranking-buying-guide, .ranking-editorial-faq, .ranking-sources { border-top: 1px solid var(--color-border); margin-top: 52px; padding-top: 48px; }
+.ranking-leader-comparison .section-heading, .ranking-buying-guide .section-heading, .ranking-editorial-faq .section-heading { margin-bottom: 26px; }
+.ranking-leader-comparison .section-heading p:last-child { max-width: 760px; }
+.ranking-comparison-scroll { overflow-x: auto; }
+.ranking-comparison-scroll:focus-visible { outline: 3px solid var(--color-primary-500); outline-offset: 3px; }
+.ranking-comparison-scroll table { border-collapse: collapse; min-width: 760px; width: 100%; }
+.ranking-comparison-scroll th, .ranking-comparison-scroll td { border-bottom: 1px solid var(--color-border); padding: 15px 14px; text-align: left; vertical-align: top; }
+.ranking-comparison-scroll thead th { color: var(--color-text-500); font-size: 12px; font-weight: 750; }
+.ranking-comparison-scroll tbody td { color: var(--color-text-800); font-size: 14px; font-weight: 650; }
+.ranking-comparison-scroll tbody th { font-size: 15px; min-width: 240px; }
+.ranking-comparison-scroll tbody th a { color: var(--color-text-900); font-weight: 750; }
+.ranking-comparison-scroll tbody th a:hover { color: var(--color-primary-700); }
+.ranking-comparison-scroll tbody th span { color: var(--color-text-500); display: block; font-size: 12px; font-weight: 600; margin-top: 4px; }
+.ranking-buying-guide-grid { display: grid; gap: 0 32px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ranking-buying-guide-grid section { border-top: 2px solid var(--color-text-900); display: grid; gap: 14px; grid-template-columns: 38px minmax(0, 1fr); padding: 24px 0 30px; }
+.ranking-buying-guide-grid section > span { color: var(--color-primary-700); font-size: 12px; font-weight: 800; padding-top: 3px; }
+.ranking-buying-guide-grid p { color: var(--color-text-700); line-height: 1.7; margin: 0; }
+.ranking-limitations { background: var(--color-text-900); color: #fff; display: grid; gap: 48px; grid-template-columns: minmax(240px, 0.65fr) minmax(0, 1.35fr); margin: 34px -32px 0; padding: 40px 32px; }
+.ranking-limitations .eyebrow { color: #a7e482; }
+.ranking-limitations h3 { color: #fff; margin-bottom: 0; }
+.ranking-limitations ul { display: grid; gap: 16px; list-style: none; margin: 0; padding: 0; }
+.ranking-limitations li { border-top: 1px solid #374151; color: #e5e7eb; line-height: 1.65; padding: 15px 0 0 24px; position: relative; }
+.ranking-limitations li::before { color: #a7e482; content: "✓"; font-weight: 800; left: 0; position: absolute; }
+.ranking-editorial-faq { max-width: 980px; }
+.ranking-sources { align-items: start; display: grid; gap: 56px; grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.25fr); }
+.ranking-sources > div > p:last-child { color: var(--color-text-700); line-height: 1.65; }
+.ranking-sources ol { counter-reset: source; display: grid; list-style: none; margin: 0; padding: 0; }
+.ranking-sources li { border-top: 1px solid var(--color-border); counter-increment: source; padding: 16px 0 18px 40px; position: relative; }
+.ranking-sources li::before { color: var(--color-primary-700); content: counter(source, decimal-leading-zero); font-size: 11px; font-weight: 800; left: 0; position: absolute; top: 19px; }
+.ranking-sources a { color: var(--color-text-900); font-weight: 750; text-decoration: underline; text-decoration-color: #b7dca2; text-underline-offset: 4px; }
+.ranking-sources a:hover { color: var(--color-primary-700); }
+.ranking-sources li > span { color: var(--color-text-500); display: block; font-size: 12px; font-weight: 700; margin-top: 5px; }
+.ranking-sources li p { color: var(--color-text-700); font-size: 14px; line-height: 1.55; margin: 7px 0 0; }
 
 .compare-intro { text-align: center; }
 .compare-intro h1, .compare-intro p { margin-left: auto; margin-right: auto; }
@@ -484,6 +529,9 @@ main { min-height: 70vh; }
   .ranking-answer-visual { height: 360px; }
   .ranking-tradeoff-band { grid-template-columns: 1fr; padding-left: 24px; padding-right: 24px; }
   .ranking-method-grid { grid-template-columns: 1fr; }
+  .ranking-editorial-header, .ranking-sources { grid-template-columns: 1fr; }
+  .ranking-editorial-byline { border-left: 0; border-top: 1px solid var(--color-border); grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 20px 0 0; }
+  .ranking-buying-guide-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
@@ -563,6 +611,14 @@ main { min-height: 70vh; }
   .ranking-tradeoff-band { gap: 20px; padding: 24px 16px; }
   .ranking-related-links { grid-template-columns: 1fr; }
   .ranking-stat-band .insight-stats { min-width: 0; width: 100%; }
+  .ranking-editorial { margin: 48px auto; padding: 42px 16px; }
+  .ranking-editorial h2 { font-size: 30px; }
+  .ranking-editorial h3 { font-size: 24px; }
+  .ranking-editorial-answer { font-size: 17px; }
+  .ranking-editorial-byline { gap: 14px; grid-template-columns: 1fr; }
+  .ranking-editorial-intro { columns: 1; margin-top: 30px; }
+  .ranking-leader-comparison, .ranking-buying-guide, .ranking-editorial-faq, .ranking-sources { margin-top: 40px; padding-top: 36px; }
+  .ranking-limitations { grid-template-columns: 1fr; margin-left: -16px; margin-right: -16px; padding: 34px 16px; }
   .compare-products { gap: 12px; }
   .compare-product { border-radius: var(--radius-md); padding: 12px; }
   .compare-product .product-visual { height: 170px; min-height: 170px; padding: 8px; }

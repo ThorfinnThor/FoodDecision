@@ -6,6 +6,12 @@ import {
   seoKeywords,
   seoPageDefinitions,
 } from "../lib/seo.ts";
+import {
+  editorialWordCount,
+  evaluateEditorialContent,
+  getSeoEditorialContent,
+  seoEditorialContent,
+} from "../lib/seo-editorial.ts";
 
 test("keeps SEO registry identifiers, paths and canonicals unique", () => {
   assert.equal(new Set(seoKeywords.map((keyword) => keyword.id)).size, seoKeywords.length);
@@ -64,6 +70,8 @@ test("registers six curated bilingual launch candidates without indexing them", 
 test("keeps curated candidates blocked until demand evidence is approved", () => {
   const candidate = getSeoPageDefinition("/en-us/best/high-protein/protein-bars");
   assert.ok(candidate);
+  const editorial = getSeoEditorialContent(candidate.path);
+  const editorialQuality = evaluateEditorialContent(editorial);
 
   const decision = evaluateSeoPage(candidate, {
     resultCount: 100,
@@ -71,8 +79,35 @@ test("keeps curated candidates blocked until demand evidence is approved", () =>
     uniqueInsightCount: 10,
     title: candidate.seoTitle,
     h1: candidate.h1,
+    editorialWordCount: editorialQuality.wordCount,
+    editorialBlockers: editorialQuality.blockers,
   });
 
   assert.equal(decision.indexable, false);
   assert.deepEqual(decision.reasons, ["keyword_not_approved", "page_not_approved"]);
+});
+
+test("requires substantial, sourced and page-specific editorial guidance for every launch candidate", () => {
+  const candidates = seoPageDefinitions.filter((page) => page.status === "review");
+
+  assert.equal(seoEditorialContent.length, candidates.length);
+  assert.equal(new Set(seoEditorialContent.map((content) => content.path)).size, seoEditorialContent.length);
+  for (const candidate of candidates) {
+    const content = getSeoEditorialContent(candidate.path);
+    assert.ok(content, `missing editorial content for ${candidate.path}`);
+    assert.equal(content.locale, candidate.filters.locale);
+    assert.ok(editorialWordCount(content) >= 600);
+    assert.deepEqual(evaluateEditorialContent(content).blockers, []);
+    assert.equal(content.criteria.length, 4);
+    assert.ok(content.faq.length >= 4);
+    assert.ok(content.sources.length >= 3);
+  }
+});
+
+test("keeps editorial answers and criteria unique across launch pages", () => {
+  const answers = seoEditorialContent.map((content) => content.answer);
+  const criteria = seoEditorialContent.flatMap((content) => content.criteria.map((item) => item.body));
+
+  assert.equal(new Set(answers).size, answers.length);
+  assert.equal(new Set(criteria).size, criteria.length);
 });
