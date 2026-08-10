@@ -39,6 +39,10 @@ export type SeoPageDefinition = {
   indexable: boolean;
   status: "draft" | "review" | "published" | "retired";
   internalLinks: SeoInternalLink[];
+  seoTitle?: string;
+  seoDescription?: string;
+  h1?: string;
+  editorialSummary?: string;
 };
 
 export type SeoPageContext = {
@@ -68,9 +72,10 @@ const generatedRankingDefinitions = supportedLocales.flatMap((locale) => localiz
     const publicAttribute = rankingRouteSlug(ranking.attribute, locale);
     const publicCategory = categoryRouteSlug(ranking.category, locale);
     const path = localizedPath(locale, `/best/${publicAttribute}/${publicCategory}`);
-    const configured = locale === "de-DE"
-      ? configuredSeoPageDefinitions.find((definition) => definition.path === `/best/${ranking.attribute}/${ranking.category}`)
-      : null;
+    const configured = configuredSeoPageDefinitions.find((definition) => definition.path === path)
+      ?? (locale === "de-DE"
+        ? configuredSeoPageDefinitions.find((definition) => definition.path === `/best/${ranking.attribute}/${ranking.category}`)
+        : undefined);
     const relatedRanking = localizedRankingPages(locale).find((candidate) =>
       candidate.category === ranking.category && candidate.attribute !== ranking.attribute,
     );
@@ -79,9 +84,23 @@ const generatedRankingDefinitions = supportedLocales.flatMap((locale) => localiz
       href: localizedPath(locale, `/best/${rankingRouteSlug(relatedRanking.attribute, locale)}/${publicCategory}`),
       label: relatedRanking.title,
     }] : [];
+    const configuredLinks = configured?.internalLinks ?? [];
+    const configuredHrefs = new Set(configuredLinks.map((link) => link.href));
+    const uniqueRelatedLinks = relatedLinks.filter((link) => !configuredHrefs.has(link.href));
+    const internalLinks: SeoInternalLink[] = configured
+      ? [
+        ...configuredLinks.filter((link) => link.relationship !== "next_step"),
+        ...uniqueRelatedLinks,
+        ...configuredLinks.filter((link) => link.relationship === "next_step"),
+      ]
+      : [
+        { relationship: "parent", href: localizedPath(locale, `/category/${publicCategory}`), label: locale === "de-DE" ? `${localizedCategoryLabel(ranking.category, locale)} im Überblick` : `${localizedCategoryLabel(ranking.category, locale)} overview` },
+        ...relatedLinks,
+        { relationship: "next_step", href: `${localizedPath(locale, "/finder")}?goal=${ranking.sortScore}`, label: locale === "de-DE" ? "Passende Produkte im Finder" : "Find matching products" },
+      ];
     return {
-      id: `${prefix}-food-${ranking.attribute}-${ranking.category}-page`,
-      slug: `${publicAttribute}/${publicCategory}`,
+      id: configured?.id ?? `${prefix}-food-${ranking.attribute}-${ranking.category}-page`,
+      slug: configured?.slug ?? `${publicAttribute}/${publicCategory}`,
       path,
       keywordId: configured?.keywordId ?? `${prefix}-food-${ranking.attribute}-${ranking.category}`,
       template: configured?.template ?? "product-ranking",
@@ -91,14 +110,14 @@ const generatedRankingDefinitions = supportedLocales.flatMap((locale) => localiz
       minimumResults: configured?.minimumResults ?? ranking.minProductsRequired,
       minimumDataCompleteness: configured?.minimumDataCompleteness ?? 0.85,
       minimumUniqueInsights: configured?.minimumUniqueInsights ?? 3,
-      canonical: path,
+      canonical: configured?.canonical ?? path,
       indexable: configured?.indexable ?? false,
       status: configured?.status ?? "draft",
-      internalLinks: [
-        { relationship: "parent", href: localizedPath(locale, `/category/${publicCategory}`), label: locale === "de-DE" ? `${localizedCategoryLabel(ranking.category, locale)} im Überblick` : `${localizedCategoryLabel(ranking.category, locale)} overview` },
-        ...relatedLinks,
-        { relationship: "next_step", href: `${localizedPath(locale, "/finder")}?goal=${ranking.sortScore}`, label: locale === "de-DE" ? "Passende Produkte im Finder" : "Find matching products" },
-      ],
+      seoTitle: configured?.seoTitle,
+      seoDescription: configured?.seoDescription,
+      h1: configured?.h1,
+      editorialSummary: configured?.editorialSummary,
+      internalLinks,
     };
   }));
 
