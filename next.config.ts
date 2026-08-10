@@ -49,6 +49,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    minimumCacheTTL: 604800,
     remotePatterns: [
       { protocol: "https", hostname: "images.openfoodfacts.org" },
       { protocol: "https", hostname: "static.openfoodfacts.org" },

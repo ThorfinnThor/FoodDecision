@@ -73,6 +73,8 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
   const [code, setCode] = useState("");
   const [result, setResult] = useState<LookupResult>({ type: "idle" });
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
+  const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null);
   const historyKey = `${SCAN_HISTORY_KEY}:${locale}`;
   const path = (value: string) => localizedPath(locale, value);
   const c = (de: string, en: string) => pick(locale, de, en);
@@ -140,7 +142,10 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
       {result.type === "match" ? (
         <section className="scanner-result is-match" aria-live="polite">
           <div className={`scanner-product-visual tone-${result.product.imageTone}`}>
-            {result.product.imageUrl ? <Image alt={`${result.product.name} ${c("von", "by")} ${result.product.brand}`} fill sizes="(max-width: 700px) 100vw, 300px" src={result.product.imageUrl} unoptimized /> : <div className="packshot"><span>{result.product.brand}</span><strong>{result.product.name}</strong><small>{result.product.categoryLabel}</small></div>}
+            {result.product.imageUrl && failedImageUrl !== result.product.imageUrl ? <>
+              <div aria-hidden={loadedImageUrl === result.product.imageUrl} className={`scanner-image-placeholder ${loadedImageUrl === result.product.imageUrl ? "is-hidden" : ""}`}><div className="packshot"><span>{result.product.brand}</span><strong>{result.product.name}</strong><small>{result.product.categoryLabel}</small></div></div>
+              <Image alt={`${result.product.name} ${c("von", "by")} ${result.product.brand}`} className={loadedImageUrl === result.product.imageUrl ? "is-loaded" : ""} fill onError={() => setFailedImageUrl(result.product.imageUrl)} onLoad={() => setLoadedImageUrl(result.product.imageUrl)} sizes="(max-width: 700px) calc(100vw - 28px), 300px" src={result.product.imageUrl} />
+            </> : <div className="packshot"><span>{result.product.brand}</span><strong>{result.product.name}</strong><small>{result.product.categoryLabel}</small></div>}
           </div>
           <div className="scanner-result-copy">
             <p className="eyebrow">{c("Im Katalog gefunden", "Found in the catalog")}</p>

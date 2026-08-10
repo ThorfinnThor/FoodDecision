@@ -1,25 +1,52 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import type { Product } from "@/lib/types";
 
-export function ProductVisual({ product, compact = false }: { product: Product; compact?: boolean }) {
+export function ProductVisual({
+  product,
+  compact = false,
+  priority = false,
+}: {
+  product: Product;
+  compact?: boolean;
+  priority?: boolean;
+}) {
+  const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const imageUrl = product.imageUrl ?? null;
+  const showImage = Boolean(imageUrl && failedUrl !== imageUrl);
+  const imageLoaded = Boolean(imageUrl && loadedUrl === imageUrl);
+
+  const packshot = (
+    <div className="packshot">
+      <span>{product.brand}</span>
+      <strong>{product.name}</strong>
+      <small>{product.categoryLabel}</small>
+    </div>
+  );
+
   return (
     <div className={`product-visual tone-${product.imageTone} ${compact ? "product-visual-compact" : ""}`}>
-      {product.imageUrl ? (
-        <div className="product-image">
+      {showImage && imageUrl ? (
+        <div className={`product-image ${imageLoaded ? "is-loaded" : "is-loading"}`}>
+          <div aria-hidden={imageLoaded} className="product-image-placeholder">{packshot}</div>
           <Image
             alt={`${product.name} ${product.locale === "de-DE" ? "von" : "by"} ${product.brand}`}
+            className="product-image-content"
             fill
-            sizes={compact ? "(max-width: 860px) 100vw, 160px" : "(max-width: 860px) 100vw, 42vw"}
-            src={product.imageUrl}
-            unoptimized
+            onError={() => setFailedUrl(imageUrl)}
+            onLoad={() => setLoadedUrl(imageUrl)}
+            priority={priority}
+            sizes={compact
+              ? "(max-width: 600px) calc(100vw - 32px), (max-width: 1080px) 50vw, 25vw"
+              : "(max-width: 860px) calc(100vw - 32px), 42vw"}
+            src={imageUrl}
           />
         </div>
       ) : (
-        <div className="packshot">
-          <span>{product.brand}</span>
-          <strong>{product.name}</strong>
-          <small>{product.categoryLabel}</small>
-        </div>
+        packshot
       )}
     </div>
   );

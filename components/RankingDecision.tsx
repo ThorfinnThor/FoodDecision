@@ -42,7 +42,7 @@ export function RankingDecision({
         </div>
       </div>
       <div className="ranking-answer-visual">
-        <ProductVisual product={product} />
+        <ProductVisual priority product={product} />
       </div>
     </section>
     <section className="ranking-tradeoff-band" aria-labelledby="ranking-tradeoff-title">

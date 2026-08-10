@@ -85,8 +85,11 @@ export function AlternativeExplorer({
             </div>
           </div>
           {options.length > 1 ? <div className="alternative-more-list">
-            <span>{c("Weitere Verbesserungen", "More improvements")}</span>
-            {options.slice(1).map((option) => <Link href={path(`/compare/${current.slug}-vs-${option.product.slug}`)} key={option.product.slug} onClick={() => trackComparison(option.product)}><strong>{option.product.name}</strong><small>+{option.scoreDelta} {c("Punkte", "points")} · {option.reasons[0]}</small></Link>)}
+            <div className="alternative-more-heading">
+              <span>{c("Weitere passende Alternativen", "More suitable alternatives")}</span>
+              <strong>{c("Auch diese Produkte verbessern dein gewähltes Ziel", "These products also improve your selected goal")}</strong>
+            </div>
+            {options.slice(1).map((option) => <Link href={path(`/compare/${current.slug}-vs-${option.product.slug}`)} key={option.product.slug} onClick={() => trackComparison(option.product)}><span><strong>{option.product.name}</strong><small>{option.reasons[0]}</small></span><b>+{option.scoreDelta} {c("Punkte", "points")}</b><i aria-hidden="true">→</i></Link>)}
           </div> : null}
         </div>
       ) : (
