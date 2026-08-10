@@ -51,6 +51,8 @@ export type SeoPageContext = {
   uniqueInsightCount: number;
   title: string;
   h1: string;
+  editorialWordCount?: number;
+  editorialBlockers?: string[];
 };
 
 export type SeoDecision = {
@@ -200,8 +202,12 @@ export function evaluateSeoPage(definition: SeoPageDefinition | undefined, conte
   if (!context.h1.trim()) reasons.push("missing_h1");
   if (!definition.canonical.startsWith("/")) reasons.push("invalid_canonical");
   if (!definition.internalLinks.length) reasons.push("missing_internal_links");
+  if (definition.status === "review" || definition.status === "published") {
+    if ((context.editorialWordCount ?? 0) < 600) reasons.push("insufficient_editorial_depth");
+    reasons.push(...(context.editorialBlockers ?? []));
+  }
 
-  return { indexable: reasons.length === 0, reasons };
+  return { indexable: reasons.length === 0, reasons: [...new Set(reasons)] };
 }
 
 export function defaultNoindexDecision(): SeoDecision {
