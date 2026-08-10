@@ -26,6 +26,9 @@ test("preserves compatible query state across locale changes", async () => {
   assert.match(switcher, /sugar: "zucker"/);
   assert.match(switcher, /parts\[0\] === "brand"/);
   assert.match(switcher, /translated = "\/brands"/);
+  assert.match(switcher, /"products", "best", "brands"/);
+  assert.match(switcher, /parts\[0\] === "best"/);
+  assert.match(switcher, /rankingRouteSlug\(attribute, alternate\)/);
 });
 
 test("provides a localized recovery page for invalid routes", async () => {

@@ -19,8 +19,13 @@ type ReportEntry = {
   dataCompleteness: number;
   uniqueInsightCount: number;
   indexable: boolean;
+  qualityReady: boolean;
+  qualityBlockers: string[];
+  publicationBlockers: string[];
   reasons: string[];
 };
+
+const publicationReasons = new Set(["keyword_not_approved", "page_not_approved"]);
 
 function duplicates(values: string[]) {
   const seen = new Set<string>();
@@ -59,6 +64,8 @@ export async function validateSeo() {
       h1: ranking?.title ?? "",
     };
     const decision = evaluateSeoPage(definition, context);
+    const qualityBlockers = decision.reasons.filter((reason) => !publicationReasons.has(reason));
+    const publicationBlockers = decision.reasons.filter((reason) => publicationReasons.has(reason));
     return {
       id: definition.id,
       path: definition.path,
@@ -67,6 +74,9 @@ export async function validateSeo() {
       dataCompleteness: Number(context.dataCompleteness.toFixed(3)),
       uniqueInsightCount: context.uniqueInsightCount,
       indexable: decision.indexable,
+      qualityReady: qualityBlockers.length === 0,
+      qualityBlockers,
+      publicationBlockers,
       reasons: decision.reasons,
     };
   });
@@ -84,6 +94,8 @@ export async function validateSeo() {
     pageCount: entries.length,
     indexableCount: entries.filter((entry) => entry.indexable).length,
     noindexCount: entries.filter((entry) => !entry.indexable).length,
+    qualityReadyCount: entries.filter((entry) => entry.qualityReady).length,
+    publicationBlockedCount: entries.filter((entry) => entry.publicationBlockers.length > 0).length,
     skippedPages: structuralFailures.filter((failure) => failure.startsWith("missing_ranking:")),
     duplicateCandidates: structuralFailures.filter((failure) => failure.startsWith("duplicate_")),
     failedQualityChecks: entries.filter((entry) => entry.reasons.length > 0),
@@ -95,7 +107,7 @@ export async function validateSeo() {
   await mkdir(outputDir, { recursive: true });
   await writeFile(join(outputDir, "build-report.json"), `${JSON.stringify(report, null, 2)}\n`);
 
-  console.log(`SEO gate: ${report.indexableCount} indexable, ${report.noindexCount} noindex, ${report.skippedPages.length} skipped.`);
+  console.log(`SEO gate: ${report.indexableCount} indexable, ${report.noindexCount} noindex, ${report.qualityReadyCount} technically ready, ${report.skippedPages.length} skipped.`);
   if (report.structuralFailures.length) {
     throw new Error(`SEO registry validation failed: ${report.structuralFailures.join(", ")}`);
   }

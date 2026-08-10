@@ -21,7 +21,7 @@ function LocaleSwitcherLink({ locale }: { locale: SiteLocale }) {
   const alternatePrefix = `/${localeSegment(alternate)}`;
   const rest = pathname.startsWith(currentPrefix) ? pathname.slice(currentPrefix.length) || "/" : "/";
   const parts = rest.split("/").filter(Boolean);
-  let translated = ["products", "brands", "ingredients", "nutrition", "finder", "compare", "favorites", "shopping-list", "scan", "preferences", "methodology", "privacy", "data-quality", "image-credits"].includes(parts[0]) && parts.length === 1 ? rest : "/";
+  let translated = ["products", "best", "brands", "ingredients", "nutrition", "finder", "compare", "favorites", "shopping-list", "scan", "preferences", "methodology", "privacy", "data-quality", "image-credits"].includes(parts[0]) && parts.length === 1 ? rest : "/";
   if (parts[0] === "compare" && parts.length > 1) translated = "/compare";
   if (parts[0] === "product" && parts.length > 1) translated = "/products";
   if (parts[0] === "brand" && parts.length > 1) translated = "/brands";
