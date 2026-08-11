@@ -16,6 +16,11 @@ on:
         type: string
         required: true
         default: "250"
+      refresh_existing:
+        description: "Refresh existing objects before filling the remaining limit"
+        type: boolean
+        required: true
+        default: false
 
 concurrency:
   group: mirror-product-images
@@ -45,6 +50,7 @@ jobs:
           OFF_USER_AGENT: ${{ secrets.OFF_USER_AGENT }}
           CATALOG_MARKET: ${{ inputs.market }}
           IMAGE_MIRROR_LIMIT: ${{ inputs.mirror_limit }}
+          IMAGE_MIRROR_REFRESH_EXISTING: ${{ inputs.refresh_existing }}
         run: npm run mirror:product-images
 
       - name: Export static JSON from Supabase
