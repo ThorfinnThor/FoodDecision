@@ -145,6 +145,7 @@ type SupabaseProductRow = {
   slug: string;
   name: string;
   image_url: string | null;
+  mirrored_image_path?: string | null;
   imported_at: string;
   source_updated_at: string | null;
   publishability: Product["publishability"];
@@ -192,6 +193,18 @@ type SupabaseProductRow = {
   }>;
 };
 
+export function mirroredProductImageUrl(supabaseUrl: string | undefined, objectPath: string | null | undefined) {
+  if (!supabaseUrl || !objectPath || objectPath.includes("..") || objectPath.startsWith("/")) return null;
+  try {
+    const base = new URL(supabaseUrl);
+    if (base.protocol !== "https:" || !base.hostname.endsWith(".supabase.co")) return null;
+    const encodedPath = objectPath.split("/").map(encodeURIComponent).join("/");
+    return `${base.origin}/storage/v1/object/public/product-images/${encodedPath}`;
+  } catch {
+    return null;
+  }
+}
+
 function firstRelated<T>(value: T | T[] | null | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -202,7 +215,11 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
   const activeOffer = row.affiliate_offers?.find((offer) => offer.active);
   const market = row.market ?? "DE";
   const locale = row.locale ?? (market === "US" ? "en-US" : "de-DE");
-  const image = licensedProductImage(row.image_url, row.gtin);
+  const image = licensedProductImage(
+    row.image_url,
+    row.gtin,
+    mirroredProductImageUrl(process.env.SUPABASE_URL, row.mirrored_image_path),
+  );
   const storedIngredients = row.product_ingredients
     ?.slice()
     .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
@@ -281,10 +298,16 @@ export function mapSupabaseProduct(row: SupabaseProductRow): Product {
 }
 
 async function loadSupabaseData() {
+  const productSelect = "id,gtin,slug,name,image_url,mirrored_image_path,imported_at,source_updated_at,publishability,market,locale,brands(name),nutrition_facts(*),product_scores(*),product_categories(categories(slug,label)),product_labels(labels(name)),product_ingredients(position,ingredients(name)),product_allergens(allergens(name)),data_quality_flags(flag),affiliate_offers(id,merchant,url,price_hint,sponsored,active)";
+  const legacyProductSelect = productSelect.replace("mirrored_image_path,", "");
+  const productPath = (select: string) => `products?select=${select}&publishability=in.(published,ranking_eligible)&order=market,slug`;
+  const productRowsPromise = supabaseAll<SupabaseProductRow>(productPath(productSelect)).catch((error) => {
+    if (!/mirrored_image_path|does not exist|schema cache/i.test(String(error))) throw error;
+    console.warn("Supabase image mirror columns are not available yet; exporting source image URLs.");
+    return supabaseAll<SupabaseProductRow>(productPath(legacyProductSelect));
+  });
   const [productRows, rankingRows] = await Promise.all([
-    supabaseAll<SupabaseProductRow>(
-      "products?select=id,gtin,slug,name,image_url,imported_at,source_updated_at,publishability,market,locale,brands(name),nutrition_facts(*),product_scores(*),product_categories(categories(slug,label)),product_labels(labels(name)),product_ingredients(position,ingredients(name)),product_allergens(allergens(name)),data_quality_flags(flag),affiliate_offers(id,merchant,url,price_hint,sponsored,active)&publishability=in.(published,ranking_eligible)&order=market,slug",
-    ),
+    productRowsPromise,
     supabaseAll<RankingPage & { market: MarketCode; locale: SiteLocale }>(
       "ranking_pages?select=attribute,category:category_slug,title,intro,sortScore:sort_score,indexable,minProductsRequired:min_products_required,market,locale&order=market,category_slug",
     ),
