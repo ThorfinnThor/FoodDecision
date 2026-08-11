@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T10:38:33.397Z",
+  "generatedAt": "2026-08-11T08:26:07.234Z",
   "locale": "en-US",
   "market": "US",
   "totals": {
@@ -286,7 +286,7 @@
     },
     {
       "slug": "cracker",
-      "label": "Crackers",
+      "label": "Crackers and crispbread",
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
