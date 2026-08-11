@@ -8,6 +8,7 @@ import {
   isFutureJwtError,
   supabaseAuthHeaders,
   comparisonPairs,
+  mirroredProductImageUrl,
 } from "../scripts/export/static-data.ts";
 import { getCatalog } from "../lib/static-data.ts";
 import { products as fixtureProducts } from "../lib/data.ts";
@@ -54,6 +55,25 @@ test("maps a one-to-one Supabase nutrition object", () => {
   assert.equal(product.nutrition.energyKcal, 360);
   assert.equal(product.nutrition.sugar, 4.5);
   assert.equal(product.category, "muesli");
+});
+
+test("uses a trusted mirrored image while preserving the licensed source", () => {
+  const row = productRow(nutrition);
+  row.image_url = "https://images.openfoodfacts.org/images/products/400/000/000/0099/front_de.400.jpg";
+  row.mirrored_image_path = "de/4000000000099/sourcehash.jpg";
+  const previousUrl = process.env.SUPABASE_URL;
+  process.env.SUPABASE_URL = "https://example.supabase.co";
+  try {
+    const product = mapSupabaseProduct(row);
+    assert.equal(product.imageUrl, "https://example.supabase.co/storage/v1/object/public/product-images/de/4000000000099/sourcehash.jpg");
+    assert.equal(product.imageSourceUrl, "https://world.openfoodfacts.org/product/4000000000099");
+    assert.equal(product.imageLicense, "CC BY-SA");
+  } finally {
+    if (previousUrl === undefined) delete process.env.SUPABASE_URL;
+    else process.env.SUPABASE_URL = previousUrl;
+  }
+  assert.equal(mirroredProductImageUrl("https://evil.example", row.mirrored_image_path), null);
+  assert.equal(mirroredProductImageUrl("https://example.supabase.co", "../secret.jpg"), null);
 });
 
 test("also accepts the array relationship shape used by older responses", () => {
