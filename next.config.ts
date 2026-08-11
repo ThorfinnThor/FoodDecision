@@ -9,7 +9,7 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   "frame-ancestors 'none'",
   "frame-src 'none'",
-  "img-src 'self' data: blob: https://images.openfoodfacts.org https://static.openfoodfacts.org",
+  "img-src 'self' data: blob: https://images.openfoodfacts.org https://static.openfoodfacts.org https://*.supabase.co",
   "manifest-src 'self'",
   "media-src 'self' blob:",
   "object-src 'none'",
@@ -53,6 +53,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "images.openfoodfacts.org" },
       { protocol: "https", hostname: "static.openfoodfacts.org" },
+      { protocol: "https", hostname: "**.supabase.co" },
     ],
   },
 };
