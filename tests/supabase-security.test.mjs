@@ -31,3 +31,11 @@ test("protects every Supabase table from direct browser-role access", () => {
   assert.match(securityMigration, /revoke all privileges.+anon, authenticated/i);
   assert.match(securityMigration, /alter default privileges[\s\S]+revoke all privileges on tables from anon, authenticated/i);
 });
+
+test("keeps the product image bucket read only for browser roles", () => {
+  const migration = readFileSync(new URL("0013_product_image_mirror.sql", migrationsDirectory), "utf8");
+  assert.match(migration, /'product-images'[\s\S]+true[\s\S]+2097152/);
+  assert.match(migration, /No INSERT, UPDATE or DELETE/);
+  assert.doesNotMatch(migration, /create policy[\s\S]+for (insert|update|delete)/i);
+  assert.match(migration, /reset_product_image_mirror/);
+});

@@ -1,0 +1,66 @@
+name: Mirror Product Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "Catalog market"
+        type: choice
+        required: true
+        default: "DE"
+        options:
+          - "DE"
+          - "US"
+      mirror_limit:
+        description: "Maximum images for this run"
+        type: string
+        required: true
+        default: "250"
+
+concurrency:
+  group: mirror-product-images
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Mirror licensed product images
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OFF_USER_AGENT: ${{ secrets.OFF_USER_AGENT }}
+          CATALOG_MARKET: ${{ inputs.market }}
+          IMAGE_MIRROR_LIMIT: ${{ inputs.mirror_limit }}
+        run: npm run mirror:product-images
+
+      - name: Export static JSON from Supabase
+        env:
+          STATIC_EXPORT_SOURCE: supabase
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run export:static-data
+
+      - name: Validate catalog and SEO
+        run: |
+          npm run audit:ranking-integrity
+          npm run seo:validate
+
+  deploy:
+    needs: mirror
+    uses: ./.github/workflows/vercel-production.yml
+    secrets: inherit

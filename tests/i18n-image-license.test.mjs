@@ -4,7 +4,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { categoryImages } from "../lib/category-images.ts";
 import { categoryFromRouteSlug, categoryRouteSlug, localizedPath, rankingFromRouteSlug, rankingRouteSlug } from "../lib/i18n.ts";
-import { isLicensedProductImageUrl, licensedProductImage } from "../lib/image-license.ts";
+import { isLicensedProductImageUrl, isMirroredProductImageUrl, licensedProductImage } from "../lib/image-license.ts";
 
 test("localizes public category and ranking paths without changing internal identifiers", () => {
   assert.equal(categoryRouteSlug("hafermilch", "en-US"), "oat-milk");
@@ -23,6 +23,11 @@ test("allows only HTTPS Open Food Facts image hosts and records attribution", ()
     imageLicense: "CC BY-SA",
     imageSourceUrl: "https://world.openfoodfacts.org/product/123",
   });
+  const mirrored = "https://example.supabase.co/storage/v1/object/public/product-images/de/123/image.jpg";
+  assert.equal(isMirroredProductImageUrl(mirrored), true);
+  assert.equal(isMirroredProductImageUrl("https://example.supabase.co/storage/v1/object/private/product-images/1.jpg"), false);
+  assert.equal(licensedProductImage("https://static.openfoodfacts.org/images/1.jpg", "123", mirrored).imageUrl, mirrored);
+  assert.equal(licensedProductImage("https://example.com/unlicensed.jpg", "123", mirrored).imageUrl, null);
 });
 
 test("every category photo is local, commercially reusable, and attributed", () => {

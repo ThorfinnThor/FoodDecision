@@ -78,6 +78,8 @@ test("wires all growth waves and the production audit into GitHub ingestion", as
   assert.match(workflow, /CATALOG_AUDIT_MODE: production/);
   assert.match(workflow, /CATALOG_AUDIT_MARKET:.*steps\.plan\.outputs\.market/);
   assert.match(workflow, /Audit production catalog quality/);
+  assert.match(workflow, /Mirror licensed product images/);
+  assert.match(workflow, /IMAGE_MIRROR_LIMIT/);
 });
 
 test("pins Node 24 compatible workflow actions to verified release commits", async () => {
@@ -85,6 +87,7 @@ test("pins Node 24 compatible workflow actions to verified release commits", asy
     "../.github/workflows/ci.yml",
     "../.github/workflows/ingest-open-food-facts.yml",
     "../.github/workflows/supabase-migrations.yml",
+    "../.github/workflows/mirror-product-images.yml",
   ];
   const workflows = await Promise.all(
     workflowUrls.map((url) => readFile(new URL(url, import.meta.url), "utf8")),

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T10:38:33.385Z",
+  "generatedAt": "2026-08-11T08:26:07.224Z",
   "locale": "de-DE",
   "market": "DE",
   "totals": {
@@ -286,7 +286,7 @@
     },
     {
       "slug": "cracker",
-      "label": "Cracker",
+      "label": "Cracker und Knäckebrot",
       "products": 0,
       "rankingEligible": 0,
       "licensedImages": 0,
