@@ -10,6 +10,7 @@ const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 500;
 const FETCH_RETRIES = 2;
+const IMAGE_CACHE_SECONDS = 31_536_000;
 
 type ProductImageRow = {
   id: string;
@@ -43,6 +44,21 @@ export function boundedMirrorLimit(value = process.env.IMAGE_MIRROR_LIMIT) {
     throw new Error(`IMAGE_MIRROR_LIMIT must be an integer from 1 to ${MAX_LIMIT}.`);
   }
   return parsed;
+}
+
+export function refreshExistingMirrors(value = process.env.IMAGE_MIRROR_REFRESH_EXISTING) {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized || normalized === "false") return false;
+  if (normalized === "true") return true;
+  throw new Error("IMAGE_MIRROR_REFRESH_EXISTING must be true or false.");
+}
+
+export function storageUploadHeaders(contentType: string) {
+  return {
+    "Content-Type": contentType,
+    "cache-control": `max-age=${IMAGE_CACHE_SECONDS}`,
+    "x-upsert": "true",
+  };
 }
 
 export function imageExtension(contentType: string | null) {
@@ -122,17 +138,25 @@ async function supabaseRequest<T>(path: string, options: RequestInit = {}) {
   return (body.trim() ? JSON.parse(body) : null) as T;
 }
 
-async function pendingProducts(market: MarketCode, limit: number) {
+async function productsByMirrorState(market: MarketCode, limit: number, mirrored: boolean) {
   const query = [
     "select=id,gtin,image_url,mirrored_image_path,market",
     `market=eq.${market}`,
     "publishability=in.(published,ranking_eligible)",
     "image_url=not.is.null",
-    "mirrored_image_path=is.null",
+    `mirrored_image_path=${mirrored ? "not.is.null" : "is.null"}`,
     "order=updated_at.desc",
     `limit=${limit}`,
   ].join("&");
   return supabaseRequest<ProductImageRow[]>(`products?${query}`);
+}
+
+async function productsForMirror(market: MarketCode, limit: number, refreshExisting: boolean) {
+  if (!refreshExisting) return productsByMirrorState(market, limit, false);
+  const existing = await productsByMirrorState(market, limit, true);
+  const remaining = limit - existing.length;
+  if (remaining <= 0) return existing;
+  return [...existing, ...await productsByMirrorState(market, remaining, false)];
 }
 
 async function fetchLicensedImage(sourceUrl: string) {
@@ -175,11 +199,7 @@ async function uploadImage(objectPath: string, bytes: Uint8Array, contentType: s
   new Uint8Array(body).set(bytes);
   const response = await fetch(`${base}/storage/v1/object/${BUCKET}/${encodedPath}`, {
     method: "POST",
-    headers: supabaseHeaders(adminKey(), {
-      "Content-Type": contentType,
-      "cache-control": "31536000",
-      "x-upsert": "true",
-    }),
+    headers: supabaseHeaders(adminKey(), storageUploadHeaders(contentType)),
     body,
   });
   if (!response.ok) throw new Error(`Storage upload failed ${response.status}: ${clipped(await response.text())}`);
@@ -193,8 +213,10 @@ async function recordMirror(productId: string, objectPath: string) {
   });
 }
 
-async function mirrorProduct(product: ProductImageRow): Promise<MirrorResult> {
-  if (product.mirrored_image_path) return { product, status: "skipped", reason: "already mirrored" };
+async function mirrorProduct(product: ProductImageRow, refreshExisting = false): Promise<MirrorResult> {
+  if (product.mirrored_image_path && !refreshExisting) {
+    return { product, status: "skipped", reason: "already mirrored" };
+  }
   if (!product.image_url) return { product, status: "skipped", reason: "missing source image" };
   try {
     const image = await fetchLicensedImage(product.image_url);
@@ -238,11 +260,12 @@ export async function main() {
   const market = String(process.env.CATALOG_MARKET ?? "DE").toUpperCase() as MarketCode;
   if (market !== "DE" && market !== "US") throw new Error(`Unsupported CATALOG_MARKET: ${market}`);
   const limit = boundedMirrorLimit();
-  const products = await pendingProducts(market, limit);
+  const refreshExisting = refreshExistingMirrors();
+  const products = await productsForMirror(market, limit, refreshExisting);
   const results: MirrorResult[] = [];
 
   for (const product of products) {
-    const result = await mirrorProduct(product);
+    const result = await mirrorProduct(product, refreshExisting && Boolean(product.mirrored_image_path));
     results.push(result);
     const detail = result.path ?? result.reason ?? "";
     console.log(`${product.gtin}: ${result.status}${detail ? ` (${detail})` : ""}`);
@@ -253,7 +276,7 @@ export async function main() {
     status,
     results.filter((result) => result.status === status).length,
   ]));
-  console.log(JSON.stringify({ market, requested: limit, candidates: products.length, ...counts }, null, 2));
+  console.log(JSON.stringify({ market, requested: limit, refreshExisting, candidates: products.length, ...counts }, null, 2));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
