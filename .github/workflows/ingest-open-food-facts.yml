@@ -48,6 +48,10 @@ on:
         description: "Products per page"
         type: string
         default: "50"
+      mirror_limit:
+        description: "Maximum product images mirrored after normalization"
+        type: string
+        default: "100"
   schedule:
     - cron: "17 3 * * 1"
     - cron: "17 3 * * 3"
@@ -124,6 +128,17 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           CATALOG_MARKET: ${{ steps.plan.outputs.market }}
         run: npm run normalize:off
+
+      - name: Mirror licensed product images
+        if: ${{ inputs.import_mode != 'dry-run' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OFF_USER_AGENT: ${{ secrets.OFF_USER_AGENT }}
+          CATALOG_MARKET: ${{ steps.plan.outputs.market }}
+          IMAGE_MIRROR_LIMIT: ${{ inputs.mirror_limit || '100' }}
+        run: npm run mirror:product-images
 
       - name: Export static JSON from Supabase
         if: ${{ inputs.import_mode != 'dry-run' }}
