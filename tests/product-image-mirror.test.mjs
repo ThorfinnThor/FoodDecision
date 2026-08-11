@@ -5,6 +5,8 @@ import {
   imageExtension,
   productImageObjectPath,
   productImagePublicUrl,
+  refreshExistingMirrors,
+  storageUploadHeaders,
 } from "../scripts/images/mirror-product-images.ts";
 
 test("bounds image mirror batches and accepts only supported image types", () => {
@@ -15,6 +17,18 @@ test("bounds image mirror batches and accepts only supported image types", () =>
   assert.equal(imageExtension("image/jpeg; charset=binary"), "jpg");
   assert.equal(imageExtension("image/webp"), "webp");
   assert.equal(imageExtension("image/svg+xml"), null);
+});
+
+test("uses immutable style browser caching and validates refresh mode", () => {
+  assert.deepEqual(storageUploadHeaders("image/jpeg"), {
+    "Content-Type": "image/jpeg",
+    "cache-control": "max-age=31536000",
+    "x-upsert": "true",
+  });
+  assert.equal(refreshExistingMirrors(undefined), false);
+  assert.equal(refreshExistingMirrors("false"), false);
+  assert.equal(refreshExistingMirrors(" TRUE "), true);
+  assert.throws(() => refreshExistingMirrors("yes"), /must be true or false/);
 });
 
 test("creates deterministic market scoped object paths and public URLs", () => {
