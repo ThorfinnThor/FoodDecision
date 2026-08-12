@@ -21,6 +21,11 @@ on:
         type: boolean
         required: true
         default: false
+      publish_after_run:
+        description: "Export, validate, and deploy the updated catalog after this batch"
+        type: boolean
+        required: true
+        default: true
 
 concurrency:
   group: mirror-product-images
@@ -54,6 +59,7 @@ jobs:
         run: npm run mirror:product-images
 
       - name: Export static JSON from Supabase
+        if: ${{ inputs.publish_after_run }}
         env:
           STATIC_EXPORT_SOURCE: supabase
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -62,11 +68,13 @@ jobs:
         run: npm run export:static-data
 
       - name: Validate catalog and SEO
+        if: ${{ inputs.publish_after_run }}
         run: |
           npm run audit:ranking-integrity
           npm run seo:validate
 
   deploy:
+    if: ${{ inputs.publish_after_run }}
     needs: mirror
     uses: ./.github/workflows/vercel-production.yml
     secrets: inherit
