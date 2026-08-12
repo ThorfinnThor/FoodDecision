@@ -9,6 +9,8 @@ const BUCKET = "product-images";
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 500;
+const DEFAULT_CONCURRENCY = 3;
+const MAX_CONCURRENCY = 4;
 const FETCH_RETRIES = 2;
 const IMAGE_CACHE_SECONDS = 31_536_000;
 
@@ -51,6 +53,14 @@ export function refreshExistingMirrors(value = process.env.IMAGE_MIRROR_REFRESH_
   if (!normalized || normalized === "false") return false;
   if (normalized === "true") return true;
   throw new Error("IMAGE_MIRROR_REFRESH_EXISTING must be true or false.");
+}
+
+export function boundedMirrorConcurrency(value = process.env.IMAGE_MIRROR_CONCURRENCY) {
+  const parsed = Number.parseInt(value ?? String(DEFAULT_CONCURRENCY), 10);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > MAX_CONCURRENCY) {
+    throw new Error(`IMAGE_MIRROR_CONCURRENCY must be an integer from 1 to ${MAX_CONCURRENCY}.`);
+  }
+  return parsed;
 }
 
 export function storageUploadHeaders(contentType: string) {
@@ -260,15 +270,21 @@ export async function main() {
   const market = String(process.env.CATALOG_MARKET ?? "DE").toUpperCase() as MarketCode;
   if (market !== "DE" && market !== "US") throw new Error(`Unsupported CATALOG_MARKET: ${market}`);
   const limit = boundedMirrorLimit();
+  const concurrency = boundedMirrorConcurrency();
   const refreshExisting = refreshExistingMirrors();
   const products = await productsForMirror(market, limit, refreshExisting);
   const results: MirrorResult[] = [];
 
-  for (const product of products) {
-    const result = await mirrorProduct(product, refreshExisting && Boolean(product.mirrored_image_path));
-    results.push(result);
-    const detail = result.path ?? result.reason ?? "";
-    console.log(`${product.gtin}: ${result.status}${detail ? ` (${detail})` : ""}`);
+  for (let offset = 0; offset < products.length; offset += concurrency) {
+    const batch = products.slice(offset, offset + concurrency);
+    const batchResults = await Promise.all(batch.map((product) => (
+      mirrorProduct(product, refreshExisting && Boolean(product.mirrored_image_path))
+    )));
+    for (const result of batchResults) {
+      results.push(result);
+      const detail = result.path ?? result.reason ?? "";
+      console.log(`${result.product.gtin}: ${result.status}${detail ? ` (${detail})` : ""}`);
+    }
   }
 
   await writeSummary(market, results);
@@ -276,7 +292,7 @@ export async function main() {
     status,
     results.filter((result) => result.status === status).length,
   ]));
-  console.log(JSON.stringify({ market, requested: limit, refreshExisting, candidates: products.length, ...counts }, null, 2));
+  console.log(JSON.stringify({ market, requested: limit, concurrency, refreshExisting, candidates: products.length, ...counts }, null, 2));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
