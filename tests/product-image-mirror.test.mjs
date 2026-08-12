@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  boundedMirrorConcurrency,
   boundedMirrorLimit,
   imageExtension,
   productImageObjectPath,
@@ -17,6 +18,14 @@ test("bounds image mirror batches and accepts only supported image types", () =>
   assert.equal(imageExtension("image/jpeg; charset=binary"), "jpg");
   assert.equal(imageExtension("image/webp"), "webp");
   assert.equal(imageExtension("image/svg+xml"), null);
+});
+
+test("keeps image mirror concurrency conservative", () => {
+  assert.equal(boundedMirrorConcurrency(undefined), 3);
+  assert.equal(boundedMirrorConcurrency("1"), 1);
+  assert.equal(boundedMirrorConcurrency("4"), 4);
+  assert.throws(() => boundedMirrorConcurrency("0"), /integer from 1 to 4/);
+  assert.throws(() => boundedMirrorConcurrency("5"), /integer from 1 to 4/);
 });
 
 test("uses immutable style browser caching and validates refresh mode", () => {
