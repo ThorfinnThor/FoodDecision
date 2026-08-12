@@ -100,3 +100,15 @@ test("pins Node 24 compatible workflow actions to verified release commits", asy
   assert.match(workflows[2], /supabase\/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf/);
   assert.match(workflows[2], /version: latest/);
 });
+
+
+test("can batch image mirrors without deploying every intermediate run", async () => {
+  const workflow = await readFile(new URL(
+    "../.github/workflows/mirror-product-images.yml",
+    import.meta.url,
+  ), "utf8");
+  assert.match(workflow, /publish_after_run:/);
+  assert.match(workflow, /default: true/);
+  assert.match(workflow, /if: \$\{\{ inputs\.publish_after_run \}\}/);
+  assert.match(workflow, /deploy:\n    if: \$\{\{ inputs\.publish_after_run \}\}/);
+});
