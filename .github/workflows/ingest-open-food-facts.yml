@@ -44,6 +44,14 @@ on:
         description: "First Open Food Facts page"
         type: string
         default: "1"
+      sort_by:
+        description: "Open Food Facts order"
+        type: choice
+        required: true
+        default: "default"
+        options:
+          - "default"
+          - "last_modified_t"
       page_size:
         description: "Products per page"
         type: string
@@ -107,6 +115,7 @@ jobs:
           OFF_CATEGORY_SLUGS: ${{ steps.plan.outputs.categories }}
           OFF_MAX_PAGES: ${{ steps.plan.outputs.max_pages }}
           OFF_START_PAGE: ${{ steps.plan.outputs.start_page }}
+          OFF_SORT_BY: ${{ inputs.sort_by || 'default' }}
           OFF_PAGE_SIZE: ${{ steps.plan.outputs.page_size }}
           OFF_REQUEST_DELAY_MS: "7000"
           OFF_CONTINUE_ON_CATEGORY_ERROR: "true"
