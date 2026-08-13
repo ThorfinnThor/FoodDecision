@@ -9,7 +9,11 @@ export function FavoriteButton({ locale = "de-DE", productName, productSlug }: {
   const storageKey = `${FAVORITES_KEY}:${locale}`;
 
   useEffect(() => {
-    const sync = () => setSelected(readStoredIds(storageKey).includes(productSlug));
+    const sync = (event?: Event) => {
+      if (event instanceof CustomEvent && event.detail?.key !== storageKey) return;
+      if (event instanceof StorageEvent && event.key !== storageKey) return;
+      setSelected(readStoredIds(storageKey).includes(productSlug));
+    };
     sync();
     window.addEventListener(SAVED_STATE_EVENT, sync);
     window.addEventListener("storage", sync);

@@ -1,5 +1,6 @@
 #!/usr/bin/env node --experimental-strip-types
 import { localizedRankingPages } from "../../lib/catalog.ts";
+import { isPrimaryCategory, primaryCategory } from "../../lib/category-assignment.ts";
 import { getCategories } from "../../lib/data.ts";
 import {
   normalizeOpenFoodFactsRow,
@@ -29,6 +30,7 @@ type RankingPageRow = IdRow & {
 const market = String(process.env.CATALOG_MARKET ?? process.env.OFF_MARKET ?? "DE").toUpperCase() as MarketCode;
 if (market !== "DE" && market !== "US") throw new Error(`Unsupported CATALOG_MARKET: ${market}`);
 const locale: SiteLocale = market === "US" ? "en-US" : "de-DE";
+const supabaseTimeoutMs = Number(process.env.SUPABASE_REQUEST_TIMEOUT_MS ?? "30000");
 
 function requireEnv(name: string) {
   const value = process.env[name];
@@ -53,6 +55,9 @@ async function supabaseRequest<T>(path: string, options: RequestInit = {}): Prom
   if (!adminKey) throw new Error("Missing SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY");
   const response = await fetch(`${url}/rest/v1/${path}`, {
     ...options,
+    signal: options.signal
+      ? AbortSignal.any([options.signal, AbortSignal.timeout(supabaseTimeoutMs)])
+      : AbortSignal.timeout(supabaseTimeoutMs),
     headers: {
       apikey: adminKey,
       ...(adminKey.startsWith("sb_secret_") ? {} : { Authorization: `Bearer ${adminKey}` }),
@@ -154,12 +159,27 @@ function aggregateProducts(rawRows: RawOpenFoodFactsRow[]) {
 
     existing.categories.add(normalized.category);
     existing.rawRows.push(raw);
-    if (normalized.nutritionCompleteness > existing.product.nutritionCompleteness) {
+    const selectedCategory = primaryCategory([existing.product.category, normalized.category]);
+    if (
+      selectedCategory === normalized.category
+      && (
+        selectedCategory !== existing.product.category
+        || normalized.nutritionCompleteness > existing.product.nutritionCompleteness
+      )
+    ) {
       existing.product = normalized;
     }
   }
 
-  return [...byGtin.values()];
+  return [...byGtin.values()].map((aggregate) => {
+    if (
+      aggregate.categories.size > 1
+      && !aggregate.product.qualityFlags.some((flag) => flag.flag === "multiple_category_matches")
+    ) {
+      aggregate.product.qualityFlags.push({ flag: "multiple_category_matches", severity: "info" });
+    }
+    return aggregate;
+  });
 }
 
 async function existingProducts(gtins: string[]) {
@@ -198,6 +218,9 @@ type RankedProductRow = {
     saturated_fat: number | null;
   }> | null;
   product_ingredients?: Array<{ ingredient_id: string }>;
+  product_labels?: Array<{ labels?: { name: string } | null }>;
+  product_allergens?: Array<{ allergens?: { name: string } | null }>;
+  data_quality_flags?: Array<{ flag: string }>;
   product_scores?: Array<{
     score_type: ScoreType;
     score: number | null;
@@ -228,16 +251,46 @@ function rankableProduct(product: RankedProductRow): RankableProduct {
   };
 }
 
+function isDatabaseRankingCandidate(product: RankedProductRow, scoreType: ScoreType) {
+  const score = product.product_scores?.find((item) => item.score_type === scoreType);
+  if (typeof score?.score !== "number" || score.confidence === "low") return false;
+  const nutrition = Array.isArray(product.nutrition_facts) ? product.nutrition_facts[0] : product.nutrition_facts;
+  const ingredientsAvailable = Boolean(product.product_ingredients?.length);
+  switch (scoreType) {
+    case "protein": return nutrition?.protein !== null && nutrition?.protein !== undefined;
+    case "low_sugar": return nutrition?.sugar !== null && nutrition?.sugar !== undefined
+      && !product.data_quality_flags?.some((entry) => entry.flag === "ingredient_nutrition_conflict");
+    case "ingredient_quality": return ingredientsAvailable;
+    case "family": return ingredientsAvailable && nutrition?.sugar != null && nutrition?.salt != null;
+    case "nutrition": return [nutrition?.sugar, nutrition?.protein, nutrition?.salt, nutrition?.saturated_fat].every((value) => value != null);
+    case "overall_match": return ingredientsAvailable
+      && [nutrition?.sugar, nutrition?.protein, nutrition?.salt, nutrition?.saturated_fat].every((value) => value != null)
+      && typeof product.product_scores?.find((item) => item.score_type === "nutrition")?.score === "number"
+      && typeof product.product_scores?.find((item) => item.score_type === "ingredient_quality")?.score === "number";
+    case "vegan": {
+      const claims = product.product_labels?.flatMap((entry) => entry.labels?.name ?? []) ?? [];
+      const allergens = product.product_allergens?.flatMap((entry) => entry.allergens?.name ?? []) ?? [];
+      const claimed = claims.some((label) => /\b(?:vegan|pflanzlich|plant[ -]?based|non[ -]?dairy|dairy[ -]?free)\b/i.test(label));
+      const conflict = allergens.some((allergen) => /\b(?:milch|laktose|ei|eier|milk|lactose|egg|eggs)\b/i.test(allergen));
+      return claimed && !conflict;
+    }
+  }
+}
+
 async function rebuildRankings(rankingRows: RankingPageRow[]) {
   const products = await supabaseRequest<RankedProductRow[]>(
-    `products?select=id,name,slug,locale,product_categories(categories(slug)),nutrition_facts(sugar,protein,salt,saturated_fat),product_ingredients(ingredient_id),product_scores(score_type,score,confidence)&market=eq.${market}&publishability=eq.ranking_eligible`,
+    `products?select=id,name,slug,locale,product_categories(categories(slug)),nutrition_facts(sugar,protein,salt,saturated_fat),product_ingredients(ingredient_id),product_labels(labels(name)),product_allergens(allergens(name)),data_quality_flags(flag),product_scores(score_type,score,confidence)&market=eq.${market}&publishability=eq.ranking_eligible`,
   );
 
   for (const ranking of rankingRows) {
     const candidates = products
       .filter((product) =>
-        product.product_categories?.some((entry) => entry.categories?.slug === ranking.category_slug),
+        isPrimaryCategory(
+          ranking.category_slug,
+          product.product_categories?.map((entry) => entry.categories?.slug) ?? [],
+        ),
       )
+      .filter((product) => isDatabaseRankingCandidate(product, ranking.sort_score as ScoreType))
       .map((product) => ({
         product,
         rankable: rankableProduct(product),

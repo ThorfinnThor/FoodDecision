@@ -177,6 +177,15 @@ Do not also enable automatic production deployments for every `main` push if
 you want production to update only after a successful Supabase-backed export.
 The deploy hook is the authoritative production path.
 
+## Public Domain Cutover
+
+The public domain is assigned only after a read-only candidate check and an
+explicit approval in the protected `public-production` GitHub environment.
+Follow [the public readiness and cutover runbook](public-readiness-and-cutover.md)
+before assigning `compareyourfood.com`. The workflow requires an immutable
+candidate deployment URL and a separately verified rollback deployment URL. A
+failed post-cutover verification automatically restores that previous deployment.
+
 ## Catalog Growth Order
 
 After a code push that adds a migration:

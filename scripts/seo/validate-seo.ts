@@ -1,13 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import {
-  averageDataCompleteness,
-  countUniqueInsights,
-  evaluateSeoPage,
-  seoKeywords,
-  seoPageDefinitions,
-} from "../../lib/seo.ts";
+import { averageDataCompleteness, countUniqueInsights, seoKeywords, seoPageDefinitions } from "../../lib/seo.ts";
+import { evaluateRankingPublication } from "../../lib/seo-publication.ts";
 import { getCatalog, staticManifest } from "../../lib/static-data.ts";
 import type { SiteLocale } from "../../lib/types.ts";
 import { evaluateEditorialContent, getSeoEditorialContent } from "../../lib/seo-editorial.ts";
@@ -70,7 +65,7 @@ export async function validateSeo() {
     const editorialQuality = evaluateEditorialContent(getSeoEditorialContent(definition.path));
     context.editorialWordCount = editorialQuality.wordCount;
     context.editorialBlockers = editorialQuality.blockers;
-    const decision = evaluateSeoPage(definition, context);
+    const decision = ranking ? evaluateRankingPublication(definition.path, ranking, items) : { indexable: false, reasons: ["missing_ranking"] };
     const qualityBlockers = decision.reasons.filter((reason) => !publicationReasons.has(reason));
     const publicationBlockers = decision.reasons.filter((reason) => publicationReasons.has(reason));
     return {

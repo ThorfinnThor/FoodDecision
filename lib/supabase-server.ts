@@ -22,6 +22,9 @@ export async function supabaseServerRequest(path: string, options: RequestInit =
   return fetch(`${url}/rest/v1/${path}`, {
     ...options,
     cache: "no-store",
+    signal: options.signal
+      ? AbortSignal.any([options.signal, AbortSignal.timeout(10_000)])
+      : AbortSignal.timeout(10_000),
     headers: {
       apikey: key,
       ...(key.startsWith("sb_secret_") ? {} : { Authorization: `Bearer ${key}` }),

@@ -1,5 +1,8 @@
 import { scoreByType } from "./scoring.ts";
 import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
+import { allergenLabel, canonicalAllergenIds, detectedAllergenIds, type AllergenId } from "./allergens.ts";
+import { compareRankedProducts } from "./ranking-order.ts";
+import { isRankingEligibleForGoal } from "./ranking-eligibility.ts";
 import type { CategorySlug, Product, ProductScore, ScoreConfidence, ScoreType } from "./types.ts";
 
 export type FinderCriteria = {
@@ -9,7 +12,7 @@ export type FinderCriteria = {
   additiveFree: boolean;
   sweetenerFree: boolean;
   palmOilFree: boolean;
-  excludedAllergens: string[];
+  excludedAllergens: AllergenId[];
   maxSugar: number | null;
   minProtein: number | null;
   maxCalories: number | null;
@@ -63,6 +66,9 @@ export type AlternativeRecommendation = {
   currentScore: number;
   candidateScore: number;
   scoreDelta: number;
+  improvementValue: number;
+  improvementKind: "score" | "protein" | "sugar";
+  improvementLabel: string;
   reasons: string[];
   tradeoffs: string[];
   confidence: ScoreConfidence;
@@ -132,7 +138,7 @@ export function finderCriteriaFromSearchParams(params: FinderSearchParams, categ
     additiveFree: firstParam(params.additives) === "1",
     sweetenerFree: firstParam(params.sweeteners) === "1",
     palmOilFree: firstParam(params.palm) === "1",
-    excludedAllergens: firstParam(params.allergens).split(",").map((item) => item.trim()).filter(Boolean).slice(0, 20),
+    excludedAllergens: canonicalAllergenIds(firstParam(params.allergens).split(",")),
     maxSugar: boundedParam(params.maxSugar, 100),
     minProtein: boundedParam(params.minProtein, 100),
     maxCalories: boundedParam(params.maxCalories, 1000),
@@ -151,9 +157,7 @@ export function finderCriteriaFromStored(value: unknown, categories: CategorySlu
   const boundedStoredNumber = (candidate: unknown, maximum: number) => typeof candidate === "number" && Number.isFinite(candidate) && candidate >= 0 ? Math.min(maximum, candidate) : null;
   const text = (candidate: unknown) => typeof candidate === "string" ? candidate.trim().slice(0, 120) : "";
   const confidence = stored.minimumConfidence === "medium" || stored.minimumConfidence === "high" ? stored.minimumConfidence : "any";
-  const excludedAllergens = Array.isArray(stored.excludedAllergens)
-    ? [...new Set(stored.excludedAllergens.filter((item): item is string => typeof item === "string").map((item) => item.trim()).filter(Boolean))].slice(0, 20)
-    : [];
+  const excludedAllergens = canonicalAllergenIds(stored.excludedAllergens);
 
   return {
     ...defaults,
@@ -200,9 +204,9 @@ export function entitySlug(value: string) {
 
 export function productTraits(product: Product): ProductTraits {
   const ingredients = analyzeIngredients(product.ingredients);
-  const vegan = analyzeVeganStatus(product.labels, product.allergens);
+  const vegan = analyzeVeganStatus(product.labels, product.allergens, product.ingredients);
   return {
-    vegan: vegan.status === "confirmed",
+    vegan: vegan.status === "claimed",
     additiveFree: ingredients.hasData && !ingredients.detected.additives,
     sweetenerFree: ingredients.hasData && !ingredients.detected.sweeteners,
     palmOilFree: ingredients.hasData && !ingredients.detected.palmOil,
@@ -267,6 +271,7 @@ export function productDecisionSummary(product: Product, categoryProducts: Produ
   const bestFor = preferredTypes
     .map((type) => scoreByType(product, type))
     .filter((score): score is ProductScore => score !== undefined && score.score !== null && score.score >= 70)
+    .filter((score) => score.type !== "family" || score.missingData.length === 0)
     .filter((score) => score.type !== "vegan" || traits.vegan)
     .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
     .slice(0, 2)
@@ -303,6 +308,7 @@ export function assessProductCriteria(product: Product, criteria: FinderCriteria
   const ingredientChecksActive = criteria.additiveFree || criteria.sweetenerFree || criteria.palmOilFree || Boolean(criteria.includeIngredient.trim()) || Boolean(criteria.excludeIngredient.trim());
 
   if (criteria.category !== "all" && product.category !== criteria.category) failures.push(c("Andere Produktkategorie als ausgewählt.", "Different product category than selected."));
+  if (!goalScore || goalScore.score === null) failures.push(c("Für dein gewähltes Ziel fehlen belastbare Bewertungsdaten.", "Reliable score data is missing for your selected goal."));
   if (criteria.veganOnly && !traits.vegan) failures.push(c("Nicht verlässlich als vegan oder pflanzlich erkannt.", "Not reliably identified as vegan or plant based."));
   if (ingredientChecksActive && !product.ingredients.length) {
     failures.push(c("Die Zutatenliste fehlt. Ausschlüsse anhand von Zutaten können deshalb nicht geprüft werden.", "The ingredient list is missing, so ingredient exclusions cannot be verified."));
@@ -326,10 +332,10 @@ export function assessProductCriteria(product: Product, criteria: FinderCriteria
     else if (product.nutrition.energyKcal > criteria.maxCalories) failures.push(c(`${product.nutrition.energyKcal} kcal liegen über deiner Grenze von ${criteria.maxCalories} kcal.`, `${product.nutrition.energyKcal} kcal exceeds your ${criteria.maxCalories} kcal limit.`));
   }
   if (criteria.query.trim() && !queryText.includes(normalizeText(criteria.query.trim()))) failures.push(c("Suchbegriff passt nicht zu Produkt, Marke oder Zutaten.", "The search term does not match the product, brand, or ingredients."));
-  const allergenText = normalizeText(product.allergens.join(" "));
-  const detectedAllergens = criteria.excludedAllergens.filter((allergen) => allergenText.includes(normalizeText(allergen)));
+  const knownAllergens = detectedAllergenIds(product.allergens);
+  const detectedAllergens = criteria.excludedAllergens.filter((allergen) => knownAllergens.includes(allergen));
   if (criteria.excludedAllergens.length && !product.allergens.length) failures.push(c("Allergendaten fehlen; deine Ausschlüsse können nicht geprüft werden.", "Allergen data is missing, so your exclusions cannot be verified."));
-  else if (detectedAllergens.length) failures.push(c(`Ausgeschlossene Allergene erkannt: ${detectedAllergens.join(", ")}.`, `Excluded allergens detected: ${detectedAllergens.join(", ")}.`));
+  else if (detectedAllergens.length) failures.push(c(`Ausgeschlossene Allergene erkannt: ${detectedAllergens.map((id) => allergenLabel(id, product.locale)).join(", ")}.`, `Excluded allergens detected: ${detectedAllergens.map((id) => allergenLabel(id, product.locale)).join(", ")}.`));
   if (
     criteria.minimumConfidence !== "any" &&
     (!goalScore || confidenceRank(goalScore.confidence) < confidenceRank(criteria.minimumConfidence))
@@ -347,7 +353,10 @@ export function productMatch(product: Product, criteria: Pick<FinderCriteria, "g
   const overall = scoreByType(product, "overall_match");
   const traits = productTraits(product);
   const c = (de: string, en: string) => product.locale === "de-DE" ? de : en;
-  let score = (goal?.score ?? 45) * 0.58 + (overall?.score ?? 45) * 0.24 + dataCompleteness(product) * 18;
+  if (!goal || goal.score === null) {
+    return { score: 0, reasons: [product.locale === "de-DE" ? "Für dieses Ziel fehlen belastbare Bewertungsdaten." : "Reliable score data is missing for this goal."] };
+  }
+  let score = goal.score * 0.58 + (overall?.score ?? 45) * 0.24 + dataCompleteness(product) * 18;
   const reasons: string[] = [];
 
   if (goal?.positives[0]) reasons.push(goal.positives[0]);
@@ -425,6 +434,52 @@ function alternativeTradeoffs(current: Product, candidate: Product, goal: Altern
   return tradeoffs.slice(0, 2);
 }
 
+export type GoalImprovement = {
+  value: number;
+  kind: AlternativeRecommendation["improvementKind"];
+  label: string;
+};
+
+export function meaningfulGoalImprovement(current: Product, candidate: Product, goal: AlternativeGoal): GoalImprovement | null {
+  const locale = current.locale;
+  const format = (value: number) => Number(value.toFixed(2)).toLocaleString(locale);
+  if (goal === "protein") {
+    const currentValue = current.nutrition.protein;
+    const candidateValue = candidate.nutrition.protein;
+    if (currentValue === null || candidateValue === null) return null;
+    const difference = candidateValue - currentValue;
+    if (difference < Math.max(1, currentValue * 0.05)) return null;
+    return {
+      value: Number(difference.toFixed(2)),
+      kind: "protein",
+      label: locale === "de-DE" ? `+${format(difference)} g Protein` : `+${format(difference)} g protein`,
+    };
+  }
+  if (goal === "low_sugar") {
+    const currentValue = current.nutrition.sugar;
+    const candidateValue = candidate.nutrition.sugar;
+    if (currentValue === null || candidateValue === null || currentValue <= 0) return null;
+    const difference = currentValue - candidateValue;
+    if (difference < Math.max(0.2, currentValue * 0.1)) return null;
+    return {
+      value: Number(difference.toFixed(2)),
+      kind: "sugar",
+      label: locale === "de-DE" ? `−${format(difference)} g Zucker` : `−${format(difference)} g sugar`,
+    };
+  }
+
+  const currentScore = scoreByType(current, goal)?.score;
+  const candidateScore = scoreByType(candidate, goal)?.score;
+  if (typeof currentScore !== "number" || typeof candidateScore !== "number") return null;
+  const difference = candidateScore - currentScore;
+  if (difference < 3) return null;
+  return {
+    value: difference,
+    kind: "score",
+    label: locale === "de-DE" ? `+${difference} Punkte` : `+${difference} points`,
+  };
+}
+
 export function alternativeRecommendation(current: Product, candidate: Product, goal: AlternativeGoal): AlternativeRecommendation | null {
   if (
     current.market !== candidate.market
@@ -434,13 +489,14 @@ export function alternativeRecommendation(current: Product, candidate: Product, 
   ) return null;
   const currentGoal = scoreByType(current, goal);
   const candidateGoal = scoreByType(candidate, goal);
-  if (goal === "overall_match" && scoreByType(candidate, "ingredient_quality")?.score == null) return null;
+  if (!isRankingEligibleForGoal(candidate, goal)) return null;
   if (currentGoal?.score === null || currentGoal?.score === undefined || candidateGoal?.score === null || candidateGoal?.score === undefined) return null;
   const scoreDelta = candidateGoal.score - currentGoal.score;
-  if (scoreDelta < 3 || candidateGoal.confidence === "low") return null;
+  const improvement = meaningfulGoalImprovement(current, candidate, goal);
+  if (!improvement || compareRankedProducts(candidate, current, goal) >= 0) return null;
 
   const reasons = alternativeReasons(current, candidate, goal);
-  if (!reasons.some((reason) => reason.includes(`${scoreDelta}`))) {
+  if (improvement.kind === "score" && !reasons.some((reason) => reason.includes(`${scoreDelta}`))) {
     reasons.unshift(current.locale === "de-DE" ? `${scoreDelta} Punkte stärker beim gewählten Ziel.` : `${scoreDelta} points stronger for the selected goal.`);
   }
 
@@ -450,6 +506,9 @@ export function alternativeRecommendation(current: Product, candidate: Product, 
     currentScore: currentGoal.score,
     candidateScore: candidateGoal.score,
     scoreDelta,
+    improvementValue: improvement.value,
+    improvementKind: improvement.kind,
+    improvementLabel: improvement.label,
     reasons: reasons.slice(0, 3),
     tradeoffs: alternativeTradeoffs(current, candidate, goal),
     confidence: candidateGoal.confidence,
@@ -459,10 +518,11 @@ export function alternativeRecommendation(current: Product, candidate: Product, 
 export function rankImprovingAlternatives(current: Product, candidates: Product[], goal: AlternativeGoal, limit = 3) {
   return candidates
     .filter((candidate) => candidate.slug !== current.slug)
-    .filter((candidate) => candidate.publishability === "ranking_eligible" || candidate.publishability === "published")
     .map((candidate) => alternativeRecommendation(current, candidate, goal))
     .filter((recommendation): recommendation is AlternativeRecommendation => recommendation !== null)
-    .sort((a, b) => b.scoreDelta - a.scoreDelta || dataCompleteness(b.product) - dataCompleteness(a.product))
+    .sort((a, b) => b.improvementValue - a.improvementValue
+      || compareRankedProducts(a.product, b.product, goal)
+      || dataCompleteness(b.product) - dataCompleteness(a.product))
     .slice(0, limit);
 }
 

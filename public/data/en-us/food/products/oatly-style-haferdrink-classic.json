@@ -49,7 +49,7 @@
     {
       "type": "nutrition",
       "label": "Nutrition score",
-      "score": 70,
+      "score": 73,
       "grade": "good",
       "confidence": "high",
       "positives": [
@@ -57,7 +57,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "ingredient_quality",
@@ -71,37 +71,37 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "protein",
       "label": "Protein score",
-      "score": 29,
-      "grade": "weak",
+      "score": 60,
+      "grade": "okay",
       "confidence": "high",
       "positives": [
         "Solid protein level: 1 g."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "low_sugar",
       "label": "Sugar score",
-      "score": 71,
-      "grade": "good",
+      "score": 66,
+      "grade": "okay",
       "confidence": "high",
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "family",
       "label": "Family score",
-      "score": 85,
-      "grade": "excellent",
+      "score": 83,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Conservative assessment based on sugar, ingredients, and salt."
@@ -110,7 +110,7 @@
         "Check allergens: Oats."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "vegan",
@@ -119,16 +119,16 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Labeled vegan or plant based."
+        "Labeled vegan or plant based; this is a source claim, not independent confirmation."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "overall_match",
       "label": "Overall score",
-      "score": 78,
+      "score": 80,
       "grade": "good",
       "confidence": "high",
       "positives": [
@@ -136,7 +136,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     }
   ]
 }

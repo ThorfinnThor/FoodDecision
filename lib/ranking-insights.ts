@@ -1,6 +1,7 @@
 import { categoryInsights } from "./category-insights.ts";
 import { pick } from "./i18n.ts";
 import { scoreByType } from "./scoring.ts";
+import { firstDifferingRankingEvidence, type RankingEvidenceKey } from "./ranking-order.ts";
 import type { Product, RankingPage, ScoreConfidence, ScoreType, SiteLocale } from "./types.ts";
 
 type MetricDirection = "higher" | "lower";
@@ -104,6 +105,37 @@ export function rankingMetric(product: Product, scoreType: ScoreType): RankingMe
   };
 }
 
+function evidenceLabel(key: RankingEvidenceKey, locale: SiteLocale) {
+  const labels: Record<RankingEvidenceKey, [string, string]> = {
+    score: ["Bewertungswert", "score"],
+    confidence: ["höhere Datensicherheit", "higher data confidence"],
+    completeness: ["vollständigere Kerndaten", "more complete core data"],
+    protein: ["höherer Proteingehalt", "higher protein"],
+    sugar: ["niedrigerer Zuckerwert", "lower sugar"],
+    salt: ["niedrigerer Salzgehalt", "lower sodium"],
+    saturated_fat: ["weniger gesättigte Fettsäuren", "lower saturated fat"],
+    nutrition_score: ["stärkere Nährwertbewertung", "stronger nutrition score"],
+    ingredient_score: ["stärkere Zutatenbewertung", "stronger ingredient score"],
+    ingredient_count: ["kürzere Zutatenliste", "shorter ingredient list"],
+    overall_score: ["stärkeres Gesamturteil", "stronger overall score"],
+  };
+  return pick(locale, ...labels[key]);
+}
+
+export function rankingTieExplanation(product: Product, previous: Product | null, scoreType: ScoreType) {
+  if (!previous) return null;
+  const primary = rankingMetric(product, scoreType);
+  const previousPrimary = rankingMetric(previous, scoreType);
+  if (primary.rawValue === null || primary.rawValue !== previousPrimary.rawValue) return null;
+  const difference = firstDifferingRankingEvidence(previous, product, scoreType);
+  if (!difference || difference.index === 0) return null;
+  return pick(
+    product.locale,
+    `Gleicher Vergleichswert wie das Produkt davor. Reihenfolge durch ${evidenceLabel(difference.a.key, product.locale)} entschieden.`,
+    `Same comparison value as the product above. ${evidenceLabel(difference.a.key, product.locale)} decides the order.`,
+  );
+}
+
 function benchmarkSentence(
   locale: SiteLocale,
   topPick: Product,
@@ -145,10 +177,14 @@ function runnerUpSentence(locale: SiteLocale, ranking: RankingPage, topPick: Pro
   const secondScore = scoreByType(runnerUp, ranking.sortScore)?.score;
   if (topScore === null || topScore === undefined || secondScore === null || secondScore === undefined) return "";
   if (topScore === secondScore) {
+    const difference = firstDifferingRankingEvidence(topPick, runnerUp, ranking.sortScore);
+    const decidingEvidence = difference && difference.index > 0
+      ? evidenceLabel(difference.a.key, locale)
+      : pick(locale, "Produktname", "product name");
     return pick(
       locale,
-      `${topPick.name} und ${runnerUp.name} haben denselben Vergleichswert. Datensicherheit, Datenvollständigkeit und danach der Produktname bestimmen die stabile Reihenfolge.`,
-      `${topPick.name} and ${runnerUp.name} have the same comparison value. Data confidence, data completeness, and then product name keep the order stable.`,
+      `${topPick.name} und ${runnerUp.name} haben denselben Vergleichswert. ${decidingEvidence} entscheidet hier die Reihenfolge.`,
+      `${topPick.name} and ${runnerUp.name} have the same comparison value. ${decidingEvidence} decides the order here.`,
     );
   }
   return pick(
@@ -161,12 +197,12 @@ function runnerUpSentence(locale: SiteLocale, ranking: RankingPage, topPick: Pro
 function methodCopy(locale: SiteLocale, ranking: RankingPage) {
   const scoreSpecific: Record<ScoreType, [string, string]> = {
     low_sugar: [
-      "Die Produkte stehen nach ihrem Zuckerwert pro 100 g oder 100 ml. Innerhalb derselben Bewertungsstufe steht der niedrigere exakte Wert weiter oben.",
-      "Products are ordered by sugar per 100 g or 100 ml. Within the same rating level, the lower exact value ranks higher.",
+      "Die Produkte stehen zuerst nach ihrem exakten Zuckerwert pro 100 g oder 100 ml. Bei gleichem Wert folgen Bewertung, Datensicherheit und belegte Sekundärwerte.",
+      "Products are ordered first by exact sugar per 100 g or 100 ml. Equal values are resolved by score, data confidence, and supported secondary evidence.",
     ],
     protein: [
-      "Die Produkte stehen nach ihrem Proteingehalt pro 100 g oder 100 ml. Innerhalb derselben Bewertungsstufe steht der höhere exakte Wert weiter oben.",
-      "Products are ordered by protein per 100 g or 100 ml. Within the same rating level, the higher exact value ranks higher.",
+      "Die Produkte stehen zuerst nach ihrem exakten Proteingehalt pro 100 g oder 100 ml. Bei gleichem Wert folgen Bewertung, Datensicherheit und belegte Sekundärwerte.",
+      "Products are ordered first by exact protein per 100 g or 100 ml. Equal values are resolved by score, data confidence, and supported secondary evidence.",
     ],
     ingredient_quality: [
       "Zutatenlänge, erkannter zugesetzter Zucker und erkannte Zusatzstoffe fließen in die Zutatenbewertung ein.",
@@ -198,8 +234,8 @@ function methodCopy(locale: SiteLocale, ranking: RankingPage) {
       title: pick(locale, "Nur geeignete Produkte", "Eligible products only"),
       body: pick(
         locale,
-        "Im Ranking erscheinen nur Produkte, die für Rankings freigegeben sind und für das Kriterium einen berechenbaren Score haben.",
-        "The ranking includes only products that are eligible for rankings and have a calculable score for the criterion.",
+        "Im Ranking erscheinen nur Produkte mit den für dieses Ziel erforderlichen Angaben. Nährwertziele benötigen belastbare Kernwerte; Zutaten-, Familien- und Gesamturteile zusätzlich eine verwertbare Zutatenliste.",
+        "The ranking includes only products with the evidence required for this goal. Nutrition goals require reliable core values, while ingredient, family, and overall assessments also require a usable ingredient list.",
       ),
     },
     {

@@ -49,7 +49,7 @@
     {
       "type": "nutrition",
       "label": "Nährwertbewertung",
-      "score": 83,
+      "score": 84,
       "grade": "good",
       "confidence": "high",
       "positives": [
@@ -57,7 +57,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "ingredient_quality",
@@ -71,25 +71,25 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "protein",
       "label": "Proteinbewertung",
-      "score": 31,
-      "grade": "weak",
+      "score": 61,
+      "grade": "okay",
       "confidence": "high",
       "positives": [
         "Solider Proteinwert: 1,1 g."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "low_sugar",
       "label": "Zuckerbewertung",
-      "score": 100,
+      "score": 92,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -97,12 +97,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "family",
       "label": "Bewertung für Familien",
-      "score": 97,
+      "score": 94,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -112,7 +112,7 @@
         "Allergene prüfen: Hafer."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "vegan",
@@ -121,16 +121,16 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Als vegan oder pflanzlich gekennzeichnet."
+        "Als vegan oder pflanzlich gekennzeichnet; dies ist eine Quellenangabe, keine unabhängige Bestätigung."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "overall_match",
       "label": "Gesamtbewertung",
-      "score": 87,
+      "score": 88,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -138,7 +138,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     }
   ]
 }

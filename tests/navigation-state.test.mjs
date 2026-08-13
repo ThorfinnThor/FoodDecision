@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import nextConfig from "../next.config.ts";
 
 test("keeps catalog controls in validated URL parameters", async () => {
   const catalog = await readFile(new URL("../components/CatalogGrid.tsx", import.meta.url), "utf8");
@@ -17,7 +18,8 @@ test("keeps catalog controls in validated URL parameters", async () => {
 test("preserves compatible query state across locale changes", async () => {
   const switcher = await readFile(new URL("../components/LocaleSwitcher.tsx", import.meta.url), "utf8");
   assert.match(switcher, /useSearchParams/);
-  assert.match(switcher, /const query = searchParams\.toString\(\)/);
+  assert.match(switcher, /new URLSearchParams\(searchParams\.toString\(\)\)/);
+  assert.match(switcher, /canonicalAllergenIds/);
   assert.match(switcher, /parts\[0\] === "compare"/);
   assert.match(switcher, /translated = "\/compare"/);
   assert.match(switcher, /parts\[0\] === "product"/);
@@ -37,4 +39,13 @@ test("provides a localized recovery page for invalid routes", async () => {
   assert.match(notFound, /This page could not be found/);
   assert.match(notFound, /Produkte durchsuchen/);
   assert.match(notFound, /Browse products/);
+});
+
+test("redirects the bare public domain to the default German locale", async () => {
+  const redirects = await nextConfig.redirects();
+  assert.deepEqual(redirects.find((entry) => entry.source === "/"), {
+    source: "/",
+    destination: "/de",
+    permanent: false,
+  });
 });

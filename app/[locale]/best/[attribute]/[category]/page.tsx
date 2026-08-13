@@ -18,11 +18,9 @@ import { requireLocale } from "@/lib/locale-page";
 import { buildRankingInsights } from "@/lib/ranking-insights";
 import {
   absoluteUrl,
-  averageDataCompleteness,
-  countUniqueInsights,
-  evaluateSeoPage,
   getSeoPageDefinition,
 } from "@/lib/seo";
+import { evaluateRankingPublication } from "@/lib/seo-publication";
 import { getCatalog } from "@/lib/static-data";
 import { BRAND_NAME } from "@/lib/brand";
 import { openDatabaseLicenseUrl, openFoodFactsUrl } from "@/lib/geo";
@@ -64,17 +62,7 @@ function seoDecision(
   ranking: NonNullable<ReturnType<typeof resolve>["ranking"]>,
   items: ReturnType<typeof resolve>["items"],
 ) {
-  const definition = getSeoPageDefinition(path);
-  const editorialQuality = evaluateEditorialContent(getSeoEditorialContent(path));
-  return evaluateSeoPage(definition, {
-    resultCount: items.length,
-    dataCompleteness: averageDataCompleteness(items),
-    uniqueInsightCount: countUniqueInsights(items),
-    title: definition?.seoTitle ?? ranking.title,
-    h1: definition?.h1 ?? ranking.title,
-    editorialWordCount: editorialQuality.wordCount,
-    editorialBlockers: editorialQuality.blockers,
-  });
+  return evaluateRankingPublication(path, ranking, items);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -7,11 +7,13 @@ import { products as fixtureProducts } from "../../lib/data.ts";
 import { localizedCategoryCatalog, localizedCategoryLabel, localizedRankingPages } from "../../lib/catalog.ts";
 import { licensedProductImage } from "../../lib/image-license.ts";
 import { analyzeIngredients, cleanIngredientEntries } from "../../lib/ingredient-analysis.ts";
+import { primaryCategory } from "../../lib/category-assignment.ts";
 import { hasDecisionReadyNutrition } from "../../lib/nutrition-quality.ts";
 import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
 import { assessDataFreshness } from "../../lib/data-freshness.ts";
 import { calculateScores, scoreByType } from "../../lib/scoring.ts";
 import { compareRankedProducts } from "../../lib/ranking-order.ts";
+import { isRankingEligibleForGoal } from "../../lib/ranking-eligibility.ts";
 import { inferBrandFromProductName, normalizeBrandName, normalizeListingName, slugify } from "../../lib/normalization.ts";
 import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
@@ -97,19 +99,30 @@ async function supabaseRequest<T>(path: string): Promise<T> {
   const supabaseUrl = requireEnv("SUPABASE_URL").replace(/\/$/, "");
   const adminKey = supabaseAdminKey();
   const retryDelays = [2_000, 4_000, 8_000, 16_000, 30_000];
+  const timeoutMs = Number(process.env.SUPABASE_REQUEST_TIMEOUT_MS ?? "30000");
 
   for (let attempt = 0; ; attempt += 1) {
-    const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
-      headers: supabaseAuthHeaders(adminKey),
-    });
-    const body = await response.text();
+    let response: Response;
+    let body: string;
+    try {
+      response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+        headers: supabaseAuthHeaders(adminKey),
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      body = await response.text();
+    } catch (error) {
+      if (attempt >= retryDelays.length) throw new Error(`Supabase export request timed out or failed for ${path}: ${String(error)}`);
+      const delay = retryDelays[attempt];
+      console.warn(`Supabase export request failed for ${path}; retrying in ${delay / 1000}s (${attempt + 1}/${retryDelays.length}).`);
+      await sleep(delay);
+      continue;
+    }
 
     if (response.ok) return JSON.parse(body) as T;
-    if (!isFutureJwtError(response.status, body) || attempt >= retryDelays.length) {
-      throw new Error(`Supabase export request failed ${response.status}: ${body}`);
-    }
+    const transient = isFutureJwtError(response.status, body) || response.status === 408 || response.status === 429 || response.status >= 500;
+    if (!transient || attempt >= retryDelays.length) throw new Error(`Supabase export request failed ${response.status}: ${body}`);
     const delay = retryDelays[attempt];
-    console.warn(`Supabase rejected a legacy JWT because of clock skew; retrying in ${delay / 1000}s (${attempt + 1}/${retryDelays.length}).`);
+    console.warn(`Supabase export request returned ${response.status}; retrying in ${delay / 1000}s (${attempt + 1}/${retryDelays.length}).`);
     await sleep(delay);
   }
 }
@@ -210,7 +223,10 @@ function firstRelated<T>(value: T | T[] | null | undefined) {
 }
 
 export function mapSupabaseProduct(row: SupabaseProductRow): Product {
-  const category = row.product_categories?.[0]?.categories;
+  const selectedCategory = primaryCategory(
+    row.product_categories?.map((entry) => entry.categories?.slug) ?? [],
+  );
+  const category = row.product_categories?.find((entry) => entry.categories?.slug === selectedCategory)?.categories;
   const nutrition = firstRelated(row.nutrition_facts);
   const activeOffer = row.affiliate_offers?.find((offer) => offer.active);
   const market = row.market ?? "DE";
@@ -412,8 +428,7 @@ export function comparisonPairs(products: Product[]) {
   const pairs: string[] = [];
   for (const category of localizedCategoryCatalog(products[0]?.locale ?? "de-DE")) {
     const candidates = products
-      .filter((product) => product.category === category.slug && (product.publishability === "ranking_eligible" || product.publishability === "published"))
-      .filter((product) => typeof scoreByType(product, "overall_match")?.score === "number")
+      .filter((product) => product.category === category.slug && isRankingEligibleForGoal(product, "overall_match"))
       .sort((a, b) => compareRankedProducts(a, b, "overall_match"))
       .slice(0, 3);
     if (candidates.length < 2) continue;
@@ -478,8 +493,7 @@ async function exportStaticData() {
 
     for (const ranking of rankings) {
       const items = products
-            .filter((product) => product.category === ranking.category && product.publishability === "ranking_eligible")
-            .filter((product) => typeof scoreByType(product, ranking.sortScore)?.score === "number")
+            .filter((product) => product.category === ranking.category && isRankingEligibleForGoal(product, ranking.sortScore))
             .sort((a, b) => compareRankedProducts(a, b, ranking.sortScore))
             .map(productSummary);
       files.push(

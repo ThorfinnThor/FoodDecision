@@ -34,6 +34,8 @@ concurrency:
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    outputs:
+      catalog_timestamp: ${{ steps.catalog.outputs.timestamp }}
     steps:
       - name: Check out source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -59,13 +61,16 @@ jobs:
         run: npm run mirror:product-images
 
       - name: Export static JSON from Supabase
+        id: catalog
         if: ${{ inputs.publish_after_run }}
         env:
           STATIC_EXPORT_SOURCE: supabase
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: npm run export:static-data
+        run: |
+          npm run export:static-data
+          node -e 'const fs=require("node:fs");const m=JSON.parse(fs.readFileSync("public/data/manifest.json","utf8"));fs.appendFileSync(process.env.GITHUB_OUTPUT,`timestamp=${m.generatedAt}\n`)'
 
       - name: Validate catalog and SEO
         if: ${{ inputs.publish_after_run }}
@@ -73,8 +78,14 @@ jobs:
           npm run audit:ranking-integrity
           npm run seo:validate
 
+      - name: Build production application from the validated catalog
+        if: ${{ inputs.publish_after_run }}
+        run: npm run next:build:prepared
+
   deploy:
     if: ${{ inputs.publish_after_run }}
     needs: mirror
     uses: ./.github/workflows/vercel-production.yml
+    with:
+      expected_catalog_timestamp: ${{ needs.mirror.outputs.catalog_timestamp }}
     secrets: inherit

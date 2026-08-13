@@ -45,6 +45,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     const prefixes = ["best", "brand", "category", "compare", "editorial-policy", "favorites", "finder", "ingredient", "methodology", "nutrition", "preferences", "privacy", "product", "products", "scan", "shopping-list"];
     return [
+      { source: "/", destination: "/de", permanent: false },
       ...prefixes.map((prefix) => ({ source: `/${prefix}/:path*`, destination: `/de/${prefix}/:path*`, permanent: true })),
     ];
   },

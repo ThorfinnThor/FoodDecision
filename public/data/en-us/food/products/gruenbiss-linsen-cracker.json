@@ -48,8 +48,8 @@
     {
       "type": "nutrition",
       "label": "Nutrition score",
-      "score": 89,
-      "grade": "excellent",
+      "score": 84,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Assessment based on sugar, protein, salt, and saturated fat with reference values suited to the category."
@@ -58,7 +58,7 @@
         "Salt is relatively high for this category."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "ingredient_quality",
@@ -72,12 +72,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "protein",
       "label": "Protein score",
-      "score": 100,
+      "score": 93,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -85,12 +85,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "low_sugar",
       "label": "Sugar score",
-      "score": 100,
+      "score": 95,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -98,12 +98,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "family",
       "label": "Family score",
-      "score": 89,
+      "score": 86,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -111,7 +111,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "vegan",
@@ -120,16 +120,16 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Labeled vegan or plant based."
+        "Labeled vegan or plant based; this is a source claim, not independent confirmation."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "overall_match",
       "label": "Overall score",
-      "score": 91,
+      "score": 88,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -139,7 +139,7 @@
         "Salt is relatively high for this category."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     }
   ]
 }

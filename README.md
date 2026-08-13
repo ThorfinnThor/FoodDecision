@@ -59,6 +59,12 @@ ranking concepts. Category profiles keep scores explainable and prevent unlike
 products from being presented as universal winners. Fixture data makes every
 route testable locally; production breadth comes from the Open Food Facts import.
 
+Public launch is handled separately from routine deployment. The
+`Public Readiness and Safe Cutover` workflow verifies an immutable Vercel
+candidate, requires approval in the protected `public-production` environment,
+and restores a known-good deployment if the public-domain check fails. See
+[`docs/public-readiness-and-cutover.md`](docs/public-readiness-and-cutover.md).
+
 Favorites, shopping lists and Finder preferences are stored per market in the browser for
 the anonymous MVP. Newsletter consent and aggregate product events are written
 through server-only Supabase endpoints. Affiliate offers render only when an

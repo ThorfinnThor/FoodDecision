@@ -1,0 +1,234 @@
+name: Public Readiness and Safe Cutover
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Readiness only, assign the public domain, or restore a previous deployment"
+        type: choice
+        options:
+          - readiness
+          - cutover
+          - rollback
+        default: readiness
+        required: true
+      target_deployment_url:
+        description: "Vercel deployment URL to verify and optionally assign"
+        type: string
+        required: false
+        default: ""
+      public_domain:
+        description: "Public hostname without https://"
+        type: string
+        required: true
+        default: "compareyourfood.com"
+      rollback_deployment_url:
+        description: "Known-good Vercel deployment URL; required for cutover and rollback"
+        type: string
+        required: false
+        default: ""
+      expected_catalog_timestamp:
+        description: "Optional earliest acceptable catalog timestamp"
+        type: string
+        required: false
+        default: ""
+      confirmation:
+        description: "For writes enter CUTOVER <domain> or ROLLBACK <domain>"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-domain-cutover
+  cancel-in-progress: false
+
+jobs:
+  readiness:
+    name: Verify candidate readiness
+    if: inputs.action != 'rollback'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Validate read-only public readiness
+        env:
+          READINESS_URL: ${{ inputs.target_deployment_url }}
+          EXPECTED_PUBLIC_ORIGIN: https://${{ inputs.public_domain }}
+          EXPECTED_CATALOG_TIMESTAMP: ${{ inputs.expected_catalog_timestamp }}
+          REQUIRE_LEGAL_IDENTITY: "true"
+          READINESS_REPORT_PATH: public-readiness.json
+        run: |
+          if [ -z "$READINESS_URL" ]; then
+            echo "target_deployment_url is required for readiness and cutover." >&2
+            exit 1
+          fi
+          npm run verify:public-readiness
+      - name: Upload readiness evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: public-readiness-${{ github.run_id }}
+          path: public-readiness.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  cutover:
+    name: Assign public domain
+    if: inputs.action == 'cutover'
+    needs: readiness
+    runs-on: ubuntu-latest
+    environment: public-production
+    steps:
+      - name: Validate cutover confirmation and rollback target
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          EXPECTED: CUTOVER ${{ inputs.public_domain }}
+          PUBLIC_DOMAIN: ${{ inputs.public_domain }}
+          TARGET_DEPLOYMENT_URL: ${{ inputs.target_deployment_url }}
+          ROLLBACK_DEPLOYMENT_URL: ${{ inputs.rollback_deployment_url }}
+        run: |
+          if [ "$CONFIRMATION" != "$EXPECTED" ]; then
+            echo "Confirmation must be exactly: $EXPECTED" >&2
+            exit 1
+          fi
+          if [ -z "$ROLLBACK_DEPLOYMENT_URL" ]; then
+            echo "A known-good rollback deployment URL is required." >&2
+            exit 1
+          fi
+          if [[ ! "$PUBLIC_DOMAIN" =~ ^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$ ]]; then
+            echo "public_domain must be a lowercase hostname without a scheme or path." >&2
+            exit 1
+          fi
+          if [[ ! "$TARGET_DEPLOYMENT_URL" =~ ^https://[a-zA-Z0-9.-]+\.vercel\.app/?$ ]]; then
+            echo "target_deployment_url must be an immutable HTTPS vercel.app URL." >&2
+            exit 1
+          fi
+          if [[ ! "$ROLLBACK_DEPLOYMENT_URL" =~ ^https://[a-zA-Z0-9.-]+\.vercel\.app/?$ ]]; then
+            echo "rollback_deployment_url must be an immutable HTTPS vercel.app URL." >&2
+            exit 1
+          fi
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Verify rollback target before changing the alias
+        env:
+          READINESS_URL: ${{ inputs.rollback_deployment_url }}
+          EXPECTED_PUBLIC_ORIGIN: https://${{ inputs.public_domain }}
+          PUBLIC_CATALOG_MAX_AGE_HOURS: "0"
+          REQUIRE_LEGAL_IDENTITY: "true"
+        run: npm run verify:public-readiness
+      - name: Assign verified deployment to public domain
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_SCOPE: ${{ vars.VERCEL_SCOPE }}
+          TARGET_DEPLOYMENT_URL: ${{ inputs.target_deployment_url }}
+          PUBLIC_DOMAIN: ${{ inputs.public_domain }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "Missing public-production secret: VERCEL_TOKEN" >&2
+            exit 1
+          fi
+          scope_args=()
+          if [ -n "$VERCEL_SCOPE" ]; then scope_args=(--scope "$VERCEL_SCOPE"); fi
+          npx --yes vercel@58.4.4 alias set "$TARGET_DEPLOYMENT_URL" "$PUBLIC_DOMAIN" --token "$VERCEL_TOKEN" "${scope_args[@]}"
+      - name: Verify public domain after cutover
+        id: verify_public
+        continue-on-error: true
+        env:
+          READINESS_URL: https://${{ inputs.public_domain }}
+          EXPECTED_PUBLIC_ORIGIN: https://${{ inputs.public_domain }}
+          EXPECTED_CATALOG_TIMESTAMP: ${{ inputs.expected_catalog_timestamp }}
+          REQUIRE_LEGAL_IDENTITY: "true"
+        run: npm run verify:public-readiness
+      - name: Restore previous deployment when verification fails
+        if: steps.verify_public.outcome == 'failure'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_SCOPE: ${{ vars.VERCEL_SCOPE }}
+          ROLLBACK_DEPLOYMENT_URL: ${{ inputs.rollback_deployment_url }}
+          PUBLIC_DOMAIN: ${{ inputs.public_domain }}
+        run: |
+          scope_args=()
+          if [ -n "$VERCEL_SCOPE" ]; then scope_args=(--scope "$VERCEL_SCOPE"); fi
+          npx --yes vercel@58.4.4 alias set "$ROLLBACK_DEPLOYMENT_URL" "$PUBLIC_DOMAIN" --token "$VERCEL_TOKEN" "${scope_args[@]}"
+          echo "Cutover verification failed. The previous deployment was restored." >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify automatic rollback
+        if: steps.verify_public.outcome == 'failure'
+        env:
+          READINESS_URL: https://${{ inputs.public_domain }}
+          EXPECTED_PUBLIC_ORIGIN: https://${{ inputs.public_domain }}
+          PUBLIC_CATALOG_MAX_AGE_HOURS: "0"
+          REQUIRE_LEGAL_IDENTITY: "true"
+        run: npm run verify:public-readiness
+      - name: Fail cutover after automatic rollback
+        if: steps.verify_public.outcome == 'failure'
+        run: |
+          echo "The candidate failed public verification and the rollback was applied." >&2
+          exit 1
+      - name: Record successful cutover
+        run: |
+          echo "## Cutover complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://${{ inputs.public_domain }} now points to ${{ inputs.target_deployment_url }}." >> "$GITHUB_STEP_SUMMARY"
+          echo "Rollback target: ${{ inputs.rollback_deployment_url }}" >> "$GITHUB_STEP_SUMMARY"
+
+  rollback:
+    name: Restore known-good deployment
+    if: inputs.action == 'rollback'
+    runs-on: ubuntu-latest
+    environment: public-production
+    steps:
+      - name: Validate rollback confirmation and target
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          EXPECTED: ROLLBACK ${{ inputs.public_domain }}
+          PUBLIC_DOMAIN: ${{ inputs.public_domain }}
+          ROLLBACK_DEPLOYMENT_URL: ${{ inputs.rollback_deployment_url }}
+        run: |
+          if [ "$CONFIRMATION" != "$EXPECTED" ]; then
+            echo "Confirmation must be exactly: $EXPECTED" >&2
+            exit 1
+          fi
+          if [ -z "$ROLLBACK_DEPLOYMENT_URL" ]; then
+            echo "A known-good rollback deployment URL is required." >&2
+            exit 1
+          fi
+          if [[ ! "$PUBLIC_DOMAIN" =~ ^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$ ]]; then
+            echo "public_domain must be a lowercase hostname without a scheme or path." >&2
+            exit 1
+          fi
+          if [[ ! "$ROLLBACK_DEPLOYMENT_URL" =~ ^https://[a-zA-Z0-9.-]+\.vercel\.app/?$ ]]; then
+            echo "rollback_deployment_url must be an immutable HTTPS vercel.app URL." >&2
+            exit 1
+          fi
+      - name: Restore previous deployment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_SCOPE: ${{ vars.VERCEL_SCOPE }}
+          ROLLBACK_DEPLOYMENT_URL: ${{ inputs.rollback_deployment_url }}
+          PUBLIC_DOMAIN: ${{ inputs.public_domain }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "Missing public-production secret: VERCEL_TOKEN" >&2
+            exit 1
+          fi
+          scope_args=()
+          if [ -n "$VERCEL_SCOPE" ]; then scope_args=(--scope "$VERCEL_SCOPE"); fi
+          npx --yes vercel@58.4.4 alias set "$ROLLBACK_DEPLOYMENT_URL" "$PUBLIC_DOMAIN" --token "$VERCEL_TOKEN" "${scope_args[@]}"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Verify restored public deployment
+        env:
+          READINESS_URL: https://${{ inputs.public_domain }}
+          EXPECTED_PUBLIC_ORIGIN: https://${{ inputs.public_domain }}
+          PUBLIC_CATALOG_MAX_AGE_HOURS: "0"
+          REQUIRE_LEGAL_IDENTITY: "true"
+        run: npm run verify:public-readiness

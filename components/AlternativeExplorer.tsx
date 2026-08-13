@@ -48,8 +48,8 @@ export function AlternativeExplorer({
         <p className="eyebrow">{c("Bessere Alternative", "Better alternative")}</p>
         <h2>{c("Was möchtest du konkret verbessern?", "What would you like to improve?")}</h2>
         <p>{c(
-          "Wir zeigen nur Produkte derselben Kategorie und Bezugsbasis, deren Bewertung für dein Ziel um mindestens drei Punkte höher ist und deren Datensicherheit nicht niedrig ist.",
-          "We only show products from the same category and serving basis whose goal score is at least three points higher and whose data confidence is not low.",
+          "Wir zeigen nur vergleichbare Produkte mit belastbar besserem Zielwert. Bei Protein und Zucker zählt der exakte Nährwert, bei Gesamtwahl und Zutaten ein Vorsprung von mindestens drei Punkten.",
+          "We only show comparable products with a reliably better goal value. Protein and sugar use the exact nutrition value, while overall and ingredient choices require a lead of at least three points.",
         )}</p>
       </div>
 
@@ -72,7 +72,7 @@ export function AlternativeExplorer({
               <div><span>{c("Aktuell", "Current")}</span><strong>{primary.currentScore}</strong></div>
               <span aria-hidden="true">→</span>
               <div><span>{c("Alternative", "Alternative")}</span><strong>{primary.candidateScore}</strong></div>
-              <b>+{primary.scoreDelta} {c("Punkte", "points")}</b>
+              <b>{primary.improvementLabel}</b>
             </div>
             <div className="alternative-evidence-grid">
               <div><h4>{c("Warum sie besser passt", "Why it fits better")}</h4><ul>{primary.reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul></div>
@@ -89,27 +89,27 @@ export function AlternativeExplorer({
               <span>{c("Weitere passende Alternativen", "More suitable alternatives")}</span>
               <strong>{c("Auch diese Produkte verbessern dein gewähltes Ziel", "These products also improve your selected goal")}</strong>
             </div>
-            {options.slice(1).map((option) => <Link href={path(`/compare/${current.slug}-vs-${option.product.slug}`)} key={option.product.slug} onClick={() => trackComparison(option.product)}><span><strong>{option.product.name}</strong><small>{option.reasons[0]}</small></span><b>+{option.scoreDelta} {c("Punkte", "points")}</b><i aria-hidden="true">→</i></Link>)}
+            {options.slice(1).map((option) => <Link href={path(`/compare/${current.slug}-vs-${option.product.slug}`)} key={option.product.slug} onClick={() => trackComparison(option.product)}><span><strong>{option.product.name}</strong><small>{option.reasons[0]}</small></span><b>{option.improvementLabel}</b><i aria-hidden="true">→</i></Link>)}
           </div> : null}
         </div>
       ) : (
         <div className="alternative-empty-state">
           <strong>{currentGoalScore === null
             ? c("Für dieses Ziel fehlt eine belastbare Bewertung", "No reliable score is available for this goal")
-            : currentGoalScore === 100
+            : currentGoalScore === 100 && goal !== "protein" && goal !== "low_sugar"
             ? c("Für dieses Ziel bereits am Bewertungsmaximum", "Already at the scoring maximum for this goal")
             : c("Keine belastbar bessere Alternative bestätigt", "No reliably better alternative confirmed")}</strong>
           <p>{c(
             currentGoalScore === null
               ? `Die Angaben dieses Produkts reichen für „${label(goal, current)}“ nicht aus oder widersprechen sich. Deshalb zeigen wir keine rechnerische Empfehlung für dieses Ziel.`
-              : currentGoalScore === 100
+              : currentGoalScore === 100 && goal !== "protein" && goal !== "low_sugar"
               ? `Dieses Produkt erreicht bei „${label(goal, current)}“ bereits 100 von 100 Punkten. Eine rechnerisch bessere Alternative ist deshalb nicht möglich.`
-              : `Im aktuellen Katalog liegt kein anderes Produkt aus der Kategorie ${current.categoryLabel} bei „${label(goal, current)}“ mindestens drei Punkte vorn und erfüllt zugleich die Anforderungen an die Datensicherheit.`,
+              : `Im aktuellen Katalog verbessert kein anderes vergleichbares Produkt aus der Kategorie ${current.categoryLabel} den exakten Zielwert deutlich genug und erfüllt zugleich die Anforderungen an die Datensicherheit.`,
             currentGoalScore === null
               ? `This product does not have sufficient or consistent data for “${label(goal, current).toLowerCase()},” so we do not show a numerical recommendation for this goal.`
-              : currentGoalScore === 100
+              : currentGoalScore === 100 && goal !== "protein" && goal !== "low_sugar"
               ? `This product already reaches 100 out of 100 for “${label(goal, current)},” so a numerically better alternative is not possible.`
-              : `No other ${current.categoryLabel} product in the current catalog leads by at least three points for “${label(goal, current)}” while also meeting the data confidence requirements.`,
+              : `No other comparable ${current.categoryLabel} product in the current catalog improves the exact goal value by a meaningful amount while also meeting the data confidence requirements.`,
           )}</p>
           <Link className="text-link" href={path(`/category/${categoryRouteSlug(current.category, current.locale)}`)}>{c("Alle Produkte der Kategorie ansehen", "View all products in this category")} <span aria-hidden="true">→</span></Link>
         </div>

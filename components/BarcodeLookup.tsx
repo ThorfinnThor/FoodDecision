@@ -9,6 +9,7 @@ import { SCAN_HISTORY_KEY } from "@/lib/storage-keys";
 import type { ScoreConfidence, ScoreGrade, SiteLocale } from "@/lib/types";
 import { FavoriteButton } from "./FavoriteButton";
 import { ShoppingListButton } from "./ShoppingListButton";
+import { readBrowserJson, removeBrowserValue, writeBrowserJson } from "@/lib/browser-storage";
 
 export type BarcodeProduct = {
   gtin: string;
@@ -56,7 +57,7 @@ function confidenceLabel(confidence: ScoreConfidence | null, locale: SiteLocale)
 
 function readHistory(key: string) {
   try {
-    const value = JSON.parse(window.localStorage.getItem(key) ?? "[]");
+    const value = readBrowserJson<unknown>("local", key, []);
     if (!Array.isArray(value)) return [];
     return value.filter((item): item is HistoryEntry => Boolean(
       item && typeof item === "object" && typeof item.code === "string" && typeof item.label === "string" && (typeof item.slug === "string" || item.slug === null),
@@ -87,7 +88,7 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
   function remember(entry: HistoryEntry) {
     setHistory((current) => {
       const next = [entry, ...current.filter((item) => item.code !== entry.code)].slice(0, 6);
-      window.localStorage.setItem(historyKey, JSON.stringify(next));
+      writeBrowserJson("local", historyKey, next);
       return next;
     });
   }
@@ -119,7 +120,7 @@ export function BarcodeLookup({ locale, products }: { locale: SiteLocale; produc
   }
 
   function clearHistory() {
-    window.localStorage.removeItem(historyKey);
+    removeBrowserValue("local", historyKey);
     setHistory([]);
   }
 

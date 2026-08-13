@@ -1,0 +1,16 @@
+.agents
+.codex
+.git
+.github
+.wrangler
+dist
+docs
+examples
+node_modules
+outputs
+playwright-report
+test-results
+tests
+*.log
+public/data-source
+public/mirrored-images

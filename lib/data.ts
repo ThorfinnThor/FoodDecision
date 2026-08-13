@@ -1,5 +1,6 @@
 import { calculateScores, scoreByType } from "./scoring.ts";
 import { compareRankedProducts } from "./ranking-order.ts";
+import { isRankingEligibleForGoal } from "./ranking-eligibility.ts";
 import type { Category, CategorySlug, Product, RankingPage, ScoreType } from "./types.ts";
 import { categoryCatalog, defaultRankingPages, localizedCategoryLabel } from "./catalog.ts";
 
@@ -306,7 +307,7 @@ export function getRanking(attribute: string, category: string) {
 
 export function rankedProducts(category: CategorySlug, scoreType: ScoreType) {
   return getProductsByCategory(category)
-    .filter((product) => product.publishability === "ranking_eligible")
+    .filter((product) => isRankingEligibleForGoal(product, scoreType))
     .sort((a, b) => compareRankedProducts(a, b, scoreType));
 }
 

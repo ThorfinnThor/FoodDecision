@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T08:26:07.235Z",
+  "generatedAt": "2026-08-13T02:25:31.322Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locale": "en-US",
@@ -242,13 +242,13 @@
     },
     {
       "path": "public/data/en-us/food/products/nordhafer-barista-ohne-zucker.json",
-      "bytes": 3454,
-      "sha256": "43cb29bbb1a4d86207ca2f0f804e83c0d5508482215c31d6fc34873836ab0ae2"
+      "bytes": 3508,
+      "sha256": "711db51941336de0bcc07fd5d4a3cf7aaca4cc0212747ca75c932cf67208ad7e"
     },
     {
       "path": "public/data/en-us/food/products/oatly-style-haferdrink-classic.json",
-      "bytes": 3339,
-      "sha256": "870d5861472c01fde83bf6238136e42dfac507b4c2943b9c0be12c787fb700dc"
+      "bytes": 3393,
+      "sha256": "d301d17783fb0355da07fa04fea549afbf4dbae1e6f50731d3968605dc37f6e5"
     },
     {
       "path": "public/data/en-us/food/products/kraftkern-proteinriegel-kakao.json",
@@ -257,8 +257,8 @@
     },
     {
       "path": "public/data/en-us/food/products/morgenfeld-basis-muesli.json",
-      "bytes": 3467,
-      "sha256": "bdf07e9e3293b9bae5dd263ea9a6982c76122db495a531c0b4e17e9be0f2e381"
+      "bytes": 3521,
+      "sha256": "b1079cdc76d7df0d6f754a059380b05e4e34a57049b55aa8b8d8ae595b16d9bc"
     },
     {
       "path": "public/data/en-us/food/products/fjordgut-skyr-natur.json",
@@ -267,8 +267,8 @@
     },
     {
       "path": "public/data/en-us/food/products/gruenbiss-linsen-cracker.json",
-      "bytes": 3541,
-      "sha256": "00ebece30a7c7e598df37e1b0073ca80d9007691ad263e1ef38d27a098038940"
+      "bytes": 3595,
+      "sha256": "4da3683321b55c78fe66eee4eea0195b7f21b86f187221f0903b0b4ee59a449f"
     },
     {
       "path": "public/data/en-us/food/categories/hafermilch.json",
@@ -548,7 +548,7 @@
     {
       "path": "public/data/en-us/quality-report.json",
       "bytes": 8266,
-      "sha256": "be96de01af4b91da187f92eb971218e913454ebaf1567f12517df706f3aa9b59"
+      "sha256": "7923cfa5d9b98d93b1c6f521af0b528809ead777dd2a20acd3225620abe5d46f"
     }
   ]
 }

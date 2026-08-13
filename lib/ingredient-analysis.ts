@@ -9,9 +9,10 @@ export type IngredientAnalysis = {
 };
 
 export type VeganStatus = {
-  status: "confirmed" | "conflict" | "unknown";
+  status: "claimed" | "conflict" | "unknown";
   claimed: boolean;
   conflictingAllergens: string[];
+  conflictingIngredients: string[];
 };
 
 const signalPatterns: Record<IngredientSignal, RegExp> = {
@@ -87,12 +88,16 @@ export function analyzeIngredients(ingredients: string[]): IngredientAnalysis {
   };
 }
 
-export function analyzeVeganStatus(labels: string[], allergens: string[]): VeganStatus {
+const animalDerivedPattern = /\b(?:gelatine?|gelatin|carmine|cochineal|karmin|shellac|schellack|fish|fisch|anchov(?:y|ies)|sardell(?:e|en)|lard|schmalz|beeswax|bienenwachs|honey|honig|whey|molke|casein|kasein)\b/i;
+
+export function analyzeVeganStatus(labels: string[], allergens: string[], ingredients: string[] = []): VeganStatus {
   const claimed = labels.some((label) => /\b(?:vegan|pflanzlich|plant[ -]?based|non[ -]?dairy|dairy[ -]?free)\b/i.test(normalize(label)));
   const conflictingAllergens = allergens.filter((allergen) => /\b(?:milch|laktose|ei|eier|milk|lactose|egg|eggs)\b/i.test(normalize(allergen)));
+  const conflictingIngredients = cleanIngredientEntries(ingredients).filter((ingredient) => animalDerivedPattern.test(normalize(ingredient))).slice(0, 5);
   return {
     claimed,
     conflictingAllergens,
-    status: claimed ? (conflictingAllergens.length ? "conflict" : "confirmed") : "unknown",
+    conflictingIngredients,
+    status: claimed ? (conflictingAllergens.length || conflictingIngredients.length ? "conflict" : "claimed") : "unknown",
   };
 }

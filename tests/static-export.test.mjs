@@ -57,6 +57,18 @@ test("maps a one-to-one Supabase nutrition object", () => {
   assert.equal(product.category, "muesli");
 });
 
+test("selects the same deterministic primary category regardless of relationship order", () => {
+  const first = productRow(nutrition);
+  first.product_categories = [
+    { categories: { slug: "pasta", label: "Pasta" } },
+    { categories: { slug: "muesli", label: "Muesli" } },
+  ];
+  const reversed = { ...first, product_categories: [...first.product_categories].reverse() };
+
+  assert.equal(mapSupabaseProduct(first).category, "muesli");
+  assert.equal(mapSupabaseProduct(reversed).category, "muesli");
+});
+
 test("uses a trusted mirrored image while preserving the licensed source", () => {
   const row = productRow(nutrition);
   row.image_url = "https://images.openfoodfacts.org/images/products/400/000/000/0099/front_de.400.jpg";
@@ -180,6 +192,6 @@ test("generates a bounded prepared comparison library within categories", () => 
 
 test("generated rankings exclude unknown goal scores and use evidence tie breakers", async () => {
   const exporter = await readFile(new URL("../scripts/export/static-data.ts", import.meta.url), "utf8");
-  assert.match(exporter, /typeof scoreByType\(product, ranking\.sortScore\)\?\.score === "number"/);
+  assert.match(exporter, /isRankingEligibleForGoal\(product, ranking\.sortScore\)/);
   assert.match(exporter, /compareRankedProducts\(a, b, ranking\.sortScore\)/);
 });

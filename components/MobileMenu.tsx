@@ -1,19 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { localizedPath, pick } from "@/lib/i18n";
 import type { SiteLocale } from "@/lib/types";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 export function MobileMenu({ locale }: { locale: SiteLocale }) {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
   const path = (value = "/") => localizedPath(locale, value);
   const close = () => setOpen(false);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => setOpen(false), 0);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      window.setTimeout(() => triggerRef.current?.focus(), 0);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
   return (
     <div className="mobile-menu">
-      <button aria-controls="mobile-navigation" aria-expanded={open} onClick={() => setOpen((current) => !current)} type="button">
+      <button aria-controls="mobile-navigation" aria-expanded={open} onClick={() => setOpen((current) => !current)} ref={triggerRef} type="button">
         {pick(locale, "Menü", "Menu")}
       </button>
       {open ? <nav aria-label={pick(locale, "Mobile Navigation", "Mobile navigation")} id="mobile-navigation">

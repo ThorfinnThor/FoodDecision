@@ -2,6 +2,7 @@ export const FAVORITES_KEY = "food-decision:favorites";
 export const SHOPPING_LIST_KEY = "food-decision:shopping-list";
 export const SHOPPING_CHECKED_KEY = "food-decision:shopping-checked";
 export const PREFERENCES_KEY = "food-decision:preferences";
+export const FINDER_STATE_KEY = "food-decision:finder-last-state";
 export const ANALYTICS_PREFERENCE_KEY = "food-decision:analytics";
 export const ANALYTICS_SESSION_KEY = "food-decision:session";
 export const ANALYTICS_PREFERENCE_EVENT = "food-decision:analytics-preference";

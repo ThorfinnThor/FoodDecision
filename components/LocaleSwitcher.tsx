@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { alternateLocale, categoryFromRouteSlug, categoryRouteSlug, localeSegment, rankingFromRouteSlug, rankingRouteSlug } from "@/lib/i18n";
 import type { SiteLocale } from "@/lib/types";
+import { canonicalAllergenIds } from "@/lib/allergens";
 
 export function LocaleSwitcher({ locale }: { locale: SiteLocale }) {
   const alternate = alternateLocale(locale);
@@ -43,7 +44,13 @@ function LocaleSwitcherLink({ locale }: { locale: SiteLocale }) {
     const category = categoryFromRouteSlug(parts[2], locale);
     if (attribute && category) translated = `/best/${rankingRouteSlug(attribute, alternate)}/${categoryRouteSlug(category, alternate)}`;
   }
-  const query = searchParams.toString();
+  const translatedQuery = new URLSearchParams(searchParams.toString());
+  if (translatedQuery.has("allergens")) {
+    const allergens = canonicalAllergenIds(translatedQuery.get("allergens")?.split(",") ?? []);
+    if (allergens.length) translatedQuery.set("allergens", allergens.join(","));
+    else translatedQuery.delete("allergens");
+  }
+  const query = translatedQuery.toString();
   const href = `${alternatePrefix}${translated === "/" ? "" : translated}${query ? `?${query}` : ""}`;
 
   return (

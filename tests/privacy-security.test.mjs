@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import nextConfig from "../next.config.ts";
-import { validateJsonRequest } from "../lib/api-security.ts";
+import { readLimitedJson, validateJsonRequest } from "../lib/api-security.ts";
 
 function headerMap(headers) {
   return new Map(headers.map(({ key, value }) => [key.toLowerCase(), value]));
@@ -70,6 +70,30 @@ test("rejects oversized, non-JSON, and cross-origin API requests", () => {
     body: "{}",
   });
   assert.equal(validateJsonRequest(sameOrigin), null);
+});
+
+test("enforces the real streamed JSON byte limit without a content length header", async () => {
+  const oversized = new Request("https://food.example/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ value: "x".repeat(80) }),
+  });
+  const rejected = await readLimitedJson(oversized, 32);
+  assert.equal(rejected.response?.status, 413);
+
+  const invalidShape = new Request("https://food.example/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "[]",
+  });
+  assert.equal((await readLimitedJson(invalidShape)).response?.status, 400);
+
+  const valid = new Request("https://food.example/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ eventName: "finder_completed" }),
+  });
+  assert.deepEqual((await readLimitedJson(valid)).value, { eventName: "finder_completed" });
 });
 
 test("publishes bilingual privacy disclosures and consent controlled analytics", async () => {

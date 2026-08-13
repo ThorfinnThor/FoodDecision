@@ -54,7 +54,7 @@ test("applies hard finder exclusions before calculating a match", () => {
     additiveFree: false,
     sweetenerFree: true,
     palmOilFree: true,
-    excludedAllergens: ["Milch"],
+    excludedAllergens: ["milk"],
     maxSugar: 6,
     minProtein: 10,
     maxCalories: 400,
@@ -89,7 +89,7 @@ test("round-trips complete Finder criteria through a shareable URL", () => {
     additiveFree: true,
     sweetenerFree: true,
     palmOilFree: true,
-    excludedAllergens: ["Milch", "Soja"],
+    excludedAllergens: ["milk", "soy"],
     maxSugar: 8,
     minProtein: 10,
     maxCalories: 420,
@@ -153,8 +153,15 @@ test("explains failed personal criteria and Finder matches in US English", () =>
   const missingAllergens = assessProductCriteria({ ...englishProduct, allergens: [] }, criteria);
   assert.match(missingAllergens.failures.join(" "), /Allergen data is missing/i);
 
-  const match = productMatch(
+  const noScoreMatch = productMatch(
     { ...englishProduct, ingredients: ["oats"], nutrition: { ...englishProduct.nutrition, sugar: 4, protein: 12 } },
+    { ...criteria, additiveFree: false, maxSugar: 5, minProtein: 10 },
+  );
+  assert.equal(noScoreMatch.score, 0);
+  assert.match(noScoreMatch.reasons.join(" "), /Reliable score data is missing/i);
+
+  const match = productMatch(
+    { ...englishProduct, scores: muesli.scores, ingredients: ["oats"], nutrition: { ...englishProduct.nutrition, sugar: 4, protein: 12 } },
     { ...criteria, additiveFree: false, maxSugar: 5, minProtein: 10 },
   );
   assert.ok(match.reasons.some((reason) => /4 g sugar per/i.test(reason)));
@@ -180,12 +187,34 @@ test("recommends only measurable, same-category improvements", () => {
   const recommendations = rankImprovingAlternatives(current, products, "low_sugar");
   assert.equal(recommendations.length, 1);
   assert.equal(recommendations[0].product.slug, "nordhafer-barista-ohne-zucker");
-  assert.ok(recommendations[0].scoreDelta >= 3);
+  assert.equal(recommendations[0].improvementKind, "sugar");
+  assert.ok(recommendations[0].improvementValue > 0);
   assert.ok(recommendations[0].reasons.some((reason) => /weniger Zucker/.test(reason)));
   assert.ok(recommendations.every((item) => item.product.category === current.category));
   assert.ok(recommendations.every((item) => item.product.market === current.market && item.product.locale === current.locale));
 
   assert.equal(rankImprovingAlternatives(recommendations[0].product, oatProducts, "low_sugar").length, 0);
+});
+
+test("recognizes exact protein improvements even when both products share the same score band", () => {
+  const base = products.find((product) => product.category === "proteinriegel");
+  assert.ok(base);
+  const current = structuredClone(base);
+  current.id = "protein-current";
+  current.slug = "protein-current";
+  current.nutrition.protein = 30;
+  current.scores.find((score) => score.type === "protein").score = 100;
+  const candidate = structuredClone(base);
+  candidate.id = "protein-candidate";
+  candidate.slug = "protein-candidate";
+  candidate.nutrition.protein = 36;
+  candidate.scores.find((score) => score.type === "protein").score = 100;
+
+  const recommendations = rankImprovingAlternatives(current, [candidate], "protein");
+  assert.equal(recommendations.length, 1);
+  assert.equal(recommendations[0].scoreDelta, 0);
+  assert.equal(recommendations[0].improvementKind, "protein");
+  assert.equal(recommendations[0].improvementValue, 6);
 });
 
 test("requires ingredient evidence for a best-overall alternative", () => {
