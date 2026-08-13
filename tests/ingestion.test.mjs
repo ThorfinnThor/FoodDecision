@@ -4,6 +4,7 @@ import {
   allocateSourcePageSizes,
   categoryJobs,
   minimumRequestWaitMs,
+  resolveOffSort,
   shouldContinueOnCategoryError,
   shouldRejectEmptyImport,
   sourceCoverageTable,
@@ -14,6 +15,13 @@ test("continues partial imports unless strict category handling is requested", (
   assert.equal(shouldContinueOnCategoryError(undefined), true);
   assert.equal(shouldContinueOnCategoryError("true"), true);
   assert.equal(shouldContinueOnCategoryError("false"), false);
+});
+
+test("allows only the documented freshness sort for targeted imports", () => {
+  assert.equal(resolveOffSort(undefined), null);
+  assert.equal(resolveOffSort("default"), null);
+  assert.equal(resolveOffSort("last_modified_t"), "last_modified_t");
+  assert.throws(() => resolveOffSort("popularity_key"), /Unsupported OFF_SORT_BY/);
 });
 
 test("uses canonical Open Food Facts taxonomy sources for narrow categories", () => {
