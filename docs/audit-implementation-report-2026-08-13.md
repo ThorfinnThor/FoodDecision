@@ -79,6 +79,17 @@ Partial Open Food Facts imports remain compatible with the existing success enum
 
 **Files:** `.github/workflows/ingest-open-food-facts.yml`, `.github/workflows/mirror-product-images.yml`, `.github/workflows/vercel-production.yml`, `scripts/release/verify-production.mjs`, `package.json`, `scripts/ingest/open-food-facts.mjs`.
 
+### Public readiness and safe cutover follow-up
+
+**Finding:** 5 follow-up release control
+**Verdict:** YES, BUT MODIFY
+
+The release gate now has a separate read-only public-readiness stage and a protected domain-write stage. Readiness verifies HTTPS and DNS, the root locale redirect, Supabase-backed DE and US catalogs, bilingual public journeys, canonical origins, discovery files, legal identity, security headers, and real 404 behavior. Cutover requires an immutable Vercel candidate, a separately verified known-good rollback deployment, exact typed confirmation, and approval in the `public-production` GitHub environment. A failed public-domain check restores the previous deployment. Manual rollback remains available without depending on candidate readiness.
+
+DNS is not changed automatically. Safe automation would require a provider-specific API, scoped credentials, TTL and propagation handling, a change receipt, and a separately tested DNS rollback path.
+
+**Files:** `.github/workflows/public-readiness-cutover.yml`, `scripts/release/public-readiness.mjs`, `docs/public-readiness-and-cutover.md`, `next.config.ts`, `README.md`, `docs/platform-setup.md`, `package.json`, `tests/public-readiness.test.mjs`, `tests/release-workflow.test.mjs`, `tests/navigation-state.test.mjs`.
+
 ## Rejected
 
 ### Finding 12: speculative static-catalog rearchitecture
@@ -126,13 +137,15 @@ Choose between Vercel Firewall/rate limits, a Supabase RPC with durable counters
 - TypeScript: passed in Next.js production build
 - Vinext production build: passed
 - Next.js 16.2.6 production build: passed, 98 static pages generated
-- Unit and integration tests: 126 passed, 0 failed
+- Unit and integration tests: 131 passed, 0 failed
 - Ranking integrity audit: passed for DE and US fixtures
 - SEO publication gate: passed; 72 pages remain intentionally noindex because demand approval is absent
 - Local browser regression: desktop and 390 px mobile tested; no horizontal overflow, broken images, console warnings, or console errors
 - Keyboard regression: comparison active descendant and Escape behavior passed
 - Mobile regression: menu opened, closed with Escape, and restored focus
-- Production verification: implemented but not executed against a newly deployed commit in this local run
+- Public readiness and cutover workflow: implementation, positive/negative contract tests, workflow parsing, immutable-target validation, confirmation, protected environment, and automatic rollback behavior verified locally
+- Production verification: implemented but not executed against the public domain because DNS, legal operator data, and privacy contact are intentionally not configured yet
+- Vercel deployment for the latest remote commit: requested; public cutover was not performed
 - Live Supabase ingestion: not executed; no production data was mutated
 
 ## Changed Files
@@ -142,8 +155,11 @@ Choose between Vercel Firewall/rate limits, a Supabase RPC with durable counters
 - `.github/workflows/ingest-open-food-facts.yml`: pre-deploy build, timestamp handoff, verified deployment
 - `.github/workflows/mirror-product-images.yml`: same release gate for image publication
 - `.github/workflows/vercel-production.yml`: production polling and smoke verification
+- `.github/workflows/public-readiness-cutover.yml`: read-only readiness, protected alias assignment, automatic restoration, and manual rollback
 - `scripts/release/verify-production.mjs`: public release verifier
-- `package.json`: prepared build and production-verification scripts
+- `scripts/release/public-readiness.mjs`: public launch gate and machine-readable evidence
+- `package.json`: prepared build, production verification, and public-readiness scripts
+- `next.config.ts`: framework-compatible redirect from the bare domain to `/de`
 
 ### API and data pipeline
 
@@ -186,8 +202,12 @@ Choose between Vercel Firewall/rate limits, a Supabase RPC with durable counters
 - `tests/privacy-security.test.mjs`: real body-byte-limit coverage
 - `tests/product-insights.test.mjs`: canonical allergens and missing-score coverage
 - `tests/static-export.test.mjs`: category-order regression coverage
+- `tests/public-readiness.test.mjs`: complete candidate pass and fixture/legal-identity rejection
+- `tests/release-workflow.test.mjs`: protected, serialized, reversible workflow contract
 - `docs/audit-review-2026-08-13.md`: all 23 verdicts and risks
 - `docs/audit-implementation-report-2026-08-13.md`: implementation and verification record
+- `docs/public-readiness-and-cutover.md`: DNS, Vercel, approval, go/no-go, cutover, rollback, and observation runbook
+- `docs/platform-setup.md`, `README.md`: public launch workflow entry points
 - `public/data/manifest.json`: regenerated fixture manifest
 - `public/data/de/manifest.json`, `public/data/en-us/manifest.json`: regenerated locale manifests
 - `public/data/de/quality-report.json`, `public/data/en-us/quality-report.json`: regenerated quality reports
@@ -198,5 +218,6 @@ Choose between Vercel Firewall/rate limits, a Supabase RPC with durable counters
 1. Decide the permanent multi-category model after measuring actual overlap in production.
 2. Select a durable anonymous-write rate-limit and deduplication policy.
 3. Prototype CSP nonces or hashes across Next.js and Vinext in an isolated branch.
-4. Run the new production verification on the first deployment containing these changes.
-5. Add operator name and privacy contact only when the domain and legal email are ready, as previously agreed.
+4. Merge the audited branch, wait for a successful immutable Vercel deployment, and run the public workflow in `readiness` mode first.
+5. Add operator name and privacy contact only when the domain and legal email are ready, as previously agreed. The readiness gate intentionally blocks cutover until then.
+6. Configure the protected `public-production` GitHub environment and a scoped `VERCEL_TOKEN` before any domain write.

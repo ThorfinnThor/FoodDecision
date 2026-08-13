@@ -55,6 +55,8 @@ Reviewed against the repository state on 2026-08-13. The audit is treated as a s
 
 **Safer approach:** Build against exported Supabase data before deploy, pass the expected catalog timestamp into the reusable workflow, poll the public manifest, smoke-test critical routes and security headers, and fail when the verified catalog is not live. Deployment-ID promotion remains a later infrastructure improvement.
 
+**Follow-up implementation:** A separate protected public-cutover workflow now verifies an immutable Vercel candidate and a known-good rollback deployment before assigning the public domain. It requires an exact confirmation and GitHub environment approval, verifies the public hostname after assignment, and restores the previous deployment automatically if that check fails. DNS changes remain manual because no provider-specific, tested rollback integration exists.
+
 ## Finding 6 — Public writes lack complete abuse controls
 
 **Verdict:** ⚠️ YES, BUT MODIFY
