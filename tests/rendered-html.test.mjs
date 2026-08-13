@@ -157,4 +157,18 @@ test("connects product, brand, ingredient, and nutrition detail views", async ()
   assert.match(ingredient, /Was diese Seite aussagt/);
   assert.match(nutrition, /Niedrigere Werte zuerst/);
   assert.match(nutrition, /Dieser Einzelwert ersetzt keinen vollständigen Produktscore/);
+  assert.match(nutrition, /Welche Kategorie möchtest du nach Zucker vergleichen/);
+  assert.match(nutrition, /Noch keine Kategorie gewählt/);
+  assert.doesNotMatch(nutrition, /Hafermilch: Zucker/);
+});
+
+test("keeps the selected nutrition category in the URL and finder links", async () => {
+  const response = await render("/de/nutrition/zucker?category=proteinriegel");
+  assert.equal(response.status, 200);
+  const page = await response.text();
+
+  assert.match(page, /Proteinriegel(?:<!-- -->)?: (?:<!-- -->)?Zucker/);
+  assert.match(page, /href="\/de\/nutrition\/zucker\?category=proteinriegel#nutrition-results" aria-current="page"/);
+  assert.match(page, /href="\/de\/finder\?category=proteinriegel&amp;goal=low_sugar"/);
+  assert.doesNotMatch(page, /Noch keine Kategorie gewählt/);
 });
