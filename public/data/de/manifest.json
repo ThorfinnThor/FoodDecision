@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T08:26:07.225Z",
+  "generatedAt": "2026-08-13T02:25:31.302Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locale": "de-DE",
@@ -242,13 +242,13 @@
     },
     {
       "path": "public/data/de/food/products/nordhafer-barista-ohne-zucker.json",
-      "bytes": 3522,
-      "sha256": "243809b6f5016b164881c339346bd1742d391c9db90381fbeae2fd58f10dde65"
+      "bytes": 3584,
+      "sha256": "a29d2f2121771cb444f5b2e2ff41ad90af74d54a50e2ce4b8f31cc7e0b7699f2"
     },
     {
       "path": "public/data/de/food/products/oatly-style-haferdrink-classic.json",
-      "bytes": 3384,
-      "sha256": "d100c82792d2e1fbaf326a34e7b7ebe0fa9e08630e7a4418d7bd62caae3340b7"
+      "bytes": 3446,
+      "sha256": "ffb1e7a4223ea784b8fbfa10e3acbb7259428297f605d7534e3bf491ba31e9ac"
     },
     {
       "path": "public/data/de/food/products/kraftkern-proteinriegel-kakao.json",
@@ -257,8 +257,8 @@
     },
     {
       "path": "public/data/de/food/products/morgenfeld-basis-muesli.json",
-      "bytes": 3535,
-      "sha256": "eda41bcc23b833a943b90034155a35b66d2338c6bc9c22b4c66ced2518a3ea48"
+      "bytes": 3597,
+      "sha256": "f2bea77132ab0769dddc746c286c7a49de3d737c361c60265e9481b78197edb7"
     },
     {
       "path": "public/data/de/food/products/fjordgut-skyr-natur.json",
@@ -267,8 +267,8 @@
     },
     {
       "path": "public/data/de/food/products/gruenbiss-linsen-cracker.json",
-      "bytes": 3604,
-      "sha256": "fc94b123fd8697b3f39acb04c436161c0e3373a726898efb0e5faa37e216891e"
+      "bytes": 3666,
+      "sha256": "781b07ca1779f7e549f4f0fe436bcb5495753b6200e8b56f1e3f5deebe1dd422"
     },
     {
       "path": "public/data/de/food/categories/hafermilch.json",
@@ -548,7 +548,7 @@
     {
       "path": "public/data/de/quality-report.json",
       "bytes": 8298,
-      "sha256": "78b9f74bbfdb2032a6173358cda2481264e6078070ed17881f1be6bd205904ca"
+      "sha256": "5279355dd05803b489c61fe8cb0fac951b8b34b044420993fb255c542c550586"
     }
   ]
 }

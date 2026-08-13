@@ -54,7 +54,7 @@ test("applies hard finder exclusions before calculating a match", () => {
     additiveFree: false,
     sweetenerFree: true,
     palmOilFree: true,
-    excludedAllergens: ["Milch"],
+    excludedAllergens: ["milk"],
     maxSugar: 6,
     minProtein: 10,
     maxCalories: 400,
@@ -89,7 +89,7 @@ test("round-trips complete Finder criteria through a shareable URL", () => {
     additiveFree: true,
     sweetenerFree: true,
     palmOilFree: true,
-    excludedAllergens: ["Milch", "Soja"],
+    excludedAllergens: ["milk", "soy"],
     maxSugar: 8,
     minProtein: 10,
     maxCalories: 420,
@@ -153,8 +153,15 @@ test("explains failed personal criteria and Finder matches in US English", () =>
   const missingAllergens = assessProductCriteria({ ...englishProduct, allergens: [] }, criteria);
   assert.match(missingAllergens.failures.join(" "), /Allergen data is missing/i);
 
-  const match = productMatch(
+  const noScoreMatch = productMatch(
     { ...englishProduct, ingredients: ["oats"], nutrition: { ...englishProduct.nutrition, sugar: 4, protein: 12 } },
+    { ...criteria, additiveFree: false, maxSugar: 5, minProtein: 10 },
+  );
+  assert.equal(noScoreMatch.score, 0);
+  assert.match(noScoreMatch.reasons.join(" "), /Reliable score data is missing/i);
+
+  const match = productMatch(
+    { ...englishProduct, scores: muesli.scores, ingredients: ["oats"], nutrition: { ...englishProduct.nutrition, sugar: 4, protein: 12 } },
     { ...criteria, additiveFree: false, maxSugar: 5, minProtein: 10 },
   );
   assert.ok(match.reasons.some((reason) => /4 g sugar per/i.test(reason)));

@@ -1,5 +1,6 @@
 import { scoreByType } from "./scoring.ts";
 import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
+import { allergenLabel, canonicalAllergenIds, detectedAllergenIds, type AllergenId } from "./allergens.ts";
 import type { CategorySlug, Product, ProductScore, ScoreConfidence, ScoreType } from "./types.ts";
 
 export type FinderCriteria = {
@@ -9,7 +10,7 @@ export type FinderCriteria = {
   additiveFree: boolean;
   sweetenerFree: boolean;
   palmOilFree: boolean;
-  excludedAllergens: string[];
+  excludedAllergens: AllergenId[];
   maxSugar: number | null;
   minProtein: number | null;
   maxCalories: number | null;
@@ -132,7 +133,7 @@ export function finderCriteriaFromSearchParams(params: FinderSearchParams, categ
     additiveFree: firstParam(params.additives) === "1",
     sweetenerFree: firstParam(params.sweeteners) === "1",
     palmOilFree: firstParam(params.palm) === "1",
-    excludedAllergens: firstParam(params.allergens).split(",").map((item) => item.trim()).filter(Boolean).slice(0, 20),
+    excludedAllergens: canonicalAllergenIds(firstParam(params.allergens).split(",")),
     maxSugar: boundedParam(params.maxSugar, 100),
     minProtein: boundedParam(params.minProtein, 100),
     maxCalories: boundedParam(params.maxCalories, 1000),
@@ -151,9 +152,7 @@ export function finderCriteriaFromStored(value: unknown, categories: CategorySlu
   const boundedStoredNumber = (candidate: unknown, maximum: number) => typeof candidate === "number" && Number.isFinite(candidate) && candidate >= 0 ? Math.min(maximum, candidate) : null;
   const text = (candidate: unknown) => typeof candidate === "string" ? candidate.trim().slice(0, 120) : "";
   const confidence = stored.minimumConfidence === "medium" || stored.minimumConfidence === "high" ? stored.minimumConfidence : "any";
-  const excludedAllergens = Array.isArray(stored.excludedAllergens)
-    ? [...new Set(stored.excludedAllergens.filter((item): item is string => typeof item === "string").map((item) => item.trim()).filter(Boolean))].slice(0, 20)
-    : [];
+  const excludedAllergens = canonicalAllergenIds(stored.excludedAllergens);
 
   return {
     ...defaults,
@@ -200,9 +199,9 @@ export function entitySlug(value: string) {
 
 export function productTraits(product: Product): ProductTraits {
   const ingredients = analyzeIngredients(product.ingredients);
-  const vegan = analyzeVeganStatus(product.labels, product.allergens);
+  const vegan = analyzeVeganStatus(product.labels, product.allergens, product.ingredients);
   return {
-    vegan: vegan.status === "confirmed",
+    vegan: vegan.status === "claimed",
     additiveFree: ingredients.hasData && !ingredients.detected.additives,
     sweetenerFree: ingredients.hasData && !ingredients.detected.sweeteners,
     palmOilFree: ingredients.hasData && !ingredients.detected.palmOil,
@@ -267,6 +266,7 @@ export function productDecisionSummary(product: Product, categoryProducts: Produ
   const bestFor = preferredTypes
     .map((type) => scoreByType(product, type))
     .filter((score): score is ProductScore => score !== undefined && score.score !== null && score.score >= 70)
+    .filter((score) => score.type !== "family" || score.missingData.length === 0)
     .filter((score) => score.type !== "vegan" || traits.vegan)
     .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
     .slice(0, 2)
@@ -303,6 +303,7 @@ export function assessProductCriteria(product: Product, criteria: FinderCriteria
   const ingredientChecksActive = criteria.additiveFree || criteria.sweetenerFree || criteria.palmOilFree || Boolean(criteria.includeIngredient.trim()) || Boolean(criteria.excludeIngredient.trim());
 
   if (criteria.category !== "all" && product.category !== criteria.category) failures.push(c("Andere Produktkategorie als ausgewählt.", "Different product category than selected."));
+  if (!goalScore || goalScore.score === null) failures.push(c("Für dein gewähltes Ziel fehlen belastbare Bewertungsdaten.", "Reliable score data is missing for your selected goal."));
   if (criteria.veganOnly && !traits.vegan) failures.push(c("Nicht verlässlich als vegan oder pflanzlich erkannt.", "Not reliably identified as vegan or plant based."));
   if (ingredientChecksActive && !product.ingredients.length) {
     failures.push(c("Die Zutatenliste fehlt. Ausschlüsse anhand von Zutaten können deshalb nicht geprüft werden.", "The ingredient list is missing, so ingredient exclusions cannot be verified."));
@@ -326,10 +327,10 @@ export function assessProductCriteria(product: Product, criteria: FinderCriteria
     else if (product.nutrition.energyKcal > criteria.maxCalories) failures.push(c(`${product.nutrition.energyKcal} kcal liegen über deiner Grenze von ${criteria.maxCalories} kcal.`, `${product.nutrition.energyKcal} kcal exceeds your ${criteria.maxCalories} kcal limit.`));
   }
   if (criteria.query.trim() && !queryText.includes(normalizeText(criteria.query.trim()))) failures.push(c("Suchbegriff passt nicht zu Produkt, Marke oder Zutaten.", "The search term does not match the product, brand, or ingredients."));
-  const allergenText = normalizeText(product.allergens.join(" "));
-  const detectedAllergens = criteria.excludedAllergens.filter((allergen) => allergenText.includes(normalizeText(allergen)));
+  const knownAllergens = detectedAllergenIds(product.allergens);
+  const detectedAllergens = criteria.excludedAllergens.filter((allergen) => knownAllergens.includes(allergen));
   if (criteria.excludedAllergens.length && !product.allergens.length) failures.push(c("Allergendaten fehlen; deine Ausschlüsse können nicht geprüft werden.", "Allergen data is missing, so your exclusions cannot be verified."));
-  else if (detectedAllergens.length) failures.push(c(`Ausgeschlossene Allergene erkannt: ${detectedAllergens.join(", ")}.`, `Excluded allergens detected: ${detectedAllergens.join(", ")}.`));
+  else if (detectedAllergens.length) failures.push(c(`Ausgeschlossene Allergene erkannt: ${detectedAllergens.map((id) => allergenLabel(id, product.locale)).join(", ")}.`, `Excluded allergens detected: ${detectedAllergens.map((id) => allergenLabel(id, product.locale)).join(", ")}.`));
   if (
     criteria.minimumConfidence !== "any" &&
     (!goalScore || confidenceRank(goalScore.confidence) < confidenceRank(criteria.minimumConfidence))
@@ -347,7 +348,10 @@ export function productMatch(product: Product, criteria: Pick<FinderCriteria, "g
   const overall = scoreByType(product, "overall_match");
   const traits = productTraits(product);
   const c = (de: string, en: string) => product.locale === "de-DE" ? de : en;
-  let score = (goal?.score ?? 45) * 0.58 + (overall?.score ?? 45) * 0.24 + dataCompleteness(product) * 18;
+  if (!goal || goal.score === null) {
+    return { score: 0, reasons: [product.locale === "de-DE" ? "Für dieses Ziel fehlen belastbare Bewertungsdaten." : "Reliable score data is missing for this goal."] };
+  }
+  let score = goal.score * 0.58 + (overall?.score ?? 45) * 0.24 + dataCompleteness(product) * 18;
   const reasons: string[] = [];
 
   if (goal?.positives[0]) reasons.push(goal.positives[0]);

@@ -2,12 +2,27 @@ name: Vercel Production
 
 on:
   workflow_dispatch:
+    inputs:
+      expected_catalog_timestamp:
+        description: "Earliest catalog export timestamp expected in production"
+        type: string
+        required: false
+        default: ""
   workflow_call:
+    inputs:
+      expected_catalog_timestamp:
+        type: string
+        required: false
+        default: ""
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Record deployment start
+        id: clock
+        run: echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
       - name: Trigger Vercel production deployment
         env:
           VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
@@ -17,3 +32,12 @@ jobs:
             exit 1
           fi
           curl --fail --show-error --silent --request POST "$VERCEL_DEPLOY_HOOK_URL"
+
+      - name: Check out release verification
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Verify published production release
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://food-decision.vercel.app' }}
+          EXPECTED_CATALOG_TIMESTAMP: ${{ inputs.expected_catalog_timestamp || steps.clock.outputs.timestamp }}
+        run: npm run verify:production

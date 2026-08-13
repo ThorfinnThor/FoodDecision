@@ -48,8 +48,8 @@
     {
       "type": "nutrition",
       "label": "Nährwertbewertung",
-      "score": 89,
-      "grade": "excellent",
+      "score": 84,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Bewertung aus Zucker, Protein, Salz und gesättigten Fettsäuren mit passenden Zielwerten für die Kategorie."
@@ -58,7 +58,7 @@
         "Salzgehalt ist für diese Kategorie auffällig."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "ingredient_quality",
@@ -72,12 +72,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "protein",
       "label": "Proteinbewertung",
-      "score": 100,
+      "score": 93,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -85,12 +85,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "low_sugar",
       "label": "Zuckerbewertung",
-      "score": 100,
+      "score": 95,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -98,12 +98,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "family",
       "label": "Bewertung für Familien",
-      "score": 89,
+      "score": 86,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -111,7 +111,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "vegan",
@@ -120,16 +120,16 @@
       "grade": "excellent",
       "confidence": "high",
       "positives": [
-        "Als vegan oder pflanzlich gekennzeichnet."
+        "Als vegan oder pflanzlich gekennzeichnet; dies ist eine Quellenangabe, keine unabhängige Bestätigung."
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "overall_match",
       "label": "Gesamtbewertung",
-      "score": 91,
+      "score": 88,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -139,7 +139,7 @@
         "Salzgehalt ist für diese Kategorie auffällig."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     }
   ]
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env node --experimental-strip-types
 import { localizedRankingPages } from "../../lib/catalog.ts";
+import { isPrimaryCategory, primaryCategory } from "../../lib/category-assignment.ts";
 import { getCategories } from "../../lib/data.ts";
 import {
   normalizeOpenFoodFactsRow,
@@ -29,6 +30,7 @@ type RankingPageRow = IdRow & {
 const market = String(process.env.CATALOG_MARKET ?? process.env.OFF_MARKET ?? "DE").toUpperCase() as MarketCode;
 if (market !== "DE" && market !== "US") throw new Error(`Unsupported CATALOG_MARKET: ${market}`);
 const locale: SiteLocale = market === "US" ? "en-US" : "de-DE";
+const supabaseTimeoutMs = Number(process.env.SUPABASE_REQUEST_TIMEOUT_MS ?? "30000");
 
 function requireEnv(name: string) {
   const value = process.env[name];
@@ -53,6 +55,9 @@ async function supabaseRequest<T>(path: string, options: RequestInit = {}): Prom
   if (!adminKey) throw new Error("Missing SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY");
   const response = await fetch(`${url}/rest/v1/${path}`, {
     ...options,
+    signal: options.signal
+      ? AbortSignal.any([options.signal, AbortSignal.timeout(supabaseTimeoutMs)])
+      : AbortSignal.timeout(supabaseTimeoutMs),
     headers: {
       apikey: adminKey,
       ...(adminKey.startsWith("sb_secret_") ? {} : { Authorization: `Bearer ${adminKey}` }),
@@ -154,12 +159,27 @@ function aggregateProducts(rawRows: RawOpenFoodFactsRow[]) {
 
     existing.categories.add(normalized.category);
     existing.rawRows.push(raw);
-    if (normalized.nutritionCompleteness > existing.product.nutritionCompleteness) {
+    const selectedCategory = primaryCategory([existing.product.category, normalized.category]);
+    if (
+      selectedCategory === normalized.category
+      && (
+        selectedCategory !== existing.product.category
+        || normalized.nutritionCompleteness > existing.product.nutritionCompleteness
+      )
+    ) {
       existing.product = normalized;
     }
   }
 
-  return [...byGtin.values()];
+  return [...byGtin.values()].map((aggregate) => {
+    if (
+      aggregate.categories.size > 1
+      && !aggregate.product.qualityFlags.some((flag) => flag.flag === "multiple_category_matches")
+    ) {
+      aggregate.product.qualityFlags.push({ flag: "multiple_category_matches", severity: "info" });
+    }
+    return aggregate;
+  });
 }
 
 async function existingProducts(gtins: string[]) {
@@ -236,7 +256,10 @@ async function rebuildRankings(rankingRows: RankingPageRow[]) {
   for (const ranking of rankingRows) {
     const candidates = products
       .filter((product) =>
-        product.product_categories?.some((entry) => entry.categories?.slug === ranking.category_slug),
+        isPrimaryCategory(
+          ranking.category_slug,
+          product.product_categories?.map((entry) => entry.categories?.slug) ?? [],
+        ),
       )
       .map((product) => ({
         product,

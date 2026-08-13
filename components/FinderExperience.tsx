@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { PREFERENCES_KEY, trackEvent } from "@/lib/client-state";
+import { FINDER_STATE_KEY, PREFERENCES_KEY, trackEvent } from "@/lib/client-state";
+import { readBrowserJson, writeBrowserJson } from "@/lib/browser-storage";
 import { defaultFinderCriteria, finderCriteriaFromStored, finderCriteriaToSearchParams, optionalBoundedNumber, productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
 import { pick } from "@/lib/i18n";
+import { allergenLabel, allergenOptions, type AllergenId } from "@/lib/allergens";
 import type { Category, Product, ScoreType, SiteLocale } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
 
@@ -15,11 +17,6 @@ const goals: Array<{ value: ScoreType; label: string; description: string }> = [
   { value: "family", label: "Für Familien", description: "Konservative Bewertung aus Zucker, Zutaten und Salz." },
   { value: "vegan", label: "Vegan", description: "Vegane Kennzeichnung und bekannte Allergene berücksichtigen." },
 ];
-
-const allergenChoices = {
-  "de-DE": ["Milch", "Gluten", "Soja", "Eier", "Erdnüsse", "Mandeln", "Haselnüsse"],
-  "en-US": ["milk", "gluten", "soy", "eggs", "peanuts", "almonds", "hazelnuts"],
-} as const;
 
 export function FinderExperience({
   categories,
@@ -40,16 +37,13 @@ export function FinderExperience({
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
   const [hasInteracted, setHasInteracted] = useState(false);
   const preferencesKey = `${PREFERENCES_KEY}:${locale}`;
+  const finderStateKey = `${FINDER_STATE_KEY}:${locale}`;
 
   useEffect(() => {
     if (showResultsInitially) return;
     const timer = window.setTimeout(() => {
-      try {
-        const stored = JSON.parse(window.localStorage.getItem(preferencesKey) ?? "{}");
-        if (!hasInteracted) setCriteria(finderCriteriaFromStored(stored, categories.map((category) => category.slug)));
-      } catch {
-        // Invalid local preferences are ignored and replaced on the next save.
-      }
+      const stored = readBrowserJson("local", preferencesKey, {});
+      if (!hasInteracted) setCriteria(finderCriteriaFromStored(stored, categories.map((category) => category.slug)));
     }, 0);
     return () => window.clearTimeout(timer);
   }, [categories, hasInteracted, preferencesKey, showResultsInitially]);
@@ -58,8 +52,8 @@ export function FinderExperience({
     if (step !== 3) return;
     const search = finderCriteriaToSearchParams(criteria).toString();
     window.history.replaceState({}, "", `${window.location.pathname}${search ? `?${search}` : ""}`);
-    window.localStorage.setItem(preferencesKey, JSON.stringify(criteria));
-  }, [criteria, preferencesKey, step]);
+    writeBrowserJson("local", finderStateKey, criteria);
+  }, [criteria, finderStateKey, step]);
 
   const results = useMemo(
     () => products
@@ -92,7 +86,7 @@ export function FinderExperience({
   if (criteria.additiveFree) activeFilters.push({ key: "additives", label: pick(locale, "Ohne Zusatzstoffe", "No common additives"), clear: () => update("additiveFree", false) });
   if (criteria.sweetenerFree) activeFilters.push({ key: "sweeteners", label: pick(locale, "Ohne Süßungsmittel", "No sweeteners"), clear: () => update("sweetenerFree", false) });
   if (criteria.palmOilFree) activeFilters.push({ key: "palm", label: pick(locale, "Ohne Palmöl", "No palm oil"), clear: () => update("palmOilFree", false) });
-  criteria.excludedAllergens.forEach((allergen) => activeFilters.push({ key: `allergen-${allergen}`, label: `${pick(locale, "Ohne", "No")} ${allergen}`, clear: () => toggleAllergen(allergen) }));
+  criteria.excludedAllergens.forEach((allergen) => activeFilters.push({ key: `allergen-${allergen}`, label: `${pick(locale, "Ohne", "No")} ${allergenLabel(allergen, locale)}`, clear: () => toggleAllergen(allergen) }));
   if (criteria.maxSugar !== null) activeFilters.push({ key: "maxSugar", label: `${pick(locale, "Zucker max.", "Sugar max.")} ${criteria.maxSugar} g`, clear: () => update("maxSugar", null) });
   if (criteria.minProtein !== null) activeFilters.push({ key: "minProtein", label: `${pick(locale, "Protein min.", "Protein min.")} ${criteria.minProtein} g`, clear: () => update("minProtein", null) });
   if (criteria.maxCalories !== null) activeFilters.push({ key: "maxCalories", label: `${pick(locale, "Kalorien max.", "Calories max.")} ${criteria.maxCalories}`, clear: () => update("maxCalories", null) });
@@ -101,7 +95,7 @@ export function FinderExperience({
   if (criteria.minimumConfidence !== "any") activeFilters.push({ key: "confidence", label: `${pick(locale, "Datensicherheit", "Confidence")}: ${criteria.minimumConfidence === "high" ? pick(locale, "hoch", "high") : pick(locale, "mittel", "medium")}`, clear: () => update("minimumConfidence", "any") });
   if (criteria.query) activeFilters.push({ key: "query", label: `“${criteria.query}”`, clear: () => update("query", "") });
 
-  function toggleAllergen(allergen: string) {
+  function toggleAllergen(allergen: AllergenId) {
     update(
       "excludedAllergens",
       criteria.excludedAllergens.includes(allergen)
@@ -141,7 +135,7 @@ export function FinderExperience({
         {step === 0 ? (
           <div className="finder-step">
             <div className="finder-step-heading"><span>{pick(locale, "Schritt 1 von 3", "Step 1 of 3")}</span><h2>{pick(locale, "Was suchst du?", "What are you looking for?")}</h2><p>{pick(locale, "Wähle eine Produktgruppe oder vergleiche den gesamten Katalog.", "Choose a category or compare the full catalog.")}</p></div>
-            <div className="choice-grid category-choice-grid" role="radiogroup" aria-label="Produktkategorie">
+            <div className="choice-grid category-choice-grid" role="group" aria-label={pick(locale, "Produktkategorie", "Product category")}>
               <button aria-pressed={criteria.category === "all"} onClick={() => update("category", "all")} type="button"><strong>{pick(locale, "Alle Produkte", "All products")}</strong><span>{products.length} {pick(locale, "bewertete Produkte", "assessed products")}</span></button>
               {categories.map((item) => {
                 const count = products.filter((product) => product.category === item.slug).length;
@@ -154,7 +148,7 @@ export function FinderExperience({
         {step === 1 ? (
           <div className="finder-step">
             <div className="finder-step-heading"><span>{pick(locale, "Schritt 2 von 3", "Step 2 of 3")}</span><h2>{pick(locale, "Was ist dir am wichtigsten?", "What matters most?")}</h2><p>{pick(locale, "Diese Priorität hat den größten Einfluss auf deinen Match-Score.", "This priority has the greatest effect on your match score.")}</p></div>
-            <div className="choice-grid" role="radiogroup" aria-label="Priorität">
+            <div className="choice-grid" role="group" aria-label={pick(locale, "Priorität", "Priority")}>
               {localizedGoals.map((item) => (
                 <button aria-pressed={criteria.goal === item.value} key={item.value} onClick={() => {
                   update("goal", item.value);
@@ -179,7 +173,7 @@ export function FinderExperience({
 
               <fieldset className="filter-panel"><legend>{pick(locale, "Allergene ausschließen", "Exclude allergens")}</legend>
                 <div className="check-chip-grid">
-                  {allergenChoices[locale].map((allergen) => <label key={allergen}><input checked={criteria.excludedAllergens.includes(allergen)} onChange={() => toggleAllergen(allergen)} type="checkbox" /><span>{allergen}</span></label>)}
+                  {allergenOptions(locale).map((allergen) => <label key={allergen.id}><input checked={criteria.excludedAllergens.includes(allergen.id)} onChange={() => toggleAllergen(allergen.id)} type="checkbox" /><span>{allergen.label}</span></label>)}
                 </div>
                 <p className="filter-disclaimer">{pick(locale, "Bei Allergien gilt immer die aktuelle Verpackungsangabe.", "For allergies, always rely on the current package label.")}</p>
               </fieldset>

@@ -31,10 +31,11 @@ test("removes obvious packaging copy before ingredient scoring", () => {
 });
 
 test("treats vegan labels conservatively when allergen data conflicts", () => {
-  assert.equal(analyzeVeganStatus(["Plant-based"], []).status, "confirmed");
+  assert.equal(analyzeVeganStatus(["Plant-based"], []).status, "claimed");
   const conflict = analyzeVeganStatus(["Vegan"], ["milk", "eggs"]);
   assert.equal(conflict.status, "conflict");
   assert.deepEqual(conflict.conflictingAllergens, ["milk", "eggs"]);
+  assert.equal(analyzeVeganStatus(["Vegan"], [], ["whey protein"]).status, "conflict");
   assert.equal(analyzeVeganStatus([], []).status, "unknown");
 });
 

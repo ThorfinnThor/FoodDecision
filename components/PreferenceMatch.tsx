@@ -12,6 +12,7 @@ import {
 import { localizedPath, pick } from "@/lib/i18n";
 import { PREFERENCES_KEY } from "@/lib/storage-keys";
 import type { Product, ScoreType } from "@/lib/types";
+import { readBrowserJson } from "@/lib/browser-storage";
 
 const goalLabels: Record<ScoreType, [string, string]> = {
   nutrition: ["Ausgewogene Nährwerte", "Balanced nutrition"],
@@ -55,16 +56,12 @@ export function PreferenceMatch({ product }: { product: Product }) {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const stored = window.localStorage.getItem(storageKey);
+      const stored = readBrowserJson<unknown>("local", storageKey, null);
       if (!stored) {
         setState({ ready: true, criteria: null });
         return;
       }
-      try {
-        setState({ ready: true, criteria: personalCriteria(finderCriteriaFromStored(JSON.parse(stored), [])) });
-      } catch {
-        setState({ ready: true, criteria: null });
-      }
+      setState({ ready: true, criteria: personalCriteria(finderCriteriaFromStored(stored, [])) });
     }, 0);
     return () => window.clearTimeout(timer);
   }, [storageKey]);

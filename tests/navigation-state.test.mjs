@@ -17,7 +17,8 @@ test("keeps catalog controls in validated URL parameters", async () => {
 test("preserves compatible query state across locale changes", async () => {
   const switcher = await readFile(new URL("../components/LocaleSwitcher.tsx", import.meta.url), "utf8");
   assert.match(switcher, /useSearchParams/);
-  assert.match(switcher, /const query = searchParams\.toString\(\)/);
+  assert.match(switcher, /new URLSearchParams\(searchParams\.toString\(\)\)/);
+  assert.match(switcher, /canonicalAllergenIds/);
   assert.match(switcher, /parts\[0\] === "compare"/);
   assert.match(switcher, /translated = "\/compare"/);
   assert.match(switcher, /parts\[0\] === "product"/);

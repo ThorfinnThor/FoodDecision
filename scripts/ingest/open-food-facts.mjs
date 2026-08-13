@@ -138,6 +138,8 @@ const startPage = Number(process.env.OFF_START_PAGE ?? "1");
 const requestDelayMs = Number(process.env.OFF_REQUEST_DELAY_MS ?? "7000");
 const fetchRetries = Number(process.env.OFF_FETCH_RETRIES ?? "4");
 const fetchRetryBaseMs = Number(process.env.OFF_FETCH_RETRY_BASE_MS ?? "10000");
+const offRequestTimeoutMs = Number(process.env.OFF_REQUEST_TIMEOUT_MS ?? "30000");
+const supabaseRequestTimeoutMs = Number(process.env.SUPABASE_REQUEST_TIMEOUT_MS ?? "30000");
 const allowEmptyDryRun = process.env.OFF_ALLOW_EMPTY_DRY_RUN === "true";
 if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) {
   throw new Error("OFF_PAGE_SIZE must be an integer between 1 and 100.");
@@ -330,6 +332,7 @@ async function fetchOffPage(job, source, page, sourcePageSize) {
     try {
       await waitForOffRequestSlot();
       const response = await fetch(url, {
+        signal: AbortSignal.timeout(offRequestTimeoutMs),
         headers: {
           "User-Agent": userAgent,
           Accept: "application/json",
@@ -387,6 +390,9 @@ async function supabaseRequest(path, options = {}) {
   const supabaseUrl = requireEnv("SUPABASE_URL").replace(/\/$/, "");
   const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
     ...options,
+    signal: options.signal
+      ? AbortSignal.any([options.signal, AbortSignal.timeout(supabaseRequestTimeoutMs)])
+      : AbortSignal.timeout(supabaseRequestTimeoutMs),
     headers: {
       ...supabaseHeaders(options.headers),
     },
@@ -633,6 +639,9 @@ async function main() {
     if (failures.length || sourceWarnings.length) {
       console.warn(
         `Import completed with ${failures.length} category failure(s) and ${sourceWarnings.length} source warning(s).`,
+      );
+      console.warn(
+        `::warning title=Partial Open Food Facts import::${failures.length} category failure(s) and ${sourceWarnings.length} source warning(s). Production quality gates will decide whether publishing is allowed.`,
       );
     }
     await writeStepSummary({ counts, failures, sourceWarnings, sourceStats });

@@ -57,6 +57,18 @@ test("maps a one-to-one Supabase nutrition object", () => {
   assert.equal(product.category, "muesli");
 });
 
+test("selects the same deterministic primary category regardless of relationship order", () => {
+  const first = productRow(nutrition);
+  first.product_categories = [
+    { categories: { slug: "pasta", label: "Pasta" } },
+    { categories: { slug: "muesli", label: "Muesli" } },
+  ];
+  const reversed = { ...first, product_categories: [...first.product_categories].reverse() };
+
+  assert.equal(mapSupabaseProduct(first).category, "muesli");
+  assert.equal(mapSupabaseProduct(reversed).category, "muesli");
+});
+
 test("uses a trusted mirrored image while preserving the licensed source", () => {
   const row = productRow(nutrition);
   row.image_url = "https://images.openfoodfacts.org/images/products/400/000/000/0099/front_de.400.jpg";

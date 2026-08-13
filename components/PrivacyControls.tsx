@@ -5,14 +5,9 @@ import { analyticsEnabled, setAnalyticsEnabled } from "@/lib/client-state";
 import { pick } from "@/lib/i18n";
 import { ANALYTICS_PREFERENCE_EVENT } from "@/lib/storage-keys";
 import type { SiteLocale } from "@/lib/types";
+import { clearBrowserValues } from "@/lib/browser-storage";
 
 const APP_STORAGE_PREFIX = "food-decision:";
-
-function clearAppStorage(storage: Storage) {
-  const keys = Array.from({ length: storage.length }, (_, index) => storage.key(index))
-    .filter((key): key is string => Boolean(key?.startsWith(APP_STORAGE_PREFIX)));
-  keys.forEach((key) => storage.removeItem(key));
-}
 
 function subscribeToAnalytics(callback: () => void) {
   window.addEventListener("storage", callback);
@@ -39,8 +34,8 @@ export function PrivacyControls({ locale }: { locale: SiteLocale }) {
   }
 
   function clearData() {
-    clearAppStorage(window.localStorage);
-    clearAppStorage(window.sessionStorage);
+    clearBrowserValues("local", APP_STORAGE_PREFIX);
+    clearBrowserValues("session", APP_STORAGE_PREFIX);
     window.dispatchEvent(new Event(ANALYTICS_PREFERENCE_EVENT));
     setCleared(true);
     window.dispatchEvent(new CustomEvent("food-decision:saved-state"));

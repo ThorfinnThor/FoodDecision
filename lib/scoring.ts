@@ -272,22 +272,24 @@ function nutritionScore(product: Omit<Product, "scores">) {
 }
 
 function veganScore(product: Omit<Product, "scores">) {
-  const vegan = analyzeVeganStatus(product.labels, product.allergens);
-  const score = vegan.status === "confirmed" ? 100 : vegan.status === "conflict" ? 0 : 60;
+  const vegan = analyzeVeganStatus(product.labels, product.allergens, product.ingredients);
+  const score = vegan.status === "claimed" ? 100 : vegan.status === "conflict" ? 0 : 60;
 
   return createScore(
     "vegan",
     copy(product, "Veganbewertung", "Vegan score"),
     score,
-    vegan.status === "confirmed" ? [copy(product, "Als vegan oder pflanzlich gekennzeichnet.", "Labeled vegan or plant based.")] : [],
-    vegan.status === "conflict" ? [copy(product, "Die vegane Kennzeichnung widerspricht bekannten Angaben zu Milch oder Ei.", "The vegan claim conflicts with known milk or egg allergen data.")] : [],
+    vegan.status === "claimed" ? [copy(product, "Als vegan oder pflanzlich gekennzeichnet; dies ist eine Quellenangabe, keine unabhängige Bestätigung.", "Labeled vegan or plant based; this is a source claim, not independent confirmation.")] : [],
+    vegan.status === "conflict" ? [copy(product, "Die vegane Kennzeichnung widerspricht bekannten Allergen- oder Zutatenangaben.", "The vegan claim conflicts with known allergen or ingredient data.")] : [],
     [],
   );
 }
 
 function familyScore(product: Omit<Product, "scores">) {
-  const lowSugar = lowSugarScore(product).score ?? 45;
-  const ingredient = ingredientQualityScore(product).score ?? 45;
+  const lowSugarResult = lowSugarScore(product);
+  const ingredientResult = ingredientQualityScore(product);
+  const lowSugar = lowSugarResult.score ?? 45;
+  const ingredient = ingredientResult.score ?? 45;
   const salt = product.nutrition.salt ?? 1.5;
   const score = clamp(lowSugar * 0.42 + ingredient * 0.42 + Math.max(0, 100 - salt * 35) * 0.16);
   const hasConflict = hasSugarIngredientConflict(product);
@@ -301,8 +303,14 @@ function familyScore(product: Omit<Product, "scores">) {
       ...(hasConflict ? [sugarConflictCopy(product)] : []),
       ...(product.allergens.length ? [copy(product, `Allergene prüfen: ${product.allergens.join(", ")}.`, `Check allergens: ${product.allergens.join(", ")}.`)] : []),
     ],
-    product.nutrition.salt === null ? ["salt"] : [],
-    hasConflict ? "medium" : undefined,
+    [...new Set([
+      ...lowSugarResult.missingData,
+      ...ingredientResult.missingData,
+      ...(product.nutrition.salt === null ? ["salt"] : []),
+    ])],
+    lowSugarResult.score === null || ingredientResult.score === null || product.nutrition.salt === null
+      ? "low"
+      : hasConflict ? "medium" : undefined,
   );
 }
 

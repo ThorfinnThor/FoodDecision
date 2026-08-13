@@ -14,7 +14,7 @@ export function IngredientCheck({ product }: { product: Product }) {
   const locale = product.locale;
   const c = (de: string, en: string) => pick(locale, de, en);
   const ingredients = analyzeIngredients(product.ingredients);
-  const vegan = analyzeVeganStatus(product.labels, product.allergens);
+  const vegan = analyzeVeganStatus(product.labels, product.allergens, product.ingredients);
 
   if (!ingredients.hasData) {
     return <div className="ingredient-check-empty">
@@ -43,17 +43,17 @@ export function IngredientCheck({ product }: { product: Product }) {
     ingredientSignal("sweeteners", c("Süßungsmittel", "Sweeteners"), ingredients.detected.sweeteners, ingredients.evidence.sweeteners),
     ingredientSignal("additives", c("Typische Zusatzstoffe", "Common additives"), ingredients.detected.additives, ingredients.evidence.additives),
     ingredientSignal("palm-oil", c("Palmöl", "Palm oil"), ingredients.detected.palmOil, ingredients.evidence.palmOil),
-    vegan.status === "confirmed" ? {
+    vegan.status === "claimed" ? {
       key: "vegan",
       label: c("Vegane Kennzeichnung", "Vegan claim"),
       status: c("Bestätigt", "Confirmed"),
-      detail: c("Als vegan oder pflanzlich gekennzeichnet. Die Quelldaten enthalten keine widersprechenden Angaben zu Milch oder Ei.", "Labeled vegan or plant based. The source data contains no conflicting milk or egg allergen information."),
+      detail: c("Als vegan oder pflanzlich gekennzeichnet. In den verfügbaren Allergen- und Zutatenangaben wurde kein definierter Widerspruch erkannt. Dies ist keine unabhängige Bestätigung.", "Labeled vegan or plant based. No defined conflict was found in the available allergen and ingredient data. This is not independent confirmation."),
       tone: "clear",
     } : vegan.status === "conflict" ? {
       key: "vegan",
       label: c("Vegane Kennzeichnung", "Vegan claim"),
       status: c("Widerspruch", "Conflict"),
-      detail: c(`Kennzeichnung und Allergendaten widersprechen sich: ${vegan.conflictingAllergens.join(", ")}.`, `The claim conflicts with allergen data: ${vegan.conflictingAllergens.join(", ")}.`),
+      detail: c(`Kennzeichnung und Produktdaten widersprechen sich: ${[...vegan.conflictingAllergens, ...vegan.conflictingIngredients].join(", ")}.`, `The claim conflicts with product data: ${[...vegan.conflictingAllergens, ...vegan.conflictingIngredients].join(", ")}.`),
       tone: "detected",
     } : {
       key: "vegan",

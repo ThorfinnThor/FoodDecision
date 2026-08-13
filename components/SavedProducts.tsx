@@ -20,7 +20,7 @@ import { ProductVisual } from "./ProductVisual";
 import { ShoppingListButton } from "./ShoppingListButton";
 
 type SavedMode = "favorites" | "shopping";
-type ActionStatus = "idle" | "added" | "copied" | "copy-failed";
+type ActionStatus = "idle" | "added" | "copied" | "copy-failed" | "cleared";
 
 export function SavedProducts({
   emptyCopy,
@@ -39,12 +39,17 @@ export function SavedProducts({
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [status, setStatus] = useState<ActionStatus>("idle");
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [clearedIds, setClearedIds] = useState<string[]>([]);
+  const [clearedCheckedIds, setClearedCheckedIds] = useState<string[]>([]);
   const checkedKey = `${SHOPPING_CHECKED_KEY}:${locale}`;
   const shoppingKey = `${SHOPPING_LIST_KEY}:${locale}`;
   const path = (value: string) => localizedPath(locale, value);
 
   useEffect(() => {
-    const sync = () => {
+    const sync = (event?: Event) => {
+      if (event instanceof CustomEvent && ![storageKey, checkedKey].includes(event.detail?.key)) return;
+      if (event instanceof StorageEvent && ![storageKey, checkedKey].includes(event.key ?? "")) return;
       const nextIds = readStoredIds(storageKey);
       setIds(nextIds);
       setSelectedIds((current) => current.filter((id) => nextIds.includes(id)));
@@ -93,11 +98,27 @@ export function SavedProducts({
   }
 
   function clearAll() {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      return;
+    }
+    setClearedIds(ids);
+    setClearedCheckedIds(checkedIds);
     writeStoredIds(storageKey, []);
     if (mode === "shopping") writeStoredIds(checkedKey, []);
     setSelectedIds([]);
     setCheckedIds([]);
+    setConfirmClear(false);
+    setStatus("cleared");
     trackEvent("saved_collection_cleared", { entityType: mode, metadata: { count: saved.length } });
+  }
+
+  function undoClear() {
+    writeStoredIds(storageKey, clearedIds);
+    if (mode === "shopping") writeStoredIds(checkedKey, clearedCheckedIds);
+    setClearedIds([]);
+    setClearedCheckedIds([]);
+    setStatus("idle");
   }
 
   async function copyShoppingList() {
@@ -116,6 +137,7 @@ export function SavedProducts({
       <div className="empty-state saved-empty-state">
         <h2>{pick(locale, "Noch nichts gespeichert", "Nothing saved yet")}</h2>
         <p>{emptyCopy}</p>
+        {status === "cleared" ? <p role="status">{pick(locale, "Die lokale Sammlung wurde geleert.", "The local collection was cleared.")} <button className="quiet-link" onClick={undoClear} type="button">{pick(locale, "Rückgängig", "Undo")}</button></p> : null}
         <Link className="button-link" href={path("/products")}>{pick(locale, "Produkte entdecken", "Browse products")}</Link>
       </div>
     );
@@ -144,7 +166,9 @@ export function SavedProducts({
               <button className="secondary-command" disabled={!checkedIds.length} onClick={removeCompleted} type="button">{pick(locale, "Erledigte entfernen", "Remove completed")}</button>
             </>
           )}
-          <button className="danger-command" onClick={clearAll} type="button">{pick(locale, "Alle entfernen", "Remove all")}</button>
+          <button aria-describedby={confirmClear ? "clear-collection-confirmation" : undefined} className="danger-command" onClick={clearAll} type="button">{confirmClear ? pick(locale, "Entfernen bestätigen", "Confirm removal") : pick(locale, "Alle entfernen", "Remove all")}</button>
+          {confirmClear ? <button className="secondary-command" onClick={() => setConfirmClear(false)} type="button">{pick(locale, "Abbrechen", "Cancel")}</button> : null}
+          {confirmClear ? <span className="sr-only" id="clear-collection-confirmation">{pick(locale, `Dadurch werden ${saved.length} lokal gespeicherte Produkte entfernt.`, `This removes ${saved.length} locally saved products.`)}</span> : null}
         </div>
       </div>
 
@@ -153,6 +177,7 @@ export function SavedProducts({
           {status === "added" ? pick(locale, "Alle Favoriten wurden zur Einkaufsliste hinzugefügt.", "All favorites were added to the shopping list.") : null}
           {status === "copied" ? pick(locale, "Einkaufsliste wurde kopiert.", "Shopping list copied.") : null}
           {status === "copy-failed" ? pick(locale, "Kopieren war nicht möglich. Bitte Browser-Berechtigung prüfen.", "Could not copy. Check your browser permission.") : null}
+          {status === "cleared" ? <><span>{pick(locale, "Die lokale Sammlung wurde geleert.", "The local collection was cleared.")}</span> <button className="quiet-link" onClick={undoClear} type="button">{pick(locale, "Rückgängig", "Undo")}</button></> : null}
         </p>
       ) : null}
 

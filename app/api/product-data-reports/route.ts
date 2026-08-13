@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { validateJsonRequest } from "@/lib/api-security";
+import { readLimitedJson, validateJsonRequest } from "@/lib/api-security";
 import { parseProductDataReport } from "@/lib/product-data-report";
 import { getCatalog } from "@/lib/static-data";
 import { hasSupabaseServerConfig, supabaseServerRequest } from "@/lib/supabase-server";
@@ -11,8 +11,9 @@ export async function POST(request: Request) {
   if (rejected) return rejected;
   if (!hasSupabaseServerConfig()) return NextResponse.json({ error: "temporarily_unavailable" }, { status: 503 });
 
-  let input: Record<string, unknown>;
-  try { input = await request.json() as Record<string, unknown>; } catch { return NextResponse.json({ error: "invalid_json" }, { status: 400 }); }
+  const parsed = await readLimitedJson(request, 4_096);
+  if (parsed.response) return parsed.response;
+  const input = parsed.value;
   if (input.website) return NextResponse.json({ ok: true });
 
   const report = parseProductDataReport(input);
