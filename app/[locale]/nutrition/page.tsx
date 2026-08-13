@@ -38,7 +38,7 @@ export default async function NutritionHubPage({ params }: Props) {
       <div className="topic-directory">{topics.map((topic) => <Link href={path(`/nutrition/${topic.route}`)} key={topic.internal}>
         <span className="topic-index">{String(topics.indexOf(topic) + 1).padStart(2, "0")}</span>
         <span><strong>{topic.label}</strong><small>{topic.description}</small></span>
-        <b>{pick(locale, "Öffnen", "Open")}</b>
+        <b>{pick(locale, "Kategorie wählen", "Choose category")}</b>
       </Link>)}</div>
     </section>
   </main>;
