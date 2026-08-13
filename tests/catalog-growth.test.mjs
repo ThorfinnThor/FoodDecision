@@ -75,6 +75,8 @@ test("wires all growth waves and the production audit into GitHub ingestion", as
   assert.match(workflow, /steps\.plan\.outputs\.categories/);
   assert.match(workflow, /CATALOG_RUN_NUMBER:.*github\.run_number/);
   assert.match(workflow, /OFF_START_PAGE:.*steps\.plan\.outputs\.start_page/);
+  assert.match(workflow, /sort_by:/);
+  assert.match(workflow, /OFF_SORT_BY:.*inputs\.sort_by/);
   assert.match(workflow, /CATALOG_AUDIT_MODE: production/);
   assert.match(workflow, /CATALOG_AUDIT_MARKET:.*steps\.plan\.outputs\.market/);
   assert.match(workflow, /Audit production catalog quality/);
