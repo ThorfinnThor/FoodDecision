@@ -26,7 +26,8 @@
     "resolve:catalog-plan": "node --experimental-strip-types scripts/ingest/resolve-plan.mjs",
     "audit:catalog-quality": "node --experimental-strip-types scripts/audit/catalog-quality.ts",
     "audit:ranking-integrity": "node --experimental-strip-types scripts/audit/ranking-integrity.ts",
-    "verify:production": "node scripts/release/verify-production.mjs"
+    "verify:production": "node scripts/release/verify-production.mjs",
+    "verify:public-readiness": "node scripts/release/public-readiness.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
