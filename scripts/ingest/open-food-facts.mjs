@@ -141,6 +141,7 @@ const fetchRetryBaseMs = Number(process.env.OFF_FETCH_RETRY_BASE_MS ?? "10000");
 const offRequestTimeoutMs = Number(process.env.OFF_REQUEST_TIMEOUT_MS ?? "30000");
 const supabaseRequestTimeoutMs = Number(process.env.SUPABASE_REQUEST_TIMEOUT_MS ?? "30000");
 const allowEmptyDryRun = process.env.OFF_ALLOW_EMPTY_DRY_RUN === "true";
+const sortBy = resolveOffSort(process.env.OFF_SORT_BY);
 if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) {
   throw new Error("OFF_PAGE_SIZE must be an integer between 1 and 100.");
 }
@@ -161,6 +162,11 @@ export function shouldContinueOnCategoryError(value = process.env.OFF_CONTINUE_O
 }
 export function shouldRejectEmptyImport(rowCount, isDryRun = dryRun, emptyDryRunAllowed = allowEmptyDryRun) {
   return rowCount === 0 && !(isDryRun && emptyDryRunAllowed);
+}
+export function resolveOffSort(value) {
+  if (!value || value === "default") return null;
+  if (value === "last_modified_t") return value;
+  throw new Error(`Unsupported OFF_SORT_BY: ${value}`);
 }
 const continueOnCategoryError = shouldContinueOnCategoryError();
 const upsertBatchSize = Number(process.env.OFF_UPSERT_BATCH_SIZE ?? "100");
@@ -323,6 +329,7 @@ async function fetchOffPage(job, source, page, sourcePageSize) {
   url.searchParams.set("fields", fields);
   url.searchParams.set("countries_tags_en", country);
   url.searchParams.set("categories_tags_en", source.offCategory);
+  if (sortBy) url.searchParams.set("sort_by", sortBy);
 
   for (const [key, value] of Object.entries(source.extraParams ?? {})) {
     url.searchParams.set(key, value);
