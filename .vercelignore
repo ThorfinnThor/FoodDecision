@@ -2,7 +2,6 @@
 .codex
 .git
 .github
-.openai
 .wrangler
 dist
 docs
