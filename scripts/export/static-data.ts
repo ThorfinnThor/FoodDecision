@@ -13,6 +13,7 @@ import { localeSegment, supportedLocales } from "../../lib/i18n.ts";
 import { assessDataFreshness } from "../../lib/data-freshness.ts";
 import { calculateScores, scoreByType } from "../../lib/scoring.ts";
 import { compareRankedProducts } from "../../lib/ranking-order.ts";
+import { isRankingEligibleForGoal } from "../../lib/ranking-eligibility.ts";
 import { inferBrandFromProductName, normalizeBrandName, normalizeListingName, slugify } from "../../lib/normalization.ts";
 import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
@@ -427,8 +428,7 @@ export function comparisonPairs(products: Product[]) {
   const pairs: string[] = [];
   for (const category of localizedCategoryCatalog(products[0]?.locale ?? "de-DE")) {
     const candidates = products
-      .filter((product) => product.category === category.slug && (product.publishability === "ranking_eligible" || product.publishability === "published"))
-      .filter((product) => typeof scoreByType(product, "overall_match")?.score === "number")
+      .filter((product) => product.category === category.slug && isRankingEligibleForGoal(product, "overall_match"))
       .sort((a, b) => compareRankedProducts(a, b, "overall_match"))
       .slice(0, 3);
     if (candidates.length < 2) continue;
@@ -493,8 +493,7 @@ async function exportStaticData() {
 
     for (const ranking of rankings) {
       const items = products
-            .filter((product) => product.category === ranking.category && product.publishability === "ranking_eligible")
-            .filter((product) => typeof scoreByType(product, ranking.sortScore)?.score === "number")
+            .filter((product) => product.category === ranking.category && isRankingEligibleForGoal(product, ranking.sortScore))
             .sort((a, b) => compareRankedProducts(a, b, ranking.sortScore))
             .map(productSummary);
       files.push(

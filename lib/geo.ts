@@ -6,6 +6,7 @@ import {
   supportedLocales,
 } from "./i18n.ts";
 import { absoluteUrl, siteUrl } from "./seo.ts";
+import { evaluateRankingPublication } from "./seo-publication.ts";
 import { getCatalog } from "./static-data.ts";
 import type { SiteLocale } from "./types.ts";
 import { seoEditorialContent } from "./seo-editorial.ts";
@@ -29,15 +30,15 @@ function localeLabel(locale: SiteLocale) {
   return locale === "de-DE" ? "German market and German language" : "United States market and US English";
 }
 
-function rankingEntries(locale: SiteLocale) {
+export function publishedRankingEntries(locale: SiteLocale) {
   const catalog = getCatalog(locale);
   return catalog.rankingPages.flatMap((ranking) => {
     const products = catalog.rankedProducts(ranking.category, ranking.sortScore);
-    if (products.length < ranking.minProductsRequired) return [];
     const route = localizedPath(
       locale,
       `/best/${rankingRouteSlug(ranking.attribute, locale)}/${categoryRouteSlug(ranking.category, locale)}`,
     );
+    if (!evaluateRankingPublication(route, ranking, products).indexable) return [];
     return [{
       title: ranking.title,
       url: absoluteUrl(route),
@@ -89,12 +90,13 @@ Canonical site: ${siteUrl}
 }
 
 export function buildLlmsFull() {
-  const editorialDirectory = seoEditorialContent.map((content) =>
+  const publishedPaths = new Set(supportedLocales.flatMap((locale) => publishedRankingEntries(locale).map((entry) => new URL(entry.url).pathname)));
+  const editorialDirectory = seoEditorialContent.filter((content) => publishedPaths.has(content.path)).map((content) =>
     `- [${content.answerTitle}](${absoluteUrl(content.path)})\n  - Editorial answer: ${content.answer}\n  - Editorial review: ${content.reviewedAt}, ${content.author.name}.\n  - Supporting sources: ${content.sources.map((source) => `${source.publisher}: ${source.url}`).join("; ")}`,
   ).join("\n");
   const localeSections = supportedLocales.map((locale) => {
     const catalog = getCatalog(locale);
-    const rankings = rankingEntries(locale);
+    const rankings = publishedRankingEntries(locale);
     const lines = rankings.map((ranking) =>
       `- [${ranking.title}](${ranking.url}): ${ranking.products} eligible products. Catalog generated ${ranking.generatedAt}.`,
     );
@@ -126,7 +128,8 @@ Canonical site: ${siteUrl}
 - High protein rankings order eligible products by disclosed protein per 100 g or 100 ml.
 - Ingredient rankings use documented ingredient-list signals such as list length, detected added sugar, and detected additives.
 - Overall rankings combine the nutrition score at 65 percent and the ingredient score at 35 percent.
-- Stable tie resolution uses the exact comparison value, data confidence, data completeness, and then product name.
+- Protein and low sugar rankings use the exact nutrient value first. Other rankings use the published score first.
+- Equal primary values are resolved by documented data confidence and goal-specific secondary evidence before completeness and product name.
 - Products with missing or conflicting values do not gain an advantage.
 - Curated launch rankings add a reviewed editorial answer, decision criteria, limitations, and supporting public sources.
 
@@ -138,9 +141,9 @@ Canonical site: ${siteUrl}
 - Ranking rules are versioned in the application and applied equally within each category.
 - Affiliate availability and paid placements do not alter scores or ordering.
 
-## Reviewed editorial guides
+## Published editorial guides
 
-${editorialDirectory}
+${editorialDirectory || "No editorial ranking guide is currently approved for public indexing."}
 
 ${localeSections.join("\n\n")}
 `;

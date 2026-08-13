@@ -386,6 +386,8 @@ main { min-height: 70vh; }
 .rank-position strong { font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1; }
 .ranking-row .product-card { display: grid; grid-template-columns: 230px minmax(0, 1fr); grid-template-rows: 1fr; }
 .ranking-row .product-card-media { height: 100%; min-height: 260px; }
+.ranking-product-cell { min-width: 0; }
+.ranking-tie-note { background: #f6f8f3; border: 1px solid var(--color-border); border-top: 0; color: var(--color-text-700); font-size: 13px; line-height: 1.5; margin: -1px 0 0; padding: 10px 16px; }
 .ranking-page-hero { padding-bottom: 48px; }
 .ranking-answer-band { align-items: center; display: grid; gap: 64px; grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.65fr); margin: 0 auto; max-width: var(--container-max); padding: 24px 32px 72px; }
 .ranking-answer-copy h2 { font-size: 38px; line-height: 1.15; margin: 0; }

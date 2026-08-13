@@ -1,6 +1,8 @@
 import { scoreByType } from "./scoring.ts";
 import { analyzeIngredients, analyzeVeganStatus } from "./ingredient-analysis.ts";
 import { allergenLabel, canonicalAllergenIds, detectedAllergenIds, type AllergenId } from "./allergens.ts";
+import { compareRankedProducts } from "./ranking-order.ts";
+import { isRankingEligibleForGoal } from "./ranking-eligibility.ts";
 import type { CategorySlug, Product, ProductScore, ScoreConfidence, ScoreType } from "./types.ts";
 
 export type FinderCriteria = {
@@ -64,6 +66,9 @@ export type AlternativeRecommendation = {
   currentScore: number;
   candidateScore: number;
   scoreDelta: number;
+  improvementValue: number;
+  improvementKind: "score" | "protein" | "sugar";
+  improvementLabel: string;
   reasons: string[];
   tradeoffs: string[];
   confidence: ScoreConfidence;
@@ -429,6 +434,52 @@ function alternativeTradeoffs(current: Product, candidate: Product, goal: Altern
   return tradeoffs.slice(0, 2);
 }
 
+export type GoalImprovement = {
+  value: number;
+  kind: AlternativeRecommendation["improvementKind"];
+  label: string;
+};
+
+export function meaningfulGoalImprovement(current: Product, candidate: Product, goal: AlternativeGoal): GoalImprovement | null {
+  const locale = current.locale;
+  const format = (value: number) => Number(value.toFixed(2)).toLocaleString(locale);
+  if (goal === "protein") {
+    const currentValue = current.nutrition.protein;
+    const candidateValue = candidate.nutrition.protein;
+    if (currentValue === null || candidateValue === null) return null;
+    const difference = candidateValue - currentValue;
+    if (difference < Math.max(1, currentValue * 0.05)) return null;
+    return {
+      value: Number(difference.toFixed(2)),
+      kind: "protein",
+      label: locale === "de-DE" ? `+${format(difference)} g Protein` : `+${format(difference)} g protein`,
+    };
+  }
+  if (goal === "low_sugar") {
+    const currentValue = current.nutrition.sugar;
+    const candidateValue = candidate.nutrition.sugar;
+    if (currentValue === null || candidateValue === null || currentValue <= 0) return null;
+    const difference = currentValue - candidateValue;
+    if (difference < Math.max(0.2, currentValue * 0.1)) return null;
+    return {
+      value: Number(difference.toFixed(2)),
+      kind: "sugar",
+      label: locale === "de-DE" ? `−${format(difference)} g Zucker` : `−${format(difference)} g sugar`,
+    };
+  }
+
+  const currentScore = scoreByType(current, goal)?.score;
+  const candidateScore = scoreByType(candidate, goal)?.score;
+  if (typeof currentScore !== "number" || typeof candidateScore !== "number") return null;
+  const difference = candidateScore - currentScore;
+  if (difference < 3) return null;
+  return {
+    value: difference,
+    kind: "score",
+    label: locale === "de-DE" ? `+${difference} Punkte` : `+${difference} points`,
+  };
+}
+
 export function alternativeRecommendation(current: Product, candidate: Product, goal: AlternativeGoal): AlternativeRecommendation | null {
   if (
     current.market !== candidate.market
@@ -438,13 +489,14 @@ export function alternativeRecommendation(current: Product, candidate: Product, 
   ) return null;
   const currentGoal = scoreByType(current, goal);
   const candidateGoal = scoreByType(candidate, goal);
-  if (goal === "overall_match" && scoreByType(candidate, "ingredient_quality")?.score == null) return null;
+  if (!isRankingEligibleForGoal(candidate, goal)) return null;
   if (currentGoal?.score === null || currentGoal?.score === undefined || candidateGoal?.score === null || candidateGoal?.score === undefined) return null;
   const scoreDelta = candidateGoal.score - currentGoal.score;
-  if (scoreDelta < 3 || candidateGoal.confidence === "low") return null;
+  const improvement = meaningfulGoalImprovement(current, candidate, goal);
+  if (!improvement || compareRankedProducts(candidate, current, goal) >= 0) return null;
 
   const reasons = alternativeReasons(current, candidate, goal);
-  if (!reasons.some((reason) => reason.includes(`${scoreDelta}`))) {
+  if (improvement.kind === "score" && !reasons.some((reason) => reason.includes(`${scoreDelta}`))) {
     reasons.unshift(current.locale === "de-DE" ? `${scoreDelta} Punkte stärker beim gewählten Ziel.` : `${scoreDelta} points stronger for the selected goal.`);
   }
 
@@ -454,6 +506,9 @@ export function alternativeRecommendation(current: Product, candidate: Product, 
     currentScore: currentGoal.score,
     candidateScore: candidateGoal.score,
     scoreDelta,
+    improvementValue: improvement.value,
+    improvementKind: improvement.kind,
+    improvementLabel: improvement.label,
     reasons: reasons.slice(0, 3),
     tradeoffs: alternativeTradeoffs(current, candidate, goal),
     confidence: candidateGoal.confidence,
@@ -463,10 +518,11 @@ export function alternativeRecommendation(current: Product, candidate: Product, 
 export function rankImprovingAlternatives(current: Product, candidates: Product[], goal: AlternativeGoal, limit = 3) {
   return candidates
     .filter((candidate) => candidate.slug !== current.slug)
-    .filter((candidate) => candidate.publishability === "ranking_eligible" || candidate.publishability === "published")
     .map((candidate) => alternativeRecommendation(current, candidate, goal))
     .filter((recommendation): recommendation is AlternativeRecommendation => recommendation !== null)
-    .sort((a, b) => b.scoreDelta - a.scoreDelta || dataCompleteness(b.product) - dataCompleteness(a.product))
+    .sort((a, b) => b.improvementValue - a.improvementValue
+      || compareRankedProducts(a.product, b.product, goal)
+      || dataCompleteness(b.product) - dataCompleteness(a.product))
     .slice(0, limit);
 }
 

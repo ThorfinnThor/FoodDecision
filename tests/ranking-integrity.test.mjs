@@ -33,6 +33,15 @@ test("accepts rankings ordered by goal evidence and deterministic tie breakers",
   assert.ok(result.stats.productsWithOverallAlternatives >= 0);
 });
 
+test("uses the exact nutrient before score bands for nutrient rankings", () => {
+  const base = products.find((product) => product.category === "proteinriegel");
+  const lower = rescoredProduct(base, { id: "lower", slug: "lower", name: "Lower", nutrition: { ...base.nutrition, protein: 29 } });
+  const higher = rescoredProduct(base, { id: "higher", slug: "higher", name: "Higher", nutrition: { ...base.nutrition, protein: 31 } });
+  lower.scores.find((score) => score.type === "protein").score = 100;
+  higher.scores.find((score) => score.type === "protein").score = 100;
+  assert.equal([lower, higher].sort((a, b) => compareRankedProducts(a, b, "protein"))[0].slug, "higher");
+});
+
 test("blocks ranking membership, ordering, formula, and contradiction regressions", () => {
   const base = structuredClone(products.find((product) => product.category === "proteinriegel"));
   const second = rescoredProduct(base, { id: "second", slug: "second", name: "Second", nutrition: { ...base.nutrition, protein: 20 } });

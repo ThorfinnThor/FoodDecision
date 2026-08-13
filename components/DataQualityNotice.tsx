@@ -14,6 +14,9 @@ const flagLabels: Record<string, string> = {
   salt_high: "Erhöhter Salzgehalt",
   ingredient_text_cleaned: "Verpackungstext wurde aus der Zutatenliste entfernt",
   ingredient_nutrition_conflict: "Zuckerwert und Zutatenliste widersprechen sich",
+  retail_listing_text_removed: "Verkaufstext wurde aus dem Produktnamen entfernt",
+  invalid_brand_removed: "Unplausible Markenangabe wurde entfernt",
+  multiple_category_matches: "Mehrere Kategorien wurden erkannt; die passendste wird verwendet",
 };
 
 export function DataQualityNotice({ product }: { product: Product }) {
@@ -28,7 +31,7 @@ export function DataQualityNotice({ product }: { product: Product }) {
     stale: ["Älteren Quellenstand prüfen", "Older source data to verify"],
     unknown: ["Quellenalter unbekannt", "Source age unknown"],
   };
-  const englishFlags: Record<string, string> = { missing_brand: "Brand not confirmed", incomplete_nutrition: "Nutrition data is incomplete", implausible_nutrition: "Some nutrition values are implausible", missing_ingredients: "Ingredient list missing", allergens_unverified: "Allergens not fully verified", missing_image: "Product image missing", stale_source_data: "Source data may be outdated", unlicensed_image_source: "Image source is not eligible for display", ingredient_text_cleaned: "Package text was removed from the ingredient list", ingredient_nutrition_conflict: "Sugar data conflicts with the ingredient list" };
+  const englishFlags: Record<string, string> = { missing_brand: "Brand not confirmed", incomplete_nutrition: "Nutrition data is incomplete", implausible_nutrition: "Some nutrition values are implausible", missing_ingredients: "Ingredient list missing", allergens_unverified: "Allergens not fully verified", missing_image: "Product image missing", stale_source_data: "Source data may be outdated", unlicensed_image_source: "Image source is not eligible for display", ranking_confidence_medium: "Medium data confidence", salt_high: "Higher sodium", ingredient_text_cleaned: "Package text was removed from the ingredient list", ingredient_nutrition_conflict: "Sugar data conflicts with the ingredient list", retail_listing_text_removed: "Retail listing text was removed from the product name", invalid_brand_removed: "An implausible brand value was removed", multiple_category_matches: "Multiple categories matched; the strongest match is used" };
 
   return (
     <section className="quality-notice">

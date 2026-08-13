@@ -187,12 +187,34 @@ test("recommends only measurable, same-category improvements", () => {
   const recommendations = rankImprovingAlternatives(current, products, "low_sugar");
   assert.equal(recommendations.length, 1);
   assert.equal(recommendations[0].product.slug, "nordhafer-barista-ohne-zucker");
-  assert.ok(recommendations[0].scoreDelta >= 3);
+  assert.equal(recommendations[0].improvementKind, "sugar");
+  assert.ok(recommendations[0].improvementValue > 0);
   assert.ok(recommendations[0].reasons.some((reason) => /weniger Zucker/.test(reason)));
   assert.ok(recommendations.every((item) => item.product.category === current.category));
   assert.ok(recommendations.every((item) => item.product.market === current.market && item.product.locale === current.locale));
 
   assert.equal(rankImprovingAlternatives(recommendations[0].product, oatProducts, "low_sugar").length, 0);
+});
+
+test("recognizes exact protein improvements even when both products share the same score band", () => {
+  const base = products.find((product) => product.category === "proteinriegel");
+  assert.ok(base);
+  const current = structuredClone(base);
+  current.id = "protein-current";
+  current.slug = "protein-current";
+  current.nutrition.protein = 30;
+  current.scores.find((score) => score.type === "protein").score = 100;
+  const candidate = structuredClone(base);
+  candidate.id = "protein-candidate";
+  candidate.slug = "protein-candidate";
+  candidate.nutrition.protein = 36;
+  candidate.scores.find((score) => score.type === "protein").score = 100;
+
+  const recommendations = rankImprovingAlternatives(current, [candidate], "protein");
+  assert.equal(recommendations.length, 1);
+  assert.equal(recommendations[0].scoreDelta, 0);
+  assert.equal(recommendations[0].improvementKind, "protein");
+  assert.equal(recommendations[0].improvementValue, 6);
 });
 
 test("requires ingredient evidence for a best-overall alternative", () => {

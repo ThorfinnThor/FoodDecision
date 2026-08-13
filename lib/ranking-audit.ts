@@ -1,5 +1,6 @@
 import { compareRankedProducts } from "./ranking-order.ts";
-import { alternativeGoalOrder, rankImprovingAlternatives, type AlternativeGoal } from "./product-insights.ts";
+import { isRankingEligibleForGoal } from "./ranking-eligibility.ts";
+import { alternativeGoalOrder, meaningfulGoalImprovement, rankImprovingAlternatives, type AlternativeGoal } from "./product-insights.ts";
 import { calculateOverallScoreValue, gradeForScore, scoreByType } from "./scoring.ts";
 import type { Product, RankingPage, ScoreType } from "./types.ts";
 
@@ -49,17 +50,12 @@ function distributionFindings(products: Product[]) {
 }
 
 function independentAlternativeCandidates(current: Product, products: Product[], goal: AlternativeGoal) {
-  const currentScore = scoreByType(current, goal)?.score;
-  if (typeof currentScore !== "number") return [];
   return products.filter((candidate) => {
     if (candidate.slug === current.slug || candidate.category !== current.category) return false;
     if (candidate.market !== current.market || candidate.locale !== current.locale || candidate.nutrition.basis !== current.nutrition.basis) return false;
-    if (candidate.publishability !== "ranking_eligible" && candidate.publishability !== "published") return false;
-    const candidateScore = scoreByType(candidate, goal);
-    if (typeof candidateScore?.score !== "number" || candidateScore.score - currentScore < 3) return false;
-    if (candidateScore.confidence === "low") return false;
-    if (goal === "overall_match" && scoreByType(candidate, "ingredient_quality")?.score == null) return false;
-    return true;
+    if (!isRankingEligibleForGoal(candidate, goal)) return false;
+    return meaningfulGoalImprovement(current, candidate, goal) !== null
+      && compareRankedProducts(candidate, current, goal) < 0;
   });
 }
 
@@ -87,7 +83,9 @@ function auditAlternatives(products: Product[]) {
         if (!expected.some((candidate) => candidate.slug === recommendation.product.slug)) {
           failures.push(`${key}:${recommendation.product.slug}:ineligible_recommendation`);
         }
-        if (recommendation.scoreDelta < 3) failures.push(`${key}:${recommendation.product.slug}:score_delta_below_3`);
+        if (recommendation.improvementKind === "score" && recommendation.scoreDelta < 3) {
+          failures.push(`${key}:${recommendation.product.slug}:score_delta_below_3`);
+        }
       }
     }
   }
@@ -138,13 +136,12 @@ export function auditRankingIntegrity(products: Product[], rankings: GeneratedRa
         continue;
       }
       if (product.category !== ranking.category) failures.push(`${key}:${slug}:wrong_category`);
-      if (product.publishability !== "ranking_eligible") failures.push(`${key}:${slug}:not_ranking_eligible`);
+      if (!isRankingEligibleForGoal(product, ranking.sortScore)) failures.push(`${key}:${slug}:not_eligible_for_goal`);
       if (scoreByType(product, ranking.sortScore)?.score === null) failures.push(`${key}:${slug}:missing_goal_score`);
     }
 
     const expectedSlugs = products
-      .filter((product) => product.category === ranking.category && product.publishability === "ranking_eligible")
-      .filter((product) => typeof scoreByType(product, ranking.sortScore)?.score === "number")
+      .filter((product) => product.category === ranking.category && isRankingEligibleForGoal(product, ranking.sortScore))
       .sort((a, b) => compareRankedProducts(a, b, ranking.sortScore))
       .map((product) => product.slug);
     if (actualSlugs.join("|") !== expectedSlugs.join("|")) failures.push(`${key}:order_or_membership_mismatch`);

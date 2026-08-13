@@ -8,7 +8,7 @@ test("catalog search has independent input state and an explicit reset action", 
   assert.match(source, /const \[queryInput, setQueryInput\]/);
   assert.match(source, /window\.setTimeout/);
   assert.match(source, /Suche und Filter zurücksetzen/);
-  assert.match(source, /data quality and component scores keep the order stable/);
+  assert.match(source, /Ties are resolved by data confidence, nutrition score, ingredient score, and data completeness/);
   assert.doesNotMatch(source, /Tie broken by|Gleichstand aufgelöst durch/);
 });
 

@@ -192,6 +192,6 @@ test("generates a bounded prepared comparison library within categories", () => 
 
 test("generated rankings exclude unknown goal scores and use evidence tie breakers", async () => {
   const exporter = await readFile(new URL("../scripts/export/static-data.ts", import.meta.url), "utf8");
-  assert.match(exporter, /typeof scoreByType\(product, ranking\.sortScore\)\?\.score === "number"/);
+  assert.match(exporter, /isRankingEligibleForGoal\(product, ranking\.sortScore\)/);
   assert.match(exporter, /compareRankedProducts\(a, b, ranking\.sortScore\)/);
 });
