@@ -50,6 +50,7 @@ function distributionFindings(products: Product[]) {
 }
 
 function independentAlternativeCandidates(current: Product, products: Product[], goal: AlternativeGoal) {
+  if (typeof scoreByType(current, goal)?.score !== "number") return [];
   return products.filter((candidate) => {
     if (candidate.slug === current.slug || candidate.category !== current.category) return false;
     if (candidate.market !== current.market || candidate.locale !== current.locale || candidate.nutrition.basis !== current.nutrition.basis) return false;
