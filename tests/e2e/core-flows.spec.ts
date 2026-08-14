@@ -39,5 +39,10 @@ test("core catalog pages do not overflow a mobile viewport", async ({ page }, te
   await page.goto("/de/products");
   const dimensions = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: window.innerWidth }));
   expect(dimensions.body).toBeLessThanOrEqual(dimensions.viewport);
-  await expect(page.getByRole("button", { name: /Menü öffnen/ })).toBeVisible();
+  const menuButton = page.getByRole("button", { name: "Menü", exact: true });
+  await expect(menuButton).toBeVisible();
+  await expect(menuButton).toHaveAttribute("aria-expanded", "false");
+  await menuButton.click();
+  await expect(menuButton).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
 });
