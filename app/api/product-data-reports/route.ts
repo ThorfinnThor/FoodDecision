@@ -21,17 +21,28 @@ export async function POST(request: Request) {
   const { details, issueType, locale, productSlug } = report;
   if (!getCatalog(locale).getProduct(productSlug)) return NextResponse.json({ error: "product_not_found" }, { status: 404 });
 
-  const response = await supabaseServerRequest("product_data_reports", {
-    method: "POST",
-    headers: { Prefer: "return=minimal" },
-    body: JSON.stringify({
-      product_slug: productSlug,
-      market: locale === "de-DE" ? "DE" : "US",
-      locale,
-      issue_type: issueType,
-      details: details || null,
-    }),
-  });
-  if (!response.ok) return NextResponse.json({ error: "storage_failed" }, { status: 502 });
-  return NextResponse.json({ ok: true });
+  try {
+    const response = await supabaseServerRequest("product_data_reports", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        product_slug: productSlug,
+        market: locale === "de-DE" ? "DE" : "US",
+        locale,
+        issue_type: issueType,
+        details: details || null,
+      }),
+    });
+    if (!response.ok) {
+      console.error("product_report_storage_failed", { status: response.status });
+      return NextResponse.json({ error: "storage_failed" }, { status: 502, headers: { "Cache-Control": "no-store" } });
+    }
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("product_report_upstream_unavailable", { name: error instanceof Error ? error.name : "unknown" });
+    return NextResponse.json(
+      { error: "upstream_unavailable" },
+      { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "30" } },
+    );
+  }
 }

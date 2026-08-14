@@ -9,7 +9,7 @@ import { canonicalAllergenIds } from "@/lib/allergens";
 
 export function LocaleSwitcher({ locale }: { locale: SiteLocale }) {
   const alternate = alternateLocale(locale);
-  return <Suspense fallback={<span className="locale-switcher" aria-hidden="true">{alternate === "de-DE" ? "DE" : "EN"}</span>}>
+  return <Suspense fallback={<span className="locale-switcher" aria-hidden="true">{alternate === "de-DE" ? "DE" : "US"}</span>}>
     <LocaleSwitcherLink locale={locale} />
   </Suspense>;
 }
@@ -55,13 +55,13 @@ function LocaleSwitcherLink({ locale }: { locale: SiteLocale }) {
 
   return (
     <Link
-      aria-label={alternate === "de-DE" ? "Zur deutschen Version wechseln" : "Switch to US English"}
+      aria-label={alternate === "de-DE" ? "Zum deutschen Markt wechseln" : "Switch to the US market"}
       className="locale-switcher"
       href={href}
       hrefLang={alternate}
       lang={alternate}
     >
-      {alternate === "de-DE" ? "DE" : "EN"}
+      {alternate === "de-DE" ? "DE" : "US"}
     </Link>
   );
 }

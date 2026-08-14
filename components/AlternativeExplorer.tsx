@@ -34,11 +34,11 @@ export function AlternativeExplorer({
   const path = (value: string) => localizedPath(current.locale, value);
   const c = (de: string, en: string) => pick(current.locale, de, en);
 
-  function trackComparison(candidate: Product) {
+  function trackComparison(candidate: Product, scoreDelta: number) {
     trackEvent("alternative_compared", {
       entityType: "product",
       entityId: current.slug,
-      metadata: { alternative: candidate.slug, goal },
+      metadata: { alternativeId: candidate.slug, goal, scoreDelta },
     });
   }
 
@@ -80,7 +80,7 @@ export function AlternativeExplorer({
             </div>
             <p className="alternative-confidence">{c("Datensicherheit des Ziel-Scores", "Goal score confidence")}: <strong>{primary.confidence === "high" ? c("hoch", "high") : c("mittel", "medium")}</strong></p>
             <div className="alternative-actions">
-              <Link className="button-link" href={path(`/compare/${current.slug}-vs-${primary.product.slug}`)} onClick={() => trackComparison(primary.product)}>{c("Direkt vergleichen", "Compare directly")}</Link>
+              <Link className="button-link" href={path(`/compare/${current.slug}-vs-${primary.product.slug}`)} onClick={() => trackComparison(primary.product, Math.max(0, primary.candidateScore - primary.currentScore))}>{c("Direkt vergleichen", "Compare directly")}</Link>
               <Link className="secondary-button-link" href={path(`/product/${primary.product.slug}`)}>{c("Alternative ansehen", "View alternative")}</Link>
             </div>
           </div>
@@ -89,7 +89,7 @@ export function AlternativeExplorer({
               <span>{c("Weitere passende Alternativen", "More suitable alternatives")}</span>
               <strong>{c("Auch diese Produkte verbessern dein gewähltes Ziel", "These products also improve your selected goal")}</strong>
             </div>
-            {options.slice(1).map((option) => <Link href={path(`/compare/${current.slug}-vs-${option.product.slug}`)} key={option.product.slug} onClick={() => trackComparison(option.product)}><span><strong>{option.product.name}</strong><small>{option.reasons[0]}</small></span><b>{option.improvementLabel}</b><i aria-hidden="true">→</i></Link>)}
+            {options.slice(1).map((option) => <Link href={path(`/compare/${current.slug}-vs-${option.product.slug}`)} key={option.product.slug} onClick={() => trackComparison(option.product, Math.max(0, option.candidateScore - option.currentScore))}><span><strong>{option.product.name}</strong><small>{option.reasons[0]}</small></span><b>{option.improvementLabel}</b><i aria-hidden="true">→</i></Link>)}
           </div> : null}
         </div>
       ) : (

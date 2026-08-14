@@ -152,13 +152,14 @@ the ingestion workflow.
     `NEXT_PUBLIC_`.
 11. Click **Deploy**.
 
-The secret key is required at build time for the static export and at
-runtime for consented newsletter subscriptions and anonymous aggregate product
-events. It remains server-only and is never sent to the browser.
+The secret key is required at build time for the static export and at runtime
+for consented anonymous aggregate product events and product data reports. The
+current product does not offer newsletter signup. The key remains server-only
+and is never sent to the browser.
 
 All tables in the public schema have Row Level Security enabled. The `anon` and
 `authenticated` database roles have no direct table privileges. Imports,
-static exports, newsletter writes and analytics writes use the server-only
+static exports, product report writes and analytics writes use the server-only
 secret key, which must never be exposed through a `NEXT_PUBLIC_` variable
 or client-side code.
 
@@ -190,15 +191,18 @@ failed post-cutover verification automatically restores that previous deployment
 
 After a code push that adds a migration:
 
-1. Run **Supabase Migrations** and wait for a green check.
-2. Run **Ingest Open Food Facts** for market `DE` in `dry-run` mode with the
+1. Confirm the `production-database` GitHub environment has a required human
+   reviewer and that the current Supabase backup or point-in-time recovery
+   checkpoint satisfies the rollback policy.
+2. Run **Supabase Migrations**, approve the protected environment, and wait for a green check.
+3. Run **Ingest Open Food Facts** for market `DE` in `dry-run` mode with the
    currently thin German categories, one page, and 50 products.
-3. Run the same targeted German selection in `write-to-supabase` mode.
-4. Run market `US` in `dry-run` mode with `all`, one page, and 50 products.
-5. Run the same US selection in `write-to-supabase` mode.
-6. Verify `/de`, `/en-us`, both manifests, and the catalog quality table in the
+4. Run the same targeted German selection in `write-to-supabase` mode.
+5. Run market `US` in `dry-run` mode with `all`, one page, and 50 products.
+6. Run the same US selection in `write-to-supabase` mode.
+7. Verify `/de`, `/en-us`, both manifests, and the catalog quality table in the
    GitHub Actions summary after Vercel deploys.
-7. Expand one market at a time to three pages and 50 products. Prefer targeted
+8. Expand one market at a time to three pages and 50 products. Prefer targeted
    runs for categories marked `thin` over repeatedly importing every category.
 
 The quality summary reports products, ranking-eligible products, licensed image

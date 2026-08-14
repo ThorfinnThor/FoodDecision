@@ -43,6 +43,16 @@ export function findBarcodeItem<T extends BarcodeIndexItem>(items: T[], value: s
   return items.find((item) => barcodeVariants(item.gtin).some((variant) => requested.has(variant))) ?? null;
 }
 
+export function structuredGtin(value: string) {
+  const code = normalizeBarcode(value);
+  if (barcodeValidationReason(code) !== null) return {};
+  if (code.length === 8) return { gtin8: code };
+  if (code.length === 12) return { gtin12: code };
+  if (code.length === 13) return { gtin13: code };
+  if (code.length === 14) return { gtin14: code };
+  return {};
+}
+
 export function barcodeFormatLabel(value: string) {
   const length = normalizeBarcode(value).length;
   if (length === 8) return "EAN-8";

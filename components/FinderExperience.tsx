@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FINDER_STATE_KEY, PREFERENCES_KEY, trackEvent } from "@/lib/client-state";
 import { readBrowserJson, writeBrowserJson } from "@/lib/browser-storage";
 import { defaultFinderCriteria, finderCriteriaFromStored, finderCriteriaToSearchParams, optionalBoundedNumber, productMatch, productMatchesCriteria, type FinderCriteria } from "@/lib/product-insights";
@@ -36,6 +36,9 @@ export function FinderExperience({
   const [visibleCount, setVisibleCount] = useState(24);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [veganFilterIsImplicit, setVeganFilterIsImplicit] = useState(initialCriteria.goal === "vegan" && initialCriteria.veganOnly);
+  const stageHeadingRef = useRef<HTMLHeadingElement>(null);
+  const focusAfterStepChange = useRef(false);
   const preferencesKey = `${PREFERENCES_KEY}:${locale}`;
   const finderStateKey = `${FINDER_STATE_KEY}:${locale}`;
 
@@ -54,6 +57,12 @@ export function FinderExperience({
     window.history.replaceState({}, "", `${window.location.pathname}${search ? `?${search}` : ""}`);
     writeBrowserJson("local", finderStateKey, criteria);
   }, [criteria, finderStateKey, step]);
+
+  useEffect(() => {
+    if (!focusAfterStepChange.current) return;
+    focusAfterStepChange.current = false;
+    stageHeadingRef.current?.focus();
+  }, [step]);
 
   const results = useMemo(
     () => products
@@ -80,7 +89,7 @@ export function FinderExperience({
   const activeFilters: Array<{ key: string; label: string; clear: () => void }> = [];
   const selectedCategory = categories.find((item) => item.slug === criteria.category);
   const selectedGoal = localizedGoals.find((item) => item.value === criteria.goal);
-  if (criteria.goal !== "overall_match") activeFilters.push({ key: "goal", label: selectedGoal?.label ?? criteria.goal, clear: () => update("goal", "overall_match") });
+  if (criteria.goal !== "overall_match") activeFilters.push({ key: "goal", label: selectedGoal?.label ?? criteria.goal, clear: () => selectGoal("overall_match") });
   if (selectedCategory) activeFilters.push({ key: "category", label: selectedCategory.label, clear: () => update("category", "all") });
   if (criteria.veganOnly) activeFilters.push({ key: "vegan", label: pick(locale, "Nur vegan", "Vegan only"), clear: () => update("veganOnly", false) });
   if (criteria.additiveFree) activeFilters.push({ key: "additives", label: pick(locale, "Ohne Zusatzstoffe", "No common additives"), clear: () => update("additiveFree", false) });
@@ -105,11 +114,28 @@ export function FinderExperience({
   }
 
   function showResults() {
-    setStep(3);
+    moveToStep(3);
     trackEvent("finder_completed", {
       entityType: "finder",
       metadata: { goal: criteria.goal, category: criteria.category, resultCount: results.length },
     });
+  }
+
+  function moveToStep(nextStep: number) {
+    focusAfterStepChange.current = true;
+    setStep(Math.max(0, Math.min(3, nextStep)));
+  }
+
+  function selectGoal(goal: ScoreType) {
+    setHasInteracted(true);
+    setCriteria((current) => {
+      const next = { ...current, goal };
+      if (goal === "vegan") next.veganOnly = true;
+      else if (veganFilterIsImplicit) next.veganOnly = false;
+      return next;
+    });
+    setVeganFilterIsImplicit(goal === "vegan");
+    setVisibleCount(24);
   }
 
   async function copyLink() {
@@ -130,11 +156,12 @@ export function FinderExperience({
           </li>
         ))}
       </ol>
+      <p aria-live="polite" className="sr-only">{pick(locale, `Schritt ${step + 1} von 4: ${steps[step]}`, `Step ${step + 1} of 4: ${steps[step]}`)}</p>
 
       <div className="finder-stage">
         {step === 0 ? (
           <div className="finder-step">
-            <div className="finder-step-heading"><span>{pick(locale, "Schritt 1 von 3", "Step 1 of 3")}</span><h2>{pick(locale, "Was suchst du?", "What are you looking for?")}</h2><p>{pick(locale, "Wähle eine Produktgruppe oder vergleiche den gesamten Katalog.", "Choose a category or compare the full catalog.")}</p></div>
+            <div className="finder-step-heading"><span>{pick(locale, "Schritt 1 von 4", "Step 1 of 4")}</span><h2 ref={stageHeadingRef} tabIndex={-1}>{pick(locale, "Was suchst du?", "What are you looking for?")}</h2><p>{pick(locale, "Wähle eine Produktgruppe oder vergleiche den gesamten Katalog.", "Choose a category or compare the full catalog.")}</p></div>
             <div className="choice-grid category-choice-grid" role="group" aria-label={pick(locale, "Produktkategorie", "Product category")}>
               <button aria-pressed={criteria.category === "all"} onClick={() => update("category", "all")} type="button"><strong>{pick(locale, "Alle Produkte", "All products")}</strong><span>{products.length} {pick(locale, "bewertete Produkte", "assessed products")}</span></button>
               {categories.map((item) => {
@@ -147,13 +174,10 @@ export function FinderExperience({
 
         {step === 1 ? (
           <div className="finder-step">
-            <div className="finder-step-heading"><span>{pick(locale, "Schritt 2 von 3", "Step 2 of 3")}</span><h2>{pick(locale, "Was ist dir am wichtigsten?", "What matters most?")}</h2><p>{pick(locale, "Diese Priorität hat den größten Einfluss auf deinen Match-Score.", "This priority has the greatest effect on your match score.")}</p></div>
+            <div className="finder-step-heading"><span>{pick(locale, "Schritt 2 von 4", "Step 2 of 4")}</span><h2 ref={stageHeadingRef} tabIndex={-1}>{pick(locale, "Was ist dir am wichtigsten?", "What matters most?")}</h2><p>{pick(locale, "Diese Priorität hat den größten Einfluss auf deinen Match-Score.", "This priority has the greatest effect on your match score.")}</p></div>
             <div className="choice-grid" role="group" aria-label={pick(locale, "Priorität", "Priority")}>
               {localizedGoals.map((item) => (
-                <button aria-pressed={criteria.goal === item.value} key={item.value} onClick={() => {
-                  update("goal", item.value);
-                  if (item.value === "vegan") update("veganOnly", true);
-                }} type="button"><strong>{item.label}</strong><span>{item.description}</span></button>
+                <button aria-pressed={criteria.goal === item.value} key={item.value} onClick={() => selectGoal(item.value)} type="button"><strong>{item.label}</strong><span>{item.description}</span></button>
               ))}
             </div>
           </div>
@@ -161,11 +185,11 @@ export function FinderExperience({
 
         {step === 2 ? (
           <div className="finder-step">
-            <div className="finder-step-heading"><span>{pick(locale, "Schritt 3 von 3", "Step 3 of 3")}</span><h2>{pick(locale, "Grenzen und Ausschlüsse", "Limits and exclusions")}</h2><p>{pick(locale, "Alle Filter sind optional. Fehlende Produktwerte gelten bei aktiven Grenzwerten nicht als passend.", "All filters are optional. Missing values do not pass active numeric limits.")}</p></div>
+            <div className="finder-step-heading"><span>{pick(locale, "Schritt 3 von 4", "Step 3 of 4")}</span><h2 ref={stageHeadingRef} tabIndex={-1}>{pick(locale, "Grenzen und Ausschlüsse", "Limits and exclusions")}</h2><p>{pick(locale, "Alle Filter sind optional. Fehlende Produktwerte gelten bei aktiven Grenzwerten nicht als passend.", "All filters are optional. Missing values do not pass active numeric limits.")}</p></div>
 
             <div className="advanced-filter-grid">
               <fieldset className="filter-panel"><legend>{pick(locale, "Ernährung und Zutaten", "Diet and ingredients")}</legend>
-                <label className="toggle-row"><input checked={criteria.veganOnly} onChange={(event) => update("veganOnly", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Nur vegan", "Vegan only")}</strong><small>{pick(locale, "Labels und bekannte Allergene", "Labels and known allergens")}</small></span></label>
+                <label className="toggle-row"><input checked={criteria.veganOnly} onChange={(event) => { setVeganFilterIsImplicit(false); update("veganOnly", event.target.checked); }} type="checkbox" /><span><strong>{pick(locale, "Nur vegan", "Vegan only")}</strong><small>{pick(locale, "Ausdrückliche Vegan Kennzeichnung und bekannte Widersprüche", "Explicit vegan labels and known conflicts")}</small></span></label>
                 <label className="toggle-row"><input checked={criteria.additiveFree} onChange={(event) => update("additiveFree", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Ohne typische Zusatzstoffe", "No common additives")}</strong><small>{pick(locale, "Aromen, Emulgatoren, Farb- und Konservierungsstoffe", "Flavorings, emulsifiers, colors, and preservatives")}</small></span></label>
                 <label className="toggle-row"><input checked={criteria.sweetenerFree} onChange={(event) => update("sweetenerFree", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Ohne Süßungsmittel", "No sweeteners")}</strong><small>{pick(locale, "Zum Beispiel Erythrit, Stevia oder Sucralose", "For example erythritol, stevia, or sucralose")}</small></span></label>
                 <label className="toggle-row"><input checked={criteria.palmOilFree} onChange={(event) => update("palmOilFree", event.target.checked)} type="checkbox" /><span><strong>{pick(locale, "Ohne Palmöl", "No palm oil")}</strong><small>{pick(locale, "Auf Basis der vorhandenen Zutatenliste", "Based on the available ingredient list")}</small></span></label>
@@ -197,8 +221,8 @@ export function FinderExperience({
         {step === 3 ? (
           <div className="finder-step finder-results-step">
             <div className="finder-results-toolbar">
-              <div className="finder-step-heading"><span>{results.length} {pick(locale, results.length === 1 ? "passendes Produkt" : "passende Produkte", results.length === 1 ? "matching product" : "matching products")}</span><h2>{pick(locale, "Deine Treffer", "Your matches")}</h2><p>{pick(locale, "Der Match-Score ordnet alle passenden Katalogprodukte nach deiner Priorität, aktiven Filtern, Gesamturteil und Datenvollständigkeit.", "The match score ranks every matching catalog product by your priority, active filters, overall score, and data completeness.")}</p></div>
-              <div className="finder-result-actions"><button className="secondary-command" onClick={() => setStep(2)} type="button">{pick(locale, "Filter anpassen", "Adjust filters")}</button><button className="secondary-command" onClick={copyLink} type="button">{copyStatus === "copied" ? pick(locale, "Link kopiert", "Link copied") : copyStatus === "failed" ? pick(locale, "Kopieren fehlgeschlagen", "Copy failed") : pick(locale, "Link kopieren", "Copy link")}</button></div>
+              <div className="finder-step-heading"><span>{results.length} {pick(locale, results.length === 1 ? "passendes Produkt" : "passende Produkte", results.length === 1 ? "matching product" : "matching products")}</span><h2 ref={stageHeadingRef} tabIndex={-1}>{pick(locale, "Deine Treffer", "Your matches")}</h2><p>{pick(locale, "Der Match-Score ordnet alle passenden Katalogprodukte nach deiner Priorität, aktiven Filtern, Gesamturteil und Datenvollständigkeit.", "The match score ranks every matching catalog product by your priority, active filters, overall score, and data completeness.")}</p></div>
+              <div className="finder-result-actions"><button className="secondary-command" onClick={() => moveToStep(2)} type="button">{pick(locale, "Filter anpassen", "Adjust filters")}</button><button className="secondary-command" onClick={copyLink} type="button">{copyStatus === "copied" ? pick(locale, "Link kopiert", "Link copied") : copyStatus === "failed" ? pick(locale, "Kopieren fehlgeschlagen", "Copy failed") : pick(locale, "Link kopieren", "Copy link")}</button></div>
             </div>
             {activeFilters.length ? <div className="active-filter-bar" aria-label={pick(locale, "Aktive Filter", "Active filters")}>{activeFilters.map((filter) => <button key={filter.key} onClick={filter.clear} title={pick(locale, `${filter.label} entfernen`, `Remove ${filter.label}`)} type="button"><span>{filter.label}</span><b aria-hidden="true">×</b></button>)}</div> : null}
             {results.length ? (
@@ -211,8 +235,8 @@ export function FinderExperience({
         ) : null}
 
         {step < 3 ? <div className="finder-controls">
-          <button disabled={step === 0} onClick={() => setStep((value) => Math.max(0, value - 1))} type="button">{pick(locale, "Zurück", "Back")}</button>
-          <button className="primary-button" onClick={() => step === 2 ? showResults() : setStep((value) => Math.min(3, value + 1))} type="button">{step === 2 ? `${pick(locale, "Ergebnisse anzeigen", "Show results")} (${results.length})` : pick(locale, "Weiter", "Next")}</button>
+          <button disabled={step === 0} onClick={() => moveToStep(step - 1)} type="button">{pick(locale, "Zurück", "Back")}</button>
+          <button className="primary-button" onClick={() => step === 2 ? showResults() : moveToStep(step + 1)} type="button">{step === 2 ? `${pick(locale, "Ergebnisse anzeigen", "Show results")} (${results.length})` : pick(locale, "Weiter", "Next")}</button>
         </div> : null}
       </div>
     </section>

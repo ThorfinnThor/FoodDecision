@@ -97,7 +97,7 @@ test("enforces the real streamed JSON byte limit without a content length header
 });
 
 test("publishes bilingual privacy disclosures and consent controlled analytics", async () => {
-  const [page, legalPage, legalIdentity, controls, analytics, sanitizer, footer, newsletter, migration, eventRoute, layout] = await Promise.all([
+  const [page, legalPage, legalIdentity, controls, analytics, sanitizer, footer, newsletter, migration, eventRoute, eventContract, layout] = await Promise.all([
     readFile(new URL("../app/[locale]/privacy/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/[locale]/legal-notice/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../lib/legal.ts", import.meta.url), "utf8"),
@@ -108,6 +108,7 @@ test("publishes bilingual privacy disclosures and consent controlled analytics",
     readFile(new URL("../app/api/newsletter/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../supabase/migrations/0010_remove_inactive_newsletter.sql", import.meta.url), "utf8"),
     readFile(new URL("../app/api/events/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/analytics-events.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/[locale]/layout.tsx", import.meta.url), "utf8"),
   ]);
 
@@ -125,8 +126,9 @@ test("publishes bilingual privacy disclosures and consent controlled analytics",
   assert.match(sanitizer, /url\.hash = ""/);
   assert.match(analytics, /enabled \? <Analytics/);
   assert.match(layout, /ConsentAwareAnalytics/);
-  assert.match(eventRoute, /alternative_compared/);
-  assert.match(eventRoute, /saved_collection_cleared/);
+  assert.match(eventRoute, /isAnalyticsEventName/);
+  assert.match(eventContract, /alternative_compared/);
+  assert.match(eventContract, /saved_collection_cleared/);
   assert.match(footer, /\/privacy/);
   assert.match(footer, /\/legal-notice/);
   assert.match(legalIdentity, /NEXT_PUBLIC_OPERATOR_NAME/);

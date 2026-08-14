@@ -8,8 +8,13 @@ on:
     paths:
       - "supabase/migrations/**"
 
+concurrency:
+  group: supabase-production-migrations
+  cancel-in-progress: false
+
 jobs:
   migrate:
+    environment: production-database
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -18,7 +23,7 @@ jobs:
       - name: Set up Supabase CLI
         uses: supabase/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf # v2.1.1
         with:
-          version: latest
+          version: 2.114.0
           github-token: ${{ github.token }}
 
       - name: Link Supabase project

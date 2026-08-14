@@ -58,7 +58,7 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
   useEffect(() => {
     if (queryInput === queryParam) return;
     const timer = window.setTimeout(() => {
-      updateUrl({ q: queryInput.trim() ? queryInput : null, page: null }, "push");
+      updateUrl({ q: queryInput.trim() ? queryInput : null, page: null }, "replace");
     }, 180);
     return () => window.clearTimeout(timer);
   }, [queryInput, queryParam, updateUrl]);
@@ -82,6 +82,12 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
   const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const resetPage = (updates: Record<string, string | null>) => updateUrl({ ...updates, page: null }, "push");
 
+  useEffect(() => {
+    const rawPage = searchParams.get("page");
+    const canonicalPage = currentPage > 1 ? String(currentPage) : null;
+    if ((rawPage ?? null) !== canonicalPage) updateUrl({ page: canonicalPage }, "replace");
+  }, [currentPage, searchParams, updateUrl]);
+
   return (
     <div className="catalog-browser">
       <div className="catalog-toolbar">
@@ -91,11 +97,11 @@ function CatalogGridContent({ categories = [], locale = "de-DE", products }: { c
         <label className="toolbar-check"><input checked={onlyComplete} onChange={(event) => resetPage({ complete: event.target.checked ? "1" : null })} type="checkbox" /><span>{pick(locale, "Ohne Qualitätshinweis", "No quality warnings")}</span></label>
       </div>
 
-      <div className="catalog-result-line"><strong>{filtered.length} {pick(locale, "Produkte", "products")}</strong><span>{pick(locale, "Seite", "Page")} {currentPage} {pick(locale, "von", "of")} {pageCount}</span></div>
+      <div aria-atomic="true" aria-live="polite" className="catalog-result-line"><strong>{filtered.length} {pick(locale, "Produkte", "products")}</strong><span>{pick(locale, "Seite", "Page")} {currentPage} {pick(locale, "von", "of")} {pageCount}</span></div>
       {sort === "overall" && filtered.length ? <p className="catalog-sort-note">{pick(locale, "Die Reihenfolge folgt zuerst dem Gesamturteil. Bei Gleichstand entscheiden Datensicherheit, Nährwertbewertung, Zutatenbewertung und Datenvollständigkeit.", "The order follows the overall score first. Ties are resolved by data confidence, nutrition score, ingredient score, and data completeness.")}</p> : null}
       {visible.length ? <div className="product-grid">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <div className="empty-state"><h3>{pick(locale, "Keine Produkte gefunden", "No products found")}</h3><p>{pick(locale, "Versuche einen kürzeren Suchbegriff oder entferne einen Filter.", "Try a shorter search or remove a filter.")}</p><button className="secondary-command" onClick={() => { setQueryInput(""); updateUrl({ q: null, category: null, sort: null, complete: null, page: null }); }} type="button">{pick(locale, "Suche und Filter zurücksetzen", "Reset search and filters")}</button></div>}
 
-      {pageCount > 1 ? <nav className="pagination" aria-label="Produktseiten">
+      {pageCount > 1 ? <nav className="pagination" aria-label={pick(locale, "Produktseiten", "Product pages")}>
         <button disabled={currentPage === 1} onClick={() => updateUrl({ page: currentPage - 1 > 1 ? String(currentPage - 1) : null }, "push")} type="button">{pick(locale, "Zurück", "Previous")}</button>
         <span>{currentPage} / {pageCount}</span>
         <button disabled={currentPage === pageCount} onClick={() => updateUrl({ page: String(Math.min(pageCount, currentPage + 1)) }, "push")} type="button">{pick(locale, "Weiter", "Next")}</button>

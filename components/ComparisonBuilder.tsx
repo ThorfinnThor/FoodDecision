@@ -25,6 +25,7 @@ function ProductChoice({ excludeSlug, label, locale, onChange, products, value }
       .filter((item) => normalizeText(`${item.brand} ${item.name}`).includes(needle))
       .slice(0, 12);
   }, [excludeSlug, products, query]);
+  const showOptions = open && query.trim().length >= 2 && results.length > 0;
 
   function selectProduct(item: Product) {
     onChange(item.slug);
@@ -61,12 +62,12 @@ function ProductChoice({ excludeSlug, label, locale, onChange, products, value }
 
   return (
     <div className="comparison-choice">
-      <label className="comparison-product-search"><span>{label}</span><input aria-activedescendant={open && activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined} aria-autocomplete="list" aria-controls={listId} aria-expanded={open && query.trim().length >= 2} autoComplete="off" onBlur={() => window.setTimeout(() => setOpen(false), 120)} onChange={(event) => { setQuery(event.target.value); setOpen(true); setActiveIndex(-1); if (value) onChange(""); }} onFocus={() => setOpen(true)} onKeyDown={handleKeyDown} placeholder={pick(locale, "Marke oder Produkt suchen", "Search brand or product")} ref={inputRef} role="combobox" type="search" value={query} /></label>
-      {open ? <div className="comparison-choice-results" id={listId} role="listbox">
-        {query.trim().length < 2 ? <p>{pick(locale, "Gib mindestens zwei Zeichen ein.", "Enter at least two characters.")}</p>
-          : results.length ? results.map((item, index) => <button aria-selected={index === activeIndex} className={index === activeIndex ? "is-active" : undefined} id={`${listId}-option-${index}`} key={item.slug} onMouseDown={(event) => event.preventDefault()} onMouseEnter={() => setActiveIndex(index)} onClick={() => selectProduct(item)} role="option" tabIndex={-1} type="button"><strong>{item.name}</strong><span>{item.brand} · {scoreByType(item, "overall_match")?.score ?? "?"}/100</span></button>)
-            : <p>{pick(locale, "Kein passendes Produkt gefunden.", "No matching product found.")}</p>}
+      <label className="comparison-product-search"><span>{label}</span><input aria-activedescendant={showOptions && activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined} aria-autocomplete="list" aria-controls={showOptions ? listId : undefined} aria-expanded={showOptions} autoComplete="off" onBlur={() => window.setTimeout(() => setOpen(false), 120)} onChange={(event) => { setQuery(event.target.value); setOpen(true); setActiveIndex(-1); if (value) onChange(""); }} onFocus={() => setOpen(true)} onKeyDown={handleKeyDown} placeholder={pick(locale, "Marke oder Produkt suchen", "Search brand or product")} ref={inputRef} role="combobox" type="search" value={query} /></label>
+      {showOptions ? <div className="comparison-choice-results" id={listId} role="listbox">
+        {results.map((item, index) => <button aria-selected={index === activeIndex} className={index === activeIndex ? "is-active" : undefined} id={`${listId}-option-${index}`} key={item.slug} onMouseDown={(event) => event.preventDefault()} onMouseEnter={() => setActiveIndex(index)} onClick={() => selectProduct(item)} role="option" tabIndex={-1} type="button"><strong>{item.name}</strong><span>{item.brand} · {scoreByType(item, "overall_match")?.score ?? "?"}/100</span></button>)}
       </div> : null}
+      {open && query.trim().length < 2 ? <p className="comparison-choice-guidance">{pick(locale, "Gib mindestens zwei Zeichen ein.", "Enter at least two characters.")}</p> : null}
+      {open && query.trim().length >= 2 && !results.length ? <p className="comparison-choice-guidance" role="status">{pick(locale, "Kein passendes Produkt gefunden.", "No matching product found.")}</p> : null}
       <span aria-live="polite" className="sr-only">{open && query.trim().length >= 2 ? (results.length ? `${results.length} ${pick(locale, "Ergebnisse", "results")}` : pick(locale, "Keine Ergebnisse", "No results")) : ""}</span>
       {product ? <div className="comparison-choice-preview"><ProductVisual compact product={product} /><div><small>{product.brand}</small><strong>{product.name}</strong><span>{scoreByType(product, "overall_match")?.score ?? "?"}/100 {pick(locale, "Gesamturteil", "overall")}</span></div></div> : <div className="comparison-choice-empty">{pick(locale, "Noch kein Produkt ausgewählt", "No product selected")}</div>}
     </div>

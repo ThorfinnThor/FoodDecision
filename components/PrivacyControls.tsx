@@ -23,21 +23,21 @@ function subscribeToBrowserState() {
 }
 
 export function PrivacyControls({ locale }: { locale: SiteLocale }) {
-  const [cleared, setCleared] = useState(false);
+  const [clearStatus, setClearStatus] = useState<"idle" | "cleared" | "session-only">("idle");
   const analytics = useSyncExternalStore(subscribeToAnalytics, analyticsEnabled, () => false);
   const doNotTrack = useSyncExternalStore(subscribeToBrowserState, () => navigator.doNotTrack === "1", () => false);
   const c = (de: string, en: string) => pick(locale, de, en);
 
   function updateAnalytics(enabled: boolean) {
     setAnalyticsEnabled(enabled);
-    setCleared(false);
+    setClearStatus("idle");
   }
 
   function clearData() {
-    clearBrowserValues("local", APP_STORAGE_PREFIX);
-    clearBrowserValues("session", APP_STORAGE_PREFIX);
+    const localCleared = clearBrowserValues("local", APP_STORAGE_PREFIX);
+    const sessionCleared = clearBrowserValues("session", APP_STORAGE_PREFIX);
     window.dispatchEvent(new Event(ANALYTICS_PREFERENCE_EVENT));
-    setCleared(true);
+    setClearStatus(localCleared && sessionCleared ? "cleared" : "session-only");
     window.dispatchEvent(new CustomEvent("food-decision:saved-state"));
   }
 
@@ -68,7 +68,8 @@ export function PrivacyControls({ locale }: { locale: SiteLocale }) {
       </label>
       <div className="privacy-clear-row">
         <button className="danger-command" onClick={clearData} type="button">{c("Alle lokalen Daten löschen", "Delete all local data")}</button>
-        {cleared ? <p role="status">{c("Lokale Daten wurden gelöscht. Die optionale Statistik ist aus.", "Local data was deleted. Optional analytics is off.")}</p> : null}
+        {clearStatus === "cleared" ? <p role="status">{c("Lokale Daten wurden gelöscht. Die optionale Statistik ist aus.", "Local data was deleted. Optional analytics is off.")}</p> : null}
+        {clearStatus === "session-only" ? <p role="alert">{c("Die Daten dieser Sitzung wurden gelöscht. Der Browser hat den Zugriff auf den dauerhaften Speicher blockiert; prüfe deshalb zusätzlich die Website Daten in den Browser Einstellungen.", "This session's data was deleted. The browser blocked access to persistent storage, so also check this site's data in browser settings.")}</p> : null}
       </div>
     </section>
   );

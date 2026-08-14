@@ -31,7 +31,9 @@ test("removes obvious packaging copy before ingredient scoring", () => {
 });
 
 test("treats vegan labels conservatively when allergen data conflicts", () => {
-  assert.equal(analyzeVeganStatus(["Plant-based"], []).status, "claimed");
+  assert.equal(analyzeVeganStatus(["Plant-based"], []).status, "unknown");
+  assert.equal(analyzeVeganStatus(["Dairy-free"], []).status, "unknown");
+  assert.equal(analyzeVeganStatus(["Veganer Genuss"], []).status, "claimed");
   const conflict = analyzeVeganStatus(["Vegan"], ["milk", "eggs"]);
   assert.equal(conflict.status, "conflict");
   assert.deepEqual(conflict.conflictingAllergens, ["milk", "eggs"]);
@@ -52,7 +54,7 @@ test("uses the shared bilingual analysis for Finder traits and ingredient scores
     ingredients: ["whole grain oats", "cane sugar", "natural flavors", "palm oil"],
   };
   const traits = productTraits({ ...american, scores: [] });
-  assert.equal(traits.vegan, true);
+  assert.equal(traits.vegan, false);
   assert.equal(traits.addedSugarFree, false);
   assert.equal(traits.additiveFree, false);
   assert.equal(traits.palmOilFree, false);

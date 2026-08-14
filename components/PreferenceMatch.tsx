@@ -10,7 +10,7 @@ import {
   type FinderCriteria,
 } from "@/lib/product-insights";
 import { localizedPath, pick } from "@/lib/i18n";
-import { PREFERENCES_KEY } from "@/lib/storage-keys";
+import { FINDER_STATE_KEY, PREFERENCES_KEY } from "@/lib/storage-keys";
 import type { Product, ScoreType } from "@/lib/types";
 import { readBrowserJson } from "@/lib/browser-storage";
 
@@ -27,6 +27,7 @@ const goalLabels: Record<ScoreType, [string, string]> = {
 type PreferenceState = {
   ready: boolean;
   criteria: FinderCriteria | null;
+  source: "finder" | "defaults" | null;
 };
 
 function personalCriteria(criteria: FinderCriteria): FinderCriteria {
@@ -49,22 +50,24 @@ function specificCriteriaCount(criteria: FinderCriteria) {
 }
 
 export function PreferenceMatch({ product }: { product: Product }) {
-  const [state, setState] = useState<PreferenceState>({ ready: false, criteria: null });
+  const [state, setState] = useState<PreferenceState>({ ready: false, criteria: null, source: null });
   const path = (value: string) => localizedPath(product.locale, value);
   const c = (de: string, en: string) => pick(product.locale, de, en);
   const storageKey = `${PREFERENCES_KEY}:${product.locale}`;
+  const finderStateKey = `${FINDER_STATE_KEY}:${product.locale}`;
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const stored = readBrowserJson<unknown>("local", storageKey, null);
+      const recentFinder = readBrowserJson<unknown>("local", finderStateKey, null);
+      const stored = recentFinder ?? readBrowserJson<unknown>("local", storageKey, null);
       if (!stored) {
-        setState({ ready: true, criteria: null });
+        setState({ ready: true, criteria: null, source: null });
         return;
       }
-      setState({ ready: true, criteria: personalCriteria(finderCriteriaFromStored(stored, [])) });
+      setState({ ready: true, criteria: personalCriteria(finderCriteriaFromStored(stored, [])), source: recentFinder ? "finder" : "defaults" });
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [storageKey]);
+  }, [finderStateKey, storageKey]);
 
   const result = useMemo(() => {
     if (!state.criteria) return null;
@@ -110,7 +113,7 @@ export function PreferenceMatch({ product }: { product: Product }) {
               <span>{result.assessment.passes ? c("Übereinstimmung", "goal match") : c("Kriterien nicht erfüllt", "criteria not met")}</span>
             </div>
             <p>{c("Priorität", "Priority")}: <strong>{goalLabels[state.criteria.goal][product.locale === "de-DE" ? 0 : 1]}</strong></p>
-            <small>{result.criteriaCount ? c(`${result.criteriaCount} zusätzliche Kriterien aktiv`, `${result.criteriaCount} additional criteria active`) : c("Keine zusätzlichen Ausschlüsse aktiv", "No additional exclusions active")}</small>
+            <small>{state.source === "finder" ? c("Aus deiner letzten Finder Suche", "From your latest Finder search") : c("Aus deinen gespeicherten Standards", "From your saved defaults")} · {result.criteriaCount ? c(`${result.criteriaCount} zusätzliche Kriterien aktiv`, `${result.criteriaCount} additional criteria active`) : c("Keine zusätzlichen Ausschlüsse aktiv", "No additional exclusions active")}</small>
           </div>
 
           <div className="preference-match-evidence">
