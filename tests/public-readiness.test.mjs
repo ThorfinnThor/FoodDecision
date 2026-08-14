@@ -33,8 +33,8 @@ function readinessFetch({ catalogSource = "supabase", legalWarning = false } = {
     }
     if (path === "/de/product/__public-readiness-missing__") return response("not found", { status: 404 });
     if (["/robots.txt", "/sitemap.xml", "/llms.txt", "/llms-full.txt"].includes(path)) return response(`Published at ${publicOrigin}`);
-    if (path === "/de/privacy" || path === "/en-us/privacy") {
-      return response(legalWarning ? "Before public launch" : `<a href="mailto:privacy@compareyourfood.com">Privacy</a> ${publicOrigin}`);
+    if (["/de/privacy", "/en-us/privacy", "/de/legal-notice", "/en-us/legal-notice"].includes(path)) {
+      return response(legalWarning ? "Required details are not complete yet" : `<a href="mailto:privacy@compareyourfood.com">Contact</a> ${publicOrigin}`);
     }
     const headers = options.method === "HEAD" ? {
       "content-security-policy": "default-src 'self'",

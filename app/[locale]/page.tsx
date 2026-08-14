@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BadgeCheck, ChartNoAxesCombined, ListTree } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StructuredData } from "@/components/StructuredData";
@@ -51,7 +52,7 @@ export default async function Home({ params }: Props) {
         name: BRAND_NAME,
         inLanguage: locale,
         url: absoluteUrl(path()),
-        potentialAction: { "@type": "SearchAction", target: `${absoluteUrl(path("/finder"))}?q={search_term_string}`, "query-input": "required name=search_term_string" },
+        potentialAction: { "@type": "SearchAction", target: `${absoluteUrl(path("/products"))}?q={search_term_string}`, "query-input": "required name=search_term_string" },
       }} />
       <SiteHeader locale={locale} />
 
@@ -59,12 +60,12 @@ export default async function Home({ params }: Props) {
         <Image alt={pick(locale, "Haferdrink, Müsli, Joghurt und Proteinriegel auf einem Küchentisch", "Oat milk, muesli, yogurt, and a protein bar on a kitchen table")} className="hero-background" fill loading="eager" sizes="100vw" src="/images/food-decision-hero.png" />
         <div className="hero-content">
           <p className="hero-kicker">{pick(locale, "Unabhängige Lebensmittelvergleiche für deinen Alltag", "Independent food comparisons for everyday choices")}</p>
-          <h1>{pick(locale, "Finde Lebensmittel, die zu deinen Prioritäten passen.", "Find foods that fit your priorities.")}</h1>
+          <h1>{pick(locale, "Finde Produkte, die zu deinen Prioritäten passen.", "Find products that fit your priorities.")}</h1>
           <p>{pick(locale, "Vergleiche Nährwerte, Zutaten und Datenqualität mit klaren, nachvollziehbaren Gründen.", "Compare nutrition, ingredients, and data quality with clear, explainable reasons.")}</p>
-          <form action={path("/finder")} className="hero-search" role="search">
+          <form action={path("/products")} className="hero-search" role="search">
             <label className="sr-only" htmlFor="hero-search">{pick(locale, "Produkte durchsuchen", "Search products")}</label>
             <input id="hero-search" name="q" placeholder={pick(locale, "Produkt, Marke oder Zutat suchen", "Search product, brand, or ingredient")} type="search" />
-            <button type="submit">{pick(locale, "Suchen", "Search")}</button>
+            <button type="submit">{pick(locale, "Katalog durchsuchen", "Search catalog")}</button>
           </form>
           <div className="hero-trust"><strong>{pick(locale, "Transparent bewertet", "Transparent scoring")}</strong><span>{pick(locale, "Jeder Score zeigt Gründe und Datenlücken.", "Every score shows its reasons and data gaps.")}</span></div>
         </div>
@@ -73,11 +74,11 @@ export default async function Home({ params }: Props) {
       <section className="priority-band" aria-labelledby="priority-title"><div className="section-inner"><div className="priority-heading"><span id="priority-title">{pick(locale, "Was ist dir wichtig?", "What matters to you?")}</span><Link href={path("/finder")}>{pick(locale, "Alle Kriterien", "All criteria")}</Link></div><div className="priority-chips">{priorities.map(([de, en, goal]) => <Link href={`${path("/finder")}?goal=${goal}`} key={goal}>{pick(locale, de, en)}</Link>)}</div></div></section>
 
       <section className="section discovery-entry-section">
-        <div className="section-heading split-heading"><div><p className="eyebrow">{pick(locale, "Den Katalog anders entdecken", "Explore the catalog another way")}</p><h2>{pick(locale, "Finde den Einstieg, der zu deiner Frage passt", "Start with the question you want to answer")}</h2></div><p>{pick(locale, "Suche über Marken, wiederkehrende Zutaten oder einen einzelnen Nährwert und wechsle anschließend direkt in Kategorie, Finder oder Produktvergleich.", "Explore brands, recurring ingredients, or a single nutrient, then move directly into a category, the finder, or a product comparison.")}</p></div>
+        <div className="section-heading discovery-entry-heading"><p className="eyebrow">{pick(locale, "Den Katalog anders entdecken", "Explore the catalog another way")}</p><h2>{pick(locale, "Finde den Einstieg, der zu deiner Frage passt", "Start with the question you want to answer")}</h2><p>{pick(locale, "Wähle Marken, Zutaten oder Nährwerte als Ausgangspunkt. Von dort gelangst du direkt zu vergleichbaren Produkten und passenden Kategorien.", "Choose brands, ingredients, or nutrition as your starting point. Each path leads directly to comparable products and relevant categories.")}</p></div>
         <div className="discovery-entry-grid">
-          <Link href={path("/brands")}><span>01</span><strong>{pick(locale, "Marken prüfen", "Review brands")}</strong><p>{pick(locale, "Produkte einer Marke nach Kategorie vergleichen, ohne die Marke pauschal zu bewerten.", "Compare a brand's products by category without applying a blanket judgment.")}</p><b>{pick(locale, "Zu den Marken", "Browse brands")}</b></Link>
-          <Link href={path("/ingredients")}><span>02</span><strong>{pick(locale, "Zutaten nachverfolgen", "Trace ingredients")}</strong><p>{pick(locale, "Sieh, in welchen Produkten und Kategorien ein Zutatenbegriff genannt wird.", "See which products and categories mention an ingredient term.")}</p><b>{pick(locale, "Zu den Zutaten", "Browse ingredients")}</b></Link>
-          <Link href={path("/nutrition")}><span>03</span><strong>{pick(locale, "Nährwerte einordnen", "Understand nutrition")}</strong><p>{pick(locale, "Vergleiche Zucker, Protein, Kalorien, Ballaststoffe und Salz im passenden Kontext.", "Compare sugar, protein, calories, fiber, and salt in the right context.")}</p><b>{pick(locale, "Zum Nährwertkompass", "Open nutrition compass")}</b></Link>
+          <Link href={path("/brands")}><span className="discovery-entry-top"><span className="discovery-entry-icon" aria-hidden="true"><BadgeCheck size={24} strokeWidth={1.8} /></span><span className="discovery-entry-index">01</span></span><strong>{pick(locale, "Marken prüfen", "Review brands")}</strong><p>{pick(locale, "Produkte einer Marke nach Kategorie vergleichen, ohne die Marke pauschal zu bewerten.", "Compare a brand's products by category without applying a blanket judgment.")}</p><b>{pick(locale, "Zu den Marken", "Browse brands")}</b></Link>
+          <Link href={path("/ingredients")}><span className="discovery-entry-top"><span className="discovery-entry-icon" aria-hidden="true"><ListTree size={24} strokeWidth={1.8} /></span><span className="discovery-entry-index">02</span></span><strong>{pick(locale, "Zutaten nachverfolgen", "Trace ingredients")}</strong><p>{pick(locale, "Sieh, in welchen Produkten und Kategorien ein Zutatenbegriff genannt wird.", "See which products and categories mention an ingredient term.")}</p><b>{pick(locale, "Zu den Zutaten", "Browse ingredients")}</b></Link>
+          <Link href={path("/nutrition")}><span className="discovery-entry-top"><span className="discovery-entry-icon" aria-hidden="true"><ChartNoAxesCombined size={24} strokeWidth={1.8} /></span><span className="discovery-entry-index">03</span></span><strong>{pick(locale, "Nährwerte einordnen", "Understand nutrition")}</strong><p>{pick(locale, "Vergleiche Zucker, Protein, Kalorien, Ballaststoffe und Salz im passenden Kontext.", "Compare sugar, protein, calories, fiber, and salt in the right context.")}</p><b>{pick(locale, "Zum Nährwertkompass", "Open nutrition compass")}</b></Link>
         </div>
       </section>
 

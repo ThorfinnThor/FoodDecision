@@ -88,10 +88,57 @@ test("server-renders the Compare Your Food experience", async () => {
   assert.match(html, /<title>Lebensmittel besser auswählen \| Compare Your Food<\/title>/i);
   assert.match(html, /Compare Your Food/);
   assert.doesNotMatch(html, /Food Decision Engine/);
-  assert.match(html, /Finde Lebensmittel/);
+  assert.match(html, /Finde Produkte/);
   assert.match(html, /Vergleiche Produkte im richtigen Kontext/);
   assert.match(html, /Hafermilch/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
+});
+
+test("uses the catalog for broad home searches and keeps the finder goal based", async () => {
+  const finderSource = await readFile(new URL("../components/FinderExperience.tsx", import.meta.url), "utf8");
+  const [homeResponse, finderResponse] = await Promise.all([
+    render("/en-us"),
+    render("/en-us/finder"),
+  ]);
+  assert.equal(homeResponse.status, 200);
+  assert.equal(finderResponse.status, 200);
+
+  const [home, finder] = await Promise.all([homeResponse.text(), finderResponse.text()]);
+  assert.match(home, /Find products that fit your priorities/);
+  assert.match(home, /<form[^>]+action="\/en-us\/products"/);
+  assert.match(home, /name="q"/);
+  assert.match(home, /Search catalog/);
+  assert.match(home, /Choose brands, ingredients, or nutrition as your starting point/);
+  assert.match(home, /Review brands/);
+  assert.match(home, /Trace ingredients/);
+  assert.match(home, /Understand nutrition/);
+  assert.doesNotMatch(home, /<form[^>]+action="\/en-us\/finder"/);
+  assert.match(finder, /full assessed catalog/);
+  assert.match(finderSource, /Your matches/);
+  assert.doesNotMatch(finderSource, /Your shortlist/);
+});
+
+test("renders bilingual privacy and legal notice routes", async () => {
+  const [deLegalResponse, enLegalResponse, dePrivacyResponse] = await Promise.all([
+    render("/de/legal-notice"),
+    render("/en-us/legal-notice"),
+    render("/de/privacy"),
+  ]);
+  assert.equal(deLegalResponse.status, 200);
+  assert.equal(enLegalResponse.status, 200);
+  assert.equal(dePrivacyResponse.status, 200);
+
+  const [deLegal, enLegal, dePrivacy] = await Promise.all([
+    deLegalResponse.text(),
+    enLegalResponse.text(),
+    dePrivacyResponse.text(),
+  ]);
+  assert.match(deLegal, /Impressum/);
+  assert.match(deLegal, /Angaben gemäß § 5 DDG/);
+  assert.match(enLegal, /Legal notice/);
+  assert.match(enLegal, /Provider details/);
+  assert.match(deLegal, /name="robots" content="noindex, follow"/);
+  assert.match(dePrivacy, /Verantwortliche Stelle/);
 });
 
 test("removes starter metadata and preview dependencies", async () => {

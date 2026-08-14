@@ -48,7 +48,7 @@ export function MobileMenu({ locale }: { locale: SiteLocale }) {
         <Link href={path("/scan")} onClick={close}>{pick(locale, "Barcode prüfen", "Check barcode")}</Link>
         <Link href={path("/preferences")} onClick={close}>{pick(locale, "Präferenzen", "Preferences")}</Link>
         <Link href={path("/methodology")} onClick={close}>{pick(locale, "So funktioniert's", "Methodology")}</Link>
-        <Link href={path("/finder")} onClick={close}>{pick(locale, "Finder starten", "Start finder")}</Link>
+        <Link href={path("/finder")} onClick={close}>{pick(locale, "Finder öffnen", "Open finder")}</Link>
       </nav> : null}
     </div>
   );

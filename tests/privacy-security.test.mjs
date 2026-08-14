@@ -97,8 +97,10 @@ test("enforces the real streamed JSON byte limit without a content length header
 });
 
 test("publishes bilingual privacy disclosures and consent controlled analytics", async () => {
-  const [page, controls, analytics, sanitizer, footer, newsletter, migration, eventRoute, layout] = await Promise.all([
+  const [page, legalPage, legalIdentity, controls, analytics, sanitizer, footer, newsletter, migration, eventRoute, layout] = await Promise.all([
     readFile(new URL("../app/[locale]/privacy/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/[locale]/legal-notice/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../lib/legal.ts", import.meta.url), "utf8"),
     readFile(new URL("../components/PrivacyControls.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/ConsentAwareAnalytics.tsx", import.meta.url), "utf8"),
     readFile(new URL("../lib/analytics.ts", import.meta.url), "utf8"),
@@ -126,8 +128,16 @@ test("publishes bilingual privacy disclosures and consent controlled analytics",
   assert.match(eventRoute, /alternative_compared/);
   assert.match(eventRoute, /saved_collection_cleared/);
   assert.match(footer, /\/privacy/);
-  assert.match(page, /NEXT_PUBLIC_OPERATOR_NAME/);
-  assert.match(page, /NEXT_PUBLIC_PRIVACY_CONTACT/);
+  assert.match(footer, /\/legal-notice/);
+  assert.match(legalIdentity, /NEXT_PUBLIC_OPERATOR_NAME/);
+  assert.match(legalIdentity, /NEXT_PUBLIC_OPERATOR_ADDRESS/);
+  assert.match(legalIdentity, /NEXT_PUBLIC_LEGAL_CONTACT/);
+  assert.match(legalIdentity, /NEXT_PUBLIC_PRIVACY_CONTACT/);
+  assert.match(page, /Artikel 6 Absatz 1 Buchstabe a DSGVO/);
+  assert.match(page, /Artikel 6 Absatz 1 Buchstabe f DSGVO/);
+  assert.match(page, /Standardvertragsklauseln/);
+  assert.match(legalPage, /§ 5 DDG/);
+  assert.match(legalPage, /Verbraucherstreitbeilegung/);
   assert.match(page, /Wir bieten derzeit keinen Newsletter an/);
   assert.match(page, /We currently do not offer a newsletter/);
   assert.match(newsletter, /signup_not_available/);
