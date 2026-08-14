@@ -74,9 +74,12 @@ Camera frames and recognized barcode values never leave the browser. Optional
 usage analytics is disabled by default, respects Do Not Track, excludes URL
 query parameters, and can be enabled or disabled on `/de/privacy` and
 `/en-us/privacy`. Those pages also let visitors delete all Compare Your Food
-data stored locally in the current browser. Configure the public privacy contact
-before launch with `NEXT_PUBLIC_OPERATOR_NAME` and
-`NEXT_PUBLIC_PRIVACY_CONTACT`.
+data stored locally in the current browser. The bilingual privacy and legal
+notice pages read their public identity from `NEXT_PUBLIC_OPERATOR_NAME`,
+`NEXT_PUBLIC_OPERATOR_ADDRESS`, `NEXT_PUBLIC_LEGAL_CONTACT`, and
+`NEXT_PUBLIC_PRIVACY_CONTACT`. Optional register, VAT, and editorial-responsible
+fields are documented in `.env.example`. The readiness gate deliberately fails
+until the required operator, address, and email details are complete.
 
 Product pages show separate source-update and catalog-import dates, a
 deterministic freshness classification, and the scoring rule versions used for

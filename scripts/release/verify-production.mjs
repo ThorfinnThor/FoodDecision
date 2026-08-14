@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const productionUrl = String(process.env.PRODUCTION_URL ?? "https://food-decision.vercel.app").replace(/\/$/, "");
+const productionUrl = String(process.env.PRODUCTION_URL ?? "https://compareyourfood.com").replace(/\/$/, "");
 const expectedTimestamp = String(process.env.EXPECTED_CATALOG_TIMESTAMP ?? "").trim();
 const attempts = Number(process.env.RELEASE_VERIFY_ATTEMPTS ?? "60");
 const delayMs = Number(process.env.RELEASE_VERIFY_DELAY_MS ?? "15000");

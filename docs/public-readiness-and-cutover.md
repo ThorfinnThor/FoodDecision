@@ -22,9 +22,14 @@ Set these Vercel Production environment variables before requesting public readi
 
 - `NEXT_PUBLIC_SITE_URL=https://compareyourfood.com`
 - `NEXT_PUBLIC_OPERATOR_NAME` with the complete legal operator or company name
+- `NEXT_PUBLIC_OPERATOR_ADDRESS` with the serviceable postal address, using `|` between lines
+- `NEXT_PUBLIC_LEGAL_CONTACT` with the public contact email for the legal notice
 - `NEXT_PUBLIC_PRIVACY_CONTACT` with a monitored privacy email address on the final domain
 
-The readiness gate fails while the privacy page displays the prelaunch warning. This is intentional.
+Optional business details can be set with `NEXT_PUBLIC_EDITORIAL_RESPONSIBLE`,
+`NEXT_PUBLIC_REGISTER_NAME`, `NEXT_PUBLIC_REGISTER_NUMBER`, and
+`NEXT_PUBLIC_VAT_ID`. The readiness gate fails while the privacy or legal notice
+page displays an incomplete identity warning. This is intentional.
 
 ### 2. Add the domain to Vercel
 
@@ -59,11 +64,11 @@ The public readiness check must report `READY`. It verifies:
 - root redirect from `/` to `/de`
 - a current Supabase-backed catalog, never fixtures
 - published DE and US products
-- bilingual home, products, finder, comparison, category, ranking, methodology, privacy, and product routes
+- bilingual home, products, finder, comparison, category, ranking, methodology, privacy, legal notice, and product routes
 - generated comparison routes when available
 - canonical references to `https://compareyourfood.com`
 - `robots.txt`, `sitemap.xml`, `llms.txt`, and `llms-full.txt`
-- legal operator name and working privacy email in both languages
+- legal operator name, serviceable address, and working contact emails in both languages
 - CSP, HSTS, framing, MIME, referrer, camera, and microphone protections
 - real 404 behavior for an unknown product
 

@@ -26,7 +26,7 @@ export function SiteHeader({ locale }: { locale: SiteLocale }) {
           <Link aria-label={pick(locale, "Favoriten öffnen", "Open favorites")} className="saved-link" href={path("/favorites")} title={pick(locale, "Favoriten", "Favorites")}><span aria-hidden="true">♡</span></Link>
           <Link className="saved-link" href={path("/shopping-list")} title={pick(locale, "Einkaufsliste", "Shopping list")}><span aria-hidden="true">✓</span><span className="sr-only">{pick(locale, "Einkaufsliste", "Shopping list")}</span></Link>
           <Link className="search-link" href={path("/scan")}>{pick(locale, "Barcode", "Barcode")}</Link>
-          <Link className="primary-link" href={path("/finder")}>{pick(locale, "Finder starten", "Start finder")}</Link>
+          <Link className="primary-link" href={path("/finder")}>{pick(locale, "Finder öffnen", "Open finder")}</Link>
         </div>
         <MobileMenu locale={locale} />
       </div>

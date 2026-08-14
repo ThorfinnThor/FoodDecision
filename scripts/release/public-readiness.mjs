@@ -30,7 +30,7 @@ function parseDate(value, label) {
 }
 
 export function readinessConfig(overrides = {}) {
-  const target = normalizeUrl(overrides.targetUrl ?? process.env.READINESS_URL ?? process.env.PRODUCTION_URL ?? "https://food-decision.vercel.app");
+  const target = normalizeUrl(overrides.targetUrl ?? process.env.READINESS_URL ?? process.env.PRODUCTION_URL ?? "https://compareyourfood.com");
   const publicOrigin = normalizeUrl(overrides.publicOrigin ?? process.env.EXPECTED_PUBLIC_ORIGIN ?? target.origin);
   return {
     target,
@@ -167,6 +167,7 @@ export async function runPublicReadiness(overrides = {}) {
         `/${segment}/data-quality`,
         `/${segment}/methodology`,
         `/${segment}/privacy`,
+        `/${segment}/legal-notice`,
         category,
         ranking,
         `/${segment}/product/${manifest.productSlugs[0]}`,
@@ -194,14 +195,24 @@ export async function runPublicReadiness(overrides = {}) {
 
   await check("Legal identity", async () => {
     if (!config.requireLegalIdentity) return "Not required for this internal release check";
+    const incompleteSignals = [
+      "Vor dem öffentlichen Launch",
+      "Before public launch",
+      "Betreiberangaben und Datenschutzadresse sind noch nicht vollständig konfiguriert",
+      "The operator details and privacy contact are not fully configured yet",
+      "Pflichtangaben noch nicht vollständig",
+      "Required details are not complete yet",
+    ];
     for (const segment of ["de", "en-us"]) {
-      const { body } = await text(`/${segment}/privacy`);
-      if (body.includes("Vor dem öffentlichen Launch") || body.includes("Before public launch")) {
-        throw new Error(`${segment} privacy page still contains the prelaunch legal warning`);
+      for (const route of ["privacy", "legal-notice"]) {
+        const { body } = await text(`/${segment}/${route}`);
+        if (incompleteSignals.some((signal) => body.includes(signal))) {
+          throw new Error(`${segment} ${route} page still contains an incomplete legal identity warning`);
+        }
+        if (!/mailto:[^\"'<\s]+@[^\"'<\s]+/.test(body)) throw new Error(`${segment} ${route} page lacks a working contact email link`);
       }
-      if (!/mailto:[^\"'<\s]+@[^\"'<\s]+/.test(body)) throw new Error(`${segment} privacy page lacks a working privacy email link`);
     }
-    return "Operator identity and privacy contact are published in both locales";
+    return "Operator identity, legal contact, and privacy contact are published in both locales";
   });
 
   await check("Security headers", async () => {
