@@ -35,8 +35,10 @@ The local preview is available at `http://localhost:3000`.
   barcode lookup, preferences, favorites, shopping lists, sitemap, and robots.
 - `lib/` contains fixture products, scoring rules, and typed product contracts.
 - `components/` contains reusable product, score, quality, comparison, Finder,
-  saved-product, affiliate, newsletter, and navigation UI.
-- `db/schema.ts` and `drizzle/` contain a local Drizzle schema scaffold.
+  saved-product, affiliate, privacy, and navigation UI. Newsletter signup is not
+  offered in the current product.
+- `db/schema.ts` and `drizzle/` contain an inactive historical D1 scaffold. The
+  production data contract is Supabase Postgres; the two schemas are not kept in parity.
 - `supabase/migrations/` contains the Postgres migration aligned to the product
   plan's Supabase target architecture.
 - `scripts/ingest/open-food-facts.mjs` fetches Open Food Facts data into a raw
@@ -66,11 +68,14 @@ and restores a known-good deployment if the public-domain check fails. See
 [`docs/public-readiness-and-cutover.md`](docs/public-readiness-and-cutover.md).
 
 Favorites, shopping lists and Finder preferences are stored per market in the browser for
-the anonymous MVP. Newsletter consent and aggregate product events are written
-through server-only Supabase endpoints. Affiliate offers render only when an
+the anonymous MVP. The app shows a session-only notice when browser storage is unavailable.
+Consented aggregate product events and product data reports are written through
+server-only Supabase endpoints. Affiliate offers render only when an
 active offer exists in the exported dataset and are always labeled as ads.
 
-Camera frames and recognized barcode values never leave the browser. Optional
+The barcode lookup is manual and the website never requests camera or microphone
+permission. Entered barcode values are matched against the downloaded market catalog
+inside the browser and are not sent as analytics metadata. Optional
 usage analytics is disabled by default, respects Do Not Track, excludes URL
 query parameters, and can be enabled or disabled on `/de/privacy` and
 `/en-us/privacy`. Those pages also let visitors delete all Compare Your Food
@@ -100,8 +105,8 @@ are cached once per static catalog so product detail rendering remains bounded
 as the live catalog grows.
 
 Production responses set a Content Security Policy, HSTS, clickjacking and MIME
-protections, and a restrictive Permissions Policy. Camera permission is disabled
-globally and enabled only for the two localized scanner routes. JSON write APIs
+protections, and a restrictive Permissions Policy. Camera and microphone permission
+are disabled globally. JSON write APIs
 reject cross-origin, oversized, and non-JSON requests.
 
 ## Workspace Auth Headers
@@ -296,9 +301,9 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 - `npm run resolve:catalog-plan`: validate a scheduled or manual growth wave
 - `npm run audit:catalog-quality`: verify catalog structure and growth targets
 - `npm test`: build the app and run normalization, rendering, export and SEO tests
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+- `npm run db:generate`: update the inactive D1 scaffold only; do not use it for production Supabase changes
 
 ## Learn More
 
 - [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- [Supabase CLI documentation](https://supabase.com/docs/guides/local-development/cli/getting-started)

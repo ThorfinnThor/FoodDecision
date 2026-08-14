@@ -8,3 +8,4 @@ export const ANALYTICS_SESSION_KEY = "food-decision:session";
 export const ANALYTICS_PREFERENCE_EVENT = "food-decision:analytics-preference";
 export const SCAN_HISTORY_KEY = "food-decision:scan-history";
 export const SAVED_STATE_EVENT = "food-decision:saved-state";
+export const STORAGE_PERSISTENCE_EVENT = "food-decision:storage-persistence";

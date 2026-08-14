@@ -6,6 +6,7 @@ import { isRankingEligibleForGoal } from "./ranking-eligibility.ts";
 import { scoreByType } from "./scoring.ts";
 import { alternativeReasons, entitySlug, productMatch } from "./product-insights.ts";
 import type { CatalogQualityReport, Category, CategorySlug, Product, RankingPage, ScoreType, SiteLocale } from "./types.ts";
+import { findBarcodeItem } from "./barcode.ts";
 
 type StaticManifest = {
   generatedAt: string;
@@ -39,7 +40,7 @@ function createCatalog(locale: SiteLocale) {
   const getCategories = () => categories;
   const getCategory = (slug: string) => categories.find((category) => category.slug === slug);
   const getProduct = (slug: string) => products.find((product) => product.slug === slug || product.legacySlugs?.includes(slug));
-  const getProductByGtin = (gtin: string) => products.find((product) => product.gtin === gtin);
+  const getProductByGtin = (gtin: string) => findBarcodeItem(products, gtin) ?? undefined;
   const getProductsByCategory = (category: CategorySlug) => products.filter((product) => product.category === category);
   const getAvailableCategories = () => categories.filter((category) => getProductsByCategory(category.slug).length > 0);
   const getCategoryProductCount = (category: CategorySlug) => getProductsByCategory(category).length;

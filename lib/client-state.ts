@@ -4,6 +4,7 @@ export { ANALYTICS_PREFERENCE_KEY, FAVORITES_KEY, FINDER_STATE_KEY, PREFERENCES_
 import { ANALYTICS_PREFERENCE_EVENT, ANALYTICS_PREFERENCE_KEY, ANALYTICS_SESSION_KEY, SAVED_STATE_EVENT } from "./storage-keys";
 import { cleanStoredIds, mergeStoredIds, toggleStoredIds, withoutStoredIds } from "./saved-state";
 import { readBrowserJson, readBrowserValue, removeBrowserValue, writeBrowserJson, writeBrowserValue } from "./browser-storage";
+import type { AnalyticsEventName } from "./analytics-events";
 
 export function readStoredIds(key: string) {
   if (typeof window === "undefined") return [] as string[];
@@ -56,7 +57,7 @@ export function setAnalyticsEnabled(enabled: boolean) {
 }
 
 export function trackEvent(
-  eventName: string,
+  eventName: AnalyticsEventName,
   details: { entityType?: string; entityId?: string; metadata?: Record<string, unknown> } = {},
 ) {
   if (typeof window === "undefined" || !analyticsEnabled()) return;

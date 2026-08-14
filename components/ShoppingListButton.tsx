@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { readStoredIds, SAVED_STATE_EVENT, SHOPPING_LIST_KEY, toggleStoredId, trackEvent } from "@/lib/client-state";
+import { readStoredIds, removeStoredIds, SAVED_STATE_EVENT, SHOPPING_CHECKED_KEY, SHOPPING_LIST_KEY, toggleStoredId, trackEvent } from "@/lib/client-state";
 import type { SiteLocale } from "@/lib/types";
 
 export function ShoppingListButton({ locale = "de-DE", productName, productSlug }: { locale?: SiteLocale; productName: string; productSlug: string }) {
@@ -25,6 +25,7 @@ export function ShoppingListButton({ locale = "de-DE", productName, productSlug 
 
   function toggle() {
     const next = toggleStoredId(storageKey, productSlug);
+    if (!next) removeStoredIds(`${SHOPPING_CHECKED_KEY}:${locale}`, [productSlug]);
     setSelected(next);
     trackEvent("shopping_list_toggled", { entityType: "product", entityId: productSlug, metadata: { selected: next } });
   }

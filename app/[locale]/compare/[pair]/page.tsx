@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ComparisonDecision } from "@/components/ComparisonDecision";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ProductVisual } from "@/components/ProductVisual";
@@ -39,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = requireLocale(values.locale);
   const slugs = splitPair(values.pair);
   if (!slugs) return {};
+  if (slugs[0] === slugs[1]) return { robots: { index: false, follow: true } };
   const catalog = getCatalog(locale);
   const first = catalog.getProduct(slugs[0]);
   const second = catalog.getProduct(slugs[1]);
@@ -57,6 +58,7 @@ export default async function ComparePairPage({ params }: Props) {
   const locale = requireLocale(values.locale);
   const slugs = splitPair(values.pair);
   if (!slugs) notFound();
+  if (slugs[0] === slugs[1]) redirect(`${localizedPath(locale, "/compare")}?first=${encodeURIComponent(slugs[0])}`);
   const catalog = getCatalog(locale);
   const first = catalog.getProduct(slugs[0]);
   const second = catalog.getProduct(slugs[1]);

@@ -5,7 +5,7 @@ import { pick } from "@/lib/i18n";
 import type { SiteLocale } from "@/lib/types";
 
 export function ProductDataReport({ locale, productName, productSlug }: { locale: SiteLocale; productName: string; productSlug: string }) {
-  const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [state, setState] = useState<"idle" | "sending" | "success" | "invalid" | "unavailable" | "error">("idle");
   const c = (de: string, en: string) => pick(locale, de, en);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -13,6 +13,8 @@ export function ProductDataReport({ locale, productName, productSlug }: { locale
     const formElement = event.currentTarget;
     setState("sending");
     const form = new FormData(formElement);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12_000);
     try {
       const response = await fetch("/api/product-data-reports", {
         method: "POST",
@@ -24,11 +26,14 @@ export function ProductDataReport({ locale, productName, productSlug }: { locale
           details: form.get("details"),
           website: form.get("website"),
         }),
+        signal: controller.signal,
       });
-      setState(response.ok ? "success" : "error");
+      setState(response.ok ? "success" : response.status === 400 || response.status === 404 ? "invalid" : response.status === 502 || response.status === 503 ? "unavailable" : "error");
       if (response.ok) formElement.reset();
-    } catch {
-      setState("error");
+    } catch (error) {
+      setState(error instanceof DOMException && error.name === "AbortError" ? "unavailable" : "error");
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
@@ -44,6 +49,8 @@ export function ProductDataReport({ locale, productName, productSlug }: { locale
             <input aria-hidden="true" autoComplete="off" className="honeypot" name="website" tabIndex={-1} type="text" />
             <div><button disabled={state === "sending"} type="submit">{state === "sending" ? c("Wird gesendet …", "Sending …") : c("Hinweis senden", "Send report")}</button><small>{c("Keine Mailadresse, kein Konto und keine Barcodedaten.", "No email address, account, or barcode data.")}</small></div>
             {state === "error" ? <p className="form-error" role="alert">{c("Der Hinweis konnte gerade nicht gespeichert werden. Bitte versuche es später erneut.", "The report could not be saved. Try again later.")}</p> : null}
+            {state === "unavailable" ? <p className="form-error" role="alert">{c("Der Datendienst antwortet gerade nicht. Deine Eingabe bleibt im Formular; versuche es bitte in einigen Minuten erneut.", "The data service is not responding. Your entry remains in the form; try again in a few minutes.")}</p> : null}
+            {state === "invalid" ? <p className="form-error" role="alert">{c("Bitte prüfe die ausgewählte Problemart und die Länge deines Hinweises.", "Check the selected issue type and the length of your note.")}</p> : null}
           </form>
         )}
       </div>

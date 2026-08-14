@@ -1,5 +1,7 @@
 "use client";
 
+import { STORAGE_PERSISTENCE_EVENT } from "./storage-keys.ts";
+
 type StorageArea = "local" | "session";
 
 const memory = new Map<string, string>();
@@ -17,13 +19,22 @@ function browserStorage(area: StorageArea) {
   }
 }
 
+function announcePersistence(area: StorageArea, persisted: boolean) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(STORAGE_PERSISTENCE_EVENT, { detail: { area, persisted } }));
+}
+
 export function readBrowserValue(area: StorageArea, key: string) {
   const storage = browserStorage(area);
   if (storage) {
     try {
       const value = storage.getItem(key);
-      if (value !== null) memory.set(memoryKey(area, key), value);
-      return value ?? memory.get(memoryKey(area, key)) ?? null;
+      if (value !== null) {
+        memory.set(memoryKey(area, key), value);
+        return value;
+      }
+      memory.delete(memoryKey(area, key));
+      return null;
     } catch {
       // Fall through to the in-memory value when storage is restricted.
     }
@@ -34,11 +45,16 @@ export function readBrowserValue(area: StorageArea, key: string) {
 export function writeBrowserValue(area: StorageArea, key: string, value: string) {
   memory.set(memoryKey(area, key), value);
   const storage = browserStorage(area);
-  if (!storage) return false;
+  if (!storage) {
+    announcePersistence(area, false);
+    return false;
+  }
   try {
     storage.setItem(key, value);
+    announcePersistence(area, true);
     return true;
   } catch {
+    announcePersistence(area, false);
     return false;
   }
 }
@@ -46,11 +62,16 @@ export function writeBrowserValue(area: StorageArea, key: string, value: string)
 export function removeBrowserValue(area: StorageArea, key: string) {
   memory.delete(memoryKey(area, key));
   const storage = browserStorage(area);
-  if (!storage) return false;
+  if (!storage) {
+    announcePersistence(area, false);
+    return false;
+  }
   try {
     storage.removeItem(key);
+    announcePersistence(area, true);
     return true;
   } catch {
+    announcePersistence(area, false);
     return false;
   }
 }
@@ -74,13 +95,18 @@ export function clearBrowserValues(area: StorageArea, prefix: string) {
     if (key.startsWith(`${area}:${prefix}`)) memory.delete(key);
   }
   const storage = browserStorage(area);
-  if (!storage) return false;
+  if (!storage) {
+    announcePersistence(area, false);
+    return false;
+  }
   try {
     const keys = Array.from({ length: storage.length }, (_, index) => storage.key(index))
       .filter((key): key is string => Boolean(key?.startsWith(prefix)));
     keys.forEach((key) => storage.removeItem(key));
+    announcePersistence(area, true);
     return true;
   } catch {
+    announcePersistence(area, false);
     return false;
   }
 }

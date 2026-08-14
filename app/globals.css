@@ -642,6 +642,15 @@ main { min-height: 70vh; }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
 
+.storage-persistence-notice {
+  background: #fff8e8;
+  border-top: 1px solid #ead9aa;
+  color: #473b20;
+  font-size: 0.9rem;
+  padding: 0.75rem max(1rem, calc((100vw - 1200px) / 2));
+  text-align: center;
+}
+
 /* Full product workflows */
 .saved-link { align-items: center; border: 1px solid var(--color-border); border-radius: 50%; display: inline-flex; font-size: 22px; height: 42px; justify-content: center; width: 42px; }
 .compact-subpage-hero { padding-bottom: 48px; padding-top: 64px; }

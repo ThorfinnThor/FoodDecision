@@ -6,6 +6,7 @@ import { localeConfigs, localeFromSegment, localizedPath, pick, supportedLocales
 import { absoluteUrl, siteUrl } from "@/lib/seo";
 import { BRAND_NAME } from "@/lib/brand";
 import { ConsentAwareAnalytics } from "@/components/ConsentAwareAnalytics";
+import { StoragePersistenceNotice } from "@/components/StoragePersistenceNotice";
 import "../globals.css";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -62,7 +63,7 @@ export default async function RootLayout({ children, params }: Readonly<{
   };
   return (
     <html data-scroll-behavior="smooth" lang={localeConfigs[locale].htmlLang}>
-      <body><StructuredData data={websiteData} />{children}<SiteFooter locale={locale} /><ConsentAwareAnalytics /></body>
+      <body><StructuredData data={websiteData} />{children}<StoragePersistenceNotice locale={locale} /><SiteFooter locale={locale} /><ConsentAwareAnalytics /></body>
     </html>
   );
 }

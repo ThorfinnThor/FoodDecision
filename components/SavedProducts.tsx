@@ -53,7 +53,12 @@ export function SavedProducts({
       const nextIds = readStoredIds(storageKey);
       setIds(nextIds);
       setSelectedIds((current) => current.filter((id) => nextIds.includes(id)));
-      if (mode === "shopping") setCheckedIds(readStoredIds(checkedKey).filter((id) => nextIds.includes(id)));
+      if (mode === "shopping") {
+        const storedChecked = readStoredIds(checkedKey);
+        const nextChecked = storedChecked.filter((id) => nextIds.includes(id));
+        setCheckedIds(nextChecked);
+        if (nextChecked.length !== storedChecked.length) writeStoredIds(checkedKey, nextChecked);
+      }
     };
     sync();
     window.addEventListener(SAVED_STATE_EVENT, sync);

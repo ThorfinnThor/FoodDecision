@@ -7,6 +7,7 @@ import {
   barcodeVariants,
   findBarcodeItem,
   normalizeBarcode,
+  structuredGtin,
 } from "../lib/barcode.ts";
 
 test("normalizes and validates standard retail barcodes", () => {
@@ -16,6 +17,12 @@ test("normalizes and validates standard retail barcodes", () => {
   assert.equal(barcodeCheckDigitIsValid("036000291452"), true);
   assert.equal(barcodeCheckDigitIsValid("123"), false);
   assert.equal(barcodeFormatLabel("4006381333931"), "EAN-13");
+});
+
+test("emits only a validated GTIN property matching the barcode length", () => {
+  assert.deepEqual(structuredGtin("036000291452"), { gtin12: "036000291452" });
+  assert.deepEqual(structuredGtin("4006381333931"), { gtin13: "4006381333931" });
+  assert.deepEqual(structuredGtin("4006381333932"), {});
 });
 
 test("explains invalid barcode characters before checking length", () => {
