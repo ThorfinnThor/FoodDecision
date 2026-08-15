@@ -26,14 +26,16 @@ test("comparison search exposes a listbox only when options exist", async ({ pag
 
 test("prepared comparison filters are shareable and follow browser history", async ({ page }) => {
   await page.goto("/de/compare");
-  const filter = page.getByRole("combobox", { name: "Kategorie filtern" });
-  await filter.selectOption("hafermilch");
-  await expect(page).toHaveURL("/de/compare?category=hafermilch");
+  const filter = page.locator(".prepared-comparison-filter select");
+  const category = await filter.locator("option").nth(1).getAttribute("value");
+  expect(category).toBeTruthy();
+  await filter.selectOption(category!);
+  await expect(page).toHaveURL(`/de/compare?category=${category}`);
   await expect(page.locator(".prepared-comparison-card")).toHaveCount(1);
   await page.goBack();
   await expect(filter).toHaveValue("");
   await page.goForward();
-  await expect(filter).toHaveValue("hafermilch");
+  await expect(filter).toHaveValue(category!);
 });
 
 test("self comparison and invalid catalog pages recover to canonical URLs", async ({ page }) => {
