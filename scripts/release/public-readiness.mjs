@@ -30,7 +30,7 @@ function parseDate(value, label) {
 }
 
 export function readinessConfig(overrides = {}) {
-  const target = normalizeUrl(overrides.targetUrl ?? process.env.READINESS_URL ?? process.env.PRODUCTION_URL ?? "https://compareyourfood.com");
+  const target = normalizeUrl(overrides.targetUrl ?? process.env.READINESS_URL ?? process.env.PRODUCTION_URL ?? "https://www.compareyourfood.com");
   const publicOrigin = normalizeUrl(overrides.publicOrigin ?? process.env.EXPECTED_PUBLIC_ORIGIN ?? target.origin);
   return {
     target,

@@ -24,8 +24,8 @@ test("documents legal, DNS, approval, evidence, and rollback prerequisites", asy
     "NEXT_PUBLIC_PRIVACY_CONTACT",
     "public-production",
     "known-good rollback deployment",
-    "CUTOVER compareyourfood.com",
-    "ROLLBACK compareyourfood.com",
+    "CUTOVER www.compareyourfood.com",
+    "ROLLBACK www.compareyourfood.com",
     "Google Search Console",
   ]) assert.match(runbook, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });

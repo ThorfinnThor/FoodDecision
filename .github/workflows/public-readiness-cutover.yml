@@ -21,7 +21,7 @@ on:
         description: "Public hostname without https://"
         type: string
         required: true
-        default: "compareyourfood.com"
+        default: "www.compareyourfood.com"
       rollback_deployment_url:
         description: "Known-good Vercel deployment URL; required for cutover and rollback"
         type: string

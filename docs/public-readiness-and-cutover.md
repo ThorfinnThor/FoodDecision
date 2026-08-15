@@ -1,6 +1,6 @@
 # Public readiness and safe cutover
 
-This runbook publishes `compareyourfood.com` without treating a successful build or deploy-hook response as proof that the public product is ready. The process is deliberately split into a read-only readiness check and a protected write operation.
+This runbook publishes `www.compareyourfood.com` without treating a successful build or deploy-hook response as proof that the public product is ready. The process is deliberately split into a read-only readiness check and a protected write operation.
 
 ## Safety properties
 
@@ -20,7 +20,7 @@ DNS remains a manual registrar operation. Automating DNS without a provider-spec
 
 Set these Vercel Production environment variables before requesting public readiness:
 
-- `NEXT_PUBLIC_SITE_URL=https://compareyourfood.com`
+- `NEXT_PUBLIC_SITE_URL=https://www.compareyourfood.com`
 - `NEXT_PUBLIC_OPERATOR_NAME` with the complete legal operator or company name
 - `NEXT_PUBLIC_OPERATOR_ADDRESS` with the serviceable postal address, using `|` between lines
 - `NEXT_PUBLIC_LEGAL_CONTACT` with the public contact email for the legal notice
@@ -35,8 +35,8 @@ page displays an incomplete identity warning. This is intentional.
 
 1. Open the `food-decision` project in Vercel.
 2. Open **Settings**, then **Domains**.
-3. Add `compareyourfood.com`.
-4. Add `www.compareyourfood.com` and configure it to redirect permanently to the apex domain.
+3. Add `www.compareyourfood.com` as the production domain.
+4. Add `compareyourfood.com` and configure it to redirect permanently to the `www` domain.
 5. Copy the exact DNS records shown by Vercel into the DNS provider.
 6. Keep the DNS TTL at 300 seconds during the launch window when the provider supports it.
 7. Wait until Vercel reports both domains as valid and SSL certificates are issued.
@@ -66,7 +66,7 @@ The public readiness check must report `READY`. It verifies:
 - published DE and US products
 - bilingual home, products, finder, comparison, category, ranking, methodology, privacy, legal notice, and product routes
 - generated comparison routes when available
-- canonical references to `https://compareyourfood.com`
+- canonical references to `https://www.compareyourfood.com`
 - `robots.txt`, `sitemap.xml`, `llms.txt`, and `llms-full.txt`
 - legal operator name, serviceable address, and working contact emails in both languages
 - CSP, HSTS, framing, MIME, referrer, camera, and microphone protections
@@ -80,7 +80,7 @@ No-go means no alias change. Fix the failing check and create a fresh deployment
 2. Select **Run workflow** on `main`.
 3. Choose action `readiness`.
 4. Enter the immutable candidate deployment URL, for example `https://food-decision-abc123.vercel.app`.
-5. Enter public domain `compareyourfood.com`.
+5. Enter public domain `www.compareyourfood.com`.
 6. Optionally enter the earliest acceptable catalog timestamp from the ingestion workflow.
 7. Leave confirmation empty and run the workflow.
 8. Review the job summary and download the JSON evidence artifact.
@@ -94,9 +94,9 @@ Before cutover, record the immutable URL of the deployment currently serving the
 1. Run **Public Readiness and Safe Cutover** again.
 2. Choose action `cutover`.
 3. Enter the candidate deployment URL that passed readiness.
-4. Enter `compareyourfood.com`.
+4. Enter `www.compareyourfood.com`.
 5. Enter the known-good rollback deployment URL.
-6. Enter the exact confirmation `CUTOVER compareyourfood.com`.
+6. Enter the exact confirmation `CUTOVER www.compareyourfood.com`.
 7. Start the workflow and approve the `public-production` environment prompt.
 
 The workflow rechecks the candidate and rollback target, assigns the candidate, then checks the public hostname. If public verification fails, it restores the previous deployment and marks the run failed.
@@ -108,9 +108,9 @@ Use rollback for a defect discovered after the cutover check, such as a business
 1. Open **Public Readiness and Safe Cutover**.
 2. Choose action `rollback`.
 3. Leave candidate deployment URL empty.
-4. Enter `compareyourfood.com`.
+4. Enter `www.compareyourfood.com`.
 5. Enter the known-good deployment in **rollback deployment URL**.
-6. Enter `ROLLBACK compareyourfood.com` exactly.
+6. Enter `ROLLBACK www.compareyourfood.com` exactly.
 7. Start the workflow and approve the protected environment.
 
 Rollback assigns the known-good deployment and verifies the public domain. It does not mutate or roll back Supabase. Catalog writes are upserts and should be corrected through a validated ingestion rather than destructive database rollback.
@@ -122,7 +122,7 @@ Rollback assigns the known-good deployment and verifies the public domain. It do
 3. Complete one finder journey, one comparison, and one manual barcode lookup in each language.
 4. Check Vercel logs, Web Analytics consent behavior, and Supabase API errors for 30 minutes.
 5. Raise DNS TTL only after the observation window is clean.
-6. Submit `https://compareyourfood.com/sitemap.xml` to Google Search Console and Bing Webmaster Tools.
+6. Submit `https://www.compareyourfood.com/sitemap.xml` to Google Search Console and Bing Webmaster Tools.
 7. Keep the rollback deployment available until at least the next successful production release.
 
 ## Local use
