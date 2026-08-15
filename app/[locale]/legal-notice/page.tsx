@@ -27,7 +27,7 @@ export default async function LegalNoticePage({ params }: Props) {
   return <main>
     <SiteHeader locale={locale} />
     <nav className="breadcrumb" aria-label="Breadcrumb"><Link href={path()}>{c("Start", "Home")}</Link><span aria-hidden="true">/</span><span aria-current="page">{c("Impressum", "Legal notice")}</span></nav>
-    <section className="subpage-hero compact-subpage-hero"><p className="eyebrow">{c("Anbieterkennzeichnung", "Provider identification")}</p><h1>{c("Impressum", "Legal notice")}</h1><p>{c(`Rechtliche Angaben zum Betrieb von ${BRAND_NAME}.`, `Legal information about the operation of ${BRAND_NAME}.`)}</p><small>{c("Stand: 14. August 2026", "Last updated: August 14, 2026")}</small></section>
+    <section className="subpage-hero compact-subpage-hero"><p className="eyebrow">{c("Anbieterkennzeichnung", "Provider identification")}</p><h1>{c("Impressum", "Legal notice")}</h1><p>{c(`Rechtliche Angaben zum Betrieb von ${BRAND_NAME}.`, `Legal information about the operation of ${BRAND_NAME}.`)}</p><small>{c("Stand: 15. August 2026", "Last updated: August 15, 2026")}</small></section>
 
     <section className="section legal-section">
       {!legal.isComplete ? <div className="legal-readiness-warning" role="status"><strong>{c("Pflichtangaben noch nicht vollständig", "Required details are not complete yet")}</strong><p>{c("Betreibername, ladungsfähige Anschrift und Kontaktadresse müssen vor dem rechtssicheren öffentlichen Betrieb vollständig eingetragen werden.", "The operator name, serviceable address, and contact email must be completed before the service is legally ready for public operation.")}</p></div> : null}

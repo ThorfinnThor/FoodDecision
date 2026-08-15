@@ -29,7 +29,7 @@ export default async function PrivacyPage({ params }: Props) {
   return <main>
     <SiteHeader locale={locale} />
     <nav className="breadcrumb" aria-label="Breadcrumb"><Link href={path()}>{c("Start", "Home")}</Link><span aria-hidden="true">/</span><span aria-current="page">{c("Datenschutz", "Privacy")}</span></nav>
-    <section className="subpage-hero compact-subpage-hero"><p className="eyebrow">{c("Datensparsam entwickelt", "Built for data minimization")}</p><h1>{c("Datenschutz", "Privacy")}</h1><p>{c("Die wichtigsten Entscheidungen passieren auf deinem Gerät. Hier erklären wir klar, was lokal bleibt, was freiwillig übertragen wird und wie du deine Daten kontrollierst.", "The most important decisions happen on your device. Here we explain what stays local, what is submitted voluntarily, and how you control your data.")}</p><small>{c("Stand: 14. August 2026", "Last updated: August 14, 2026")}</small></section>
+    <section className="subpage-hero compact-subpage-hero"><p className="eyebrow">{c("Datensparsam entwickelt", "Built for data minimization")}</p><h1>{c("Datenschutz", "Privacy")}</h1><p>{c("Die wichtigsten Entscheidungen passieren auf deinem Gerät. Hier erklären wir klar, was lokal bleibt, was freiwillig übertragen wird und wie du deine Daten kontrollierst.", "The most important decisions happen on your device. Here we explain what stays local, what is submitted voluntarily, and how you control your data.")}</p><small>{c("Stand: 15. August 2026", "Last updated: August 15, 2026")}</small></section>
 
     <section className="section privacy-section">
       <div className="privacy-summary" aria-label={c("Kurzfassung", "Summary")}>
