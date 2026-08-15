@@ -3,7 +3,7 @@ import { categoryRouteSlug, localizedPath, rankingRouteSlug, supportedLocales } 
 import { siteUrl } from "@/lib/seo";
 import { evaluateRankingPublication } from "@/lib/seo-publication";
 import { getCatalog } from "@/lib/static-data";
-import { indexableStaticPaths, isCategoryIndexable } from "@/lib/search-indexing";
+import { indexableStaticPaths, isCategoryIndexable, isComparisonIndexable, isProductIndexable } from "@/lib/search-indexing";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const homes: MetadataRoute.Sitemap = supportedLocales.map((locale) => ({
@@ -51,12 +51,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
   const comparisons: MetadataRoute.Sitemap = supportedLocales.flatMap((locale) => {
     const catalog = getCatalog(locale);
-    return catalog.comparisonPairs.map((pair) => ({
-      url: `${siteUrl}${localizedPath(locale, `/compare/${pair}`)}`,
-      lastModified: new Date(catalog.manifest.generatedAt),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    }));
+    return catalog.comparisonPairs.flatMap((pair) => {
+      const [firstSlug, secondSlug] = pair.split("-vs-");
+      const first = catalog.getProduct(firstSlug);
+      const second = catalog.getProduct(secondSlug);
+      if (!first || !second || !isComparisonIndexable(catalog.qualityReport, first, second, true)) return [];
+      return [{
+        url: `${siteUrl}${localizedPath(locale, `/compare/${pair}`)}`,
+        lastModified: new Date(catalog.manifest.generatedAt),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }];
+    });
   });
-  return [...homes, ...comparisonHubs, ...staticPages, ...categories, ...rankings, ...comparisons];
+  const products: MetadataRoute.Sitemap = supportedLocales.flatMap((locale) => {
+    const catalog = getCatalog(locale);
+    return catalog.products
+      .filter((product) => isProductIndexable(catalog.qualityReport, product))
+      .map((product) => ({
+        url: `${siteUrl}${localizedPath(locale, `/product/${product.slug}`)}`,
+        lastModified: new Date(product.sourceUpdatedAt || catalog.manifest.generatedAt),
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      }));
+  });
+  return [...homes, ...comparisonHubs, ...staticPages, ...categories, ...rankings, ...comparisons, ...products];
 }

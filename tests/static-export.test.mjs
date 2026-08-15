@@ -172,9 +172,20 @@ test("only exposes categories that have products in the current market catalog",
   assert.ok(available.every((category) => catalog.getCategoryProductCount(category.slug) > 0));
 });
 
-test("generates a bounded prepared comparison library within categories", () => {
-  const pairs = comparisonPairs(fixtureProducts);
-  const bySlug = new Map(fixtureProducts.map((product) => [product.slug, product]));
+test("generates an expanded but bounded prepared comparison library within categories", () => {
+  const seed = fixtureProducts.find((product) => product.locale === "de-DE" && product.publishability === "ranking_eligible");
+  const comparisonProducts = Array.from({ length: 7 }, (_, index) => ({
+    ...seed,
+    id: `${seed.id}-${index}`,
+    gtin: `${seed.gtin.slice(0, -1)}${index}`,
+    slug: `${seed.slug}-${index}`,
+    imageUrl: "/images/test.webp",
+    imageLicense: "CC BY-SA",
+    imageSourceUrl: "https://example.com/source",
+    nutrition: { ...seed.nutrition, sugar: (seed.nutrition.sugar ?? 0) + index },
+  }));
+  const pairs = comparisonPairs(comparisonProducts);
+  const bySlug = new Map(comparisonProducts.map((product) => [product.slug, product]));
   const categoryCounts = new Map();
   assert.ok(pairs.length > 0);
   for (const pair of pairs) {
@@ -187,7 +198,7 @@ test("generates a bounded prepared comparison library within categories", () => 
     assert.ok(["ranking_eligible", "published"].includes(second.publishability));
     categoryCounts.set(first.category, (categoryCounts.get(first.category) ?? 0) + 1);
   }
-  assert.ok([...categoryCounts.values()].every((count) => count <= 2));
+  assert.ok([...categoryCounts.values()].every((count) => count <= 10));
 });
 
 test("generated rankings exclude unknown goal scores and use evidence tie breakers", async () => {

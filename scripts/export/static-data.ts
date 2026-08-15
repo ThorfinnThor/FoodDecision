@@ -426,14 +426,27 @@ function chunks<T>(values: T[], size: number) {
 
 export function comparisonPairs(products: Product[]) {
   const pairs: string[] = [];
-  for (const category of localizedCategoryCatalog(products[0]?.locale ?? "de-DE")) {
-    const candidates = products
+  const locale = products[0]?.locale ?? "de-DE";
+  const localizedProducts = [...new Map(
+    products.filter((product) => product.locale === locale).map((product) => [product.slug, product]),
+  ).values()];
+  const pairIndexes = [
+    [0, 1], [0, 2], [0, 3], [1, 2], [1, 3],
+    [1, 4], [2, 3], [2, 4], [2, 5], [3, 4],
+  ] as const;
+  for (const category of localizedCategoryCatalog(locale)) {
+    const candidates = localizedProducts
       .filter((product) => product.category === category.slug && isRankingEligibleForGoal(product, "overall_match"))
+      .filter((product) => Boolean(product.imageUrl && product.imageLicense && product.imageSourceUrl))
+      .filter((product) => !/unbekannte marke|unknown brand/i.test(product.brand))
       .sort((a, b) => compareRankedProducts(a, b, "overall_match"))
-      .slice(0, 3);
+      .slice(0, 6);
     if (candidates.length < 2) continue;
-    pairs.push(`${candidates[0].slug}-vs-${candidates[1].slug}`);
-    if (candidates.length >= 3) pairs.push(`${candidates[0].slug}-vs-${candidates[2].slug}`);
+    for (const [firstIndex, secondIndex] of pairIndexes) {
+      const first = candidates[firstIndex];
+      const second = candidates[secondIndex];
+      if (first && second) pairs.push(`${first.slug}-vs-${second.slug}`);
+    }
   }
   return pairs;
 }

@@ -24,6 +24,18 @@ test("comparison search exposes a listbox only when options exist", async ({ pag
   await expect(page.getByText("Kein passendes Produkt gefunden.")).toBeVisible();
 });
 
+test("prepared comparison filters are shareable and follow browser history", async ({ page }) => {
+  await page.goto("/de/compare");
+  const filter = page.getByRole("combobox", { name: "Kategorie filtern" });
+  await filter.selectOption("hafermilch");
+  await expect(page).toHaveURL("/de/compare?category=hafermilch");
+  await expect(page.locator(".prepared-comparison-card")).toHaveCount(1);
+  await page.goBack();
+  await expect(filter).toHaveValue("");
+  await page.goForward();
+  await expect(filter).toHaveValue("hafermilch");
+});
+
 test("self comparison and invalid catalog pages recover to canonical URLs", async ({ page }) => {
   const slug = "nordhafer-barista-ohne-zucker";
   await page.goto(`/de/compare/${slug}-vs-${slug}`);
@@ -45,4 +57,9 @@ test("core catalog pages do not overflow a mobile viewport", async ({ page }, te
   await menuButton.click();
   await expect(menuButton).toHaveAttribute("aria-expanded", "true");
   await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
+
+  await page.goto("/de/compare/nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic");
+  const comparisonDimensions = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: window.innerWidth }));
+  expect(comparisonDimensions.body).toBeLessThanOrEqual(comparisonDimensions.viewport);
+  await expect(page.locator(".comparison-table tbody tr")).toHaveCount(7);
 });
