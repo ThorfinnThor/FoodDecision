@@ -12,6 +12,7 @@ import { absoluteUrl } from "@/lib/seo";
 import { getCatalog } from "@/lib/static-data";
 import { categoryImage, categoryImageAlt } from "@/lib/category-images";
 import { BRAND_NAME } from "@/lib/brand";
+import { isCategoryIndexable } from "@/lib/search-indexing";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const catalog = getCatalog(locale);
   const category = internalSlug ? catalog.getCategory(internalSlug) : null;
   if (!category || catalog.getCategoryProductCount(category.slug) === 0) return { robots: { index: false, follow: false } };
+  const indexable = isCategoryIndexable(catalog.qualityReport, category.slug);
   return {
     title: `${category.label} | ${BRAND_NAME}`,
     description: category.description,
@@ -37,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         "x-default": localizedPath("de-DE", `/category/${categoryRouteSlug(category.slug, "de-DE")}`),
       },
     },
-    robots: { index: false, follow: true },
+    robots: { index: indexable, follow: true },
   };
 }
 

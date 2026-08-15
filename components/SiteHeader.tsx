@@ -1,7 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { localizedPath, pick } from "@/lib/i18n";
 import type { SiteLocale } from "@/lib/types";
-import { BRAND_MARK, BRAND_NAME } from "@/lib/brand";
+import { BRAND_NAME } from "@/lib/brand";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { MobileMenu } from "./MobileMenu";
 
@@ -11,7 +12,7 @@ export function SiteHeader({ locale }: { locale: SiteLocale }) {
     <header className="site-header">
       <div className="header-inner">
         <Link href={path()} className="brand" aria-label={pick(locale, `${BRAND_NAME} Startseite`, `${BRAND_NAME} home`)}>
-          <span className="brand-mark" aria-hidden="true">{BRAND_MARK}</span>
+          <Image alt="" aria-hidden="true" className="brand-mark" height={38} priority src="/brand-icon.webp" width={38} />
           <span>{BRAND_NAME}</span>
         </Link>
         <nav className="desktop-nav" aria-label={pick(locale, "Hauptnavigation", "Main navigation")}>

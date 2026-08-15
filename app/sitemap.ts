@@ -3,6 +3,7 @@ import { categoryRouteSlug, localizedPath, rankingRouteSlug, supportedLocales } 
 import { siteUrl } from "@/lib/seo";
 import { evaluateRankingPublication } from "@/lib/seo-publication";
 import { getCatalog } from "@/lib/static-data";
+import { indexableStaticPaths, isCategoryIndexable } from "@/lib/search-indexing";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const homes: MetadataRoute.Sitemap = supportedLocales.map((locale) => ({
@@ -28,6 +29,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly",
     priority: 0.8,
   }));
+  const staticPages: MetadataRoute.Sitemap = supportedLocales.flatMap((locale) => {
+    const lastModified = new Date(getCatalog(locale).manifest.generatedAt);
+    return indexableStaticPaths.map((path) => ({
+      url: `${siteUrl}${localizedPath(locale, path)}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+  });
+  const categories: MetadataRoute.Sitemap = supportedLocales.flatMap((locale) => {
+    const catalog = getCatalog(locale);
+    return catalog.getAvailableCategories()
+      .filter((category) => isCategoryIndexable(catalog.qualityReport, category.slug))
+      .map((category) => ({
+        url: `${siteUrl}${localizedPath(locale, `/category/${categoryRouteSlug(category.slug, locale)}`)}`,
+        lastModified: new Date(catalog.manifest.generatedAt),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
+  });
   const comparisons: MetadataRoute.Sitemap = supportedLocales.flatMap((locale) => {
     const catalog = getCatalog(locale);
     return catalog.comparisonPairs.map((pair) => ({
@@ -37,5 +58,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     }));
   });
-  return [...homes, ...comparisonHubs, ...rankings, ...comparisons];
+  return [...homes, ...comparisonHubs, ...staticPages, ...categories, ...rankings, ...comparisons];
 }

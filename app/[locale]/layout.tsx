@@ -21,7 +21,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     metadataBase: new URL(siteUrl),
     title: BRAND_NAME,
     description,
-    icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+    icons: {
+      icon: [{ url: "/favicon.png", sizes: "64x64", type: "image/png" }],
+      shortcut: "/favicon.png",
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    },
     openGraph: {
       title: BRAND_NAME,
       description,
@@ -58,6 +62,10 @@ export default async function RootLayout({ children, params }: Readonly<{
       "@type": "Organization",
       name: BRAND_NAME,
       url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: absoluteUrl("/brand-icon.webp"),
+      },
       publishingPrinciples: absoluteUrl(localizedPath(locale, "/editorial-policy")),
     },
   };
