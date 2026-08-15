@@ -51,23 +51,29 @@ test("requires both human keyword approval and page quality thresholds", () => {
   assert.ok(decision.reasons.includes("insufficient_results"));
 });
 
-test("registers six curated bilingual launch candidates without indexing them", () => {
-  const candidates = seoPageDefinitions.filter((page) => page.status === "review");
+test("publishes only the bilingual muesli pair in the first controlled release", () => {
+  const curated = seoPageDefinitions.filter((page) => page.status === "review" || page.status === "published");
+  const published = curated.filter((page) => page.status === "published");
+  const review = curated.filter((page) => page.status === "review");
 
-  assert.equal(candidates.length, 6);
-  assert.equal(candidates.filter((page) => page.path.startsWith("/de/")).length, 3);
-  assert.equal(candidates.filter((page) => page.path.startsWith("/en-us/")).length, 3);
-  for (const candidate of candidates) {
-    assert.equal(candidate.indexable, false);
-    assert.ok(candidate.seoTitle?.trim());
-    assert.ok(candidate.seoDescription?.trim());
-    assert.ok(candidate.h1?.trim());
-    assert.ok(candidate.editorialSummary?.trim());
-    assert.equal(candidate.canonical, candidate.path);
+  assert.equal(curated.length, 6);
+  assert.deepEqual(published.map((page) => page.path).sort(), [
+    "/de/best/beste-wahl/muesli",
+    "/en-us/best/best-overall/muesli",
+  ]);
+  assert.equal(review.length, 4);
+  assert.ok(published.every((page) => page.indexable));
+  assert.ok(review.every((page) => !page.indexable));
+  for (const page of curated) {
+    assert.ok(page.seoTitle?.trim());
+    assert.ok(page.seoDescription?.trim());
+    assert.ok(page.h1?.trim());
+    assert.ok(page.editorialSummary?.trim());
+    assert.equal(page.canonical, page.path);
   }
 });
 
-test("keeps curated candidates blocked until demand evidence is approved", () => {
+test("keeps ranking candidates blocked until search intent and content are approved", () => {
   const candidate = getSeoPageDefinition("/en-us/best/high-protein/protein-bars");
   assert.ok(candidate);
   const editorial = getSeoEditorialContent(candidate.path);
@@ -87,8 +93,42 @@ test("keeps curated candidates blocked until demand evidence is approved", () =>
   assert.deepEqual(decision.reasons, ["keyword_not_approved", "page_not_approved"]);
 });
 
+test("allows an approved ranking only when all runtime quality thresholds pass", () => {
+  const definition = getSeoPageDefinition("/en-us/best/best-overall/muesli");
+  assert.ok(definition);
+  const editorialQuality = evaluateEditorialContent(getSeoEditorialContent(definition.path));
+
+  const decision = evaluateSeoPage(definition, {
+    resultCount: 117,
+    dataCompleteness: 0.95,
+    uniqueInsightCount: 10,
+    title: definition.seoTitle,
+    h1: definition.h1,
+    editorialWordCount: editorialQuality.wordCount,
+    editorialBlockers: editorialQuality.blockers,
+  });
+
+  assert.equal(decision.indexable, true);
+  assert.deepEqual(decision.reasons, []);
+});
+
+test("requires explicit approved keyword evidence for every published ranking", () => {
+  const published = seoPageDefinitions.filter((page) => page.status === "published");
+
+  assert.ok(published.length > 0);
+  for (const page of published) {
+    const keyword = seoKeywords.find((entry) => entry.id === page.keywordId);
+    assert.ok(keyword, `missing keyword for ${page.path}`);
+    assert.equal(keyword.validated, true);
+    assert.equal(keyword.status, "approved");
+    assert.ok(keyword.evidence.some((entry) => entry.startsWith("independent_serp_review:")));
+    assert.ok(keyword.evidence.some((entry) => entry.startsWith("content_review:")));
+    assert.ok(keyword.evidence.some((entry) => entry.startsWith("catalog_review:")));
+  }
+});
+
 test("requires substantial, sourced and page-specific editorial guidance for every launch candidate", () => {
-  const candidates = seoPageDefinitions.filter((page) => page.status === "review");
+  const candidates = seoPageDefinitions.filter((page) => page.status === "review" || page.status === "published");
 
   assert.equal(seoEditorialContent.length, candidates.length);
   assert.equal(new Set(seoEditorialContent.map((content) => content.path)).size, seoEditorialContent.length);

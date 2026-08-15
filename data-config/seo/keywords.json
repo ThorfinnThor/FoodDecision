@@ -35,11 +35,17 @@
     "intent": "ranking",
     "cluster": "muesli",
     "priority": 65,
-    "evidence": ["manual_serp_review:2026-08-10", "intent_match:commercial_investigation"],
-    "validated": false,
-    "status": "candidate",
+    "evidence": [
+      "manual_serp_review:2026-08-10",
+      "independent_serp_review:2026-08-15",
+      "intent_match:commercial_investigation",
+      "content_review:2026-08-15",
+      "catalog_review:148_eligible_products"
+    ],
+    "validated": true,
+    "status": "approved",
     "targetPageType": "ranking",
-    "notes": "Search intent and competing result formats reviewed on 2026-08-10. Independent demand validation remains required before indexation."
+    "notes": "Approved for the first controlled ranking release on 2026-08-15. The page answers comparison intent with a disclosed data-based overall assessment and does not claim sensory or laboratory testing."
   },
   {
     "id": "us-food-oat-milk-low-sugar",
@@ -77,10 +83,16 @@
     "intent": "ranking",
     "cluster": "muesli",
     "priority": 65,
-    "evidence": ["manual_serp_review:2026-08-10", "intent_match:commercial_investigation"],
-    "validated": false,
-    "status": "candidate",
+    "evidence": [
+      "manual_serp_review:2026-08-10",
+      "independent_serp_review:2026-08-15",
+      "intent_match:commercial_investigation",
+      "content_review:2026-08-15",
+      "catalog_review:117_eligible_products"
+    ],
+    "validated": true,
+    "status": "approved",
     "targetPageType": "ranking",
-    "notes": "US search intent and competing result formats reviewed on 2026-08-10. Independent demand validation remains required before indexation."
+    "notes": "Approved for the first controlled ranking release on 2026-08-15. The page answers comparison intent with a disclosed data-based overall assessment and does not claim sensory or laboratory testing."
   }
 ]

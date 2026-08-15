@@ -148,7 +148,7 @@
   {
     "path": "/de/best/beste-wahl/muesli",
     "locale": "de-DE",
-    "reviewedAt": "2026-08-10",
+    "reviewedAt": "2026-08-15",
     "author": { "name": "Compare Your Food Redaktion", "role": "Datenredaktion" },
     "answerTitle": "Woran erkennt man ein ausgewogenes Müsli?",
     "answer": "Ein sinnvolles Gesamturteil für Müsli braucht mehrere Perspektiven. Zucker, Protein, Salz und gesättigte Fettsäuren werden zusammen mit der Zutatenbewertung betrachtet. Vollkorn und Ballaststoffe sind für die Kaufentscheidung wichtig, liegen in offenen Produktdaten aber nicht für jedes Müsli vollständig vor. Diese Lücken bleiben sichtbar und werden nicht als null interpretiert.",
@@ -367,7 +367,7 @@
   {
     "path": "/en-us/best/best-overall/muesli",
     "locale": "en-US",
-    "reviewedAt": "2026-08-10",
+    "reviewedAt": "2026-08-15",
     "author": { "name": "Compare Your Food editorial team", "role": "Data editorial team" },
     "answerTitle": "What makes a strong overall muesli choice?",
     "answer": "A useful overall muesli comparison needs more than one nutrient. Our assessment combines category specific nutrition, including sugar, protein, sodium, and saturated fat, with ingredient quality. Whole grains and fiber also matter to buyers, but those fields are not complete for every product in the open catalog. Missing values remain visible rather than being treated as zero.",
