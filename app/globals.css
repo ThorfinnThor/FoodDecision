@@ -181,10 +181,11 @@ main { min-height: 70vh; }
 .newsletter-success { background: var(--color-primary-100); border-radius: var(--radius-md); color: var(--color-primary-700); font-weight: 700; padding: 20px; }
 
 .site-footer { background: var(--color-text-900); color: #fff; padding: 48px max(32px, calc((100vw - var(--container-max)) / 2 + 32px)) 24px; }
-.footer-inner { display: grid; gap: 48px; grid-template-columns: 1fr auto; }
+.footer-inner { display: grid; gap: 56px; grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.3fr); }
+.footer-inner > div { min-width: 0; }
 .footer-brand { margin-bottom: 14px; }
 .footer-inner p { color: #cbd5e1; font-size: 14px; line-height: 1.6; max-width: 480px; }
-.footer-inner nav { display: flex; flex-wrap: wrap; gap: 24px; }
+.footer-inner nav { display: grid; gap: 14px 24px; grid-template-columns: repeat(3, minmax(110px, 1fr)); }
 .footer-inner nav a { color: #e5e7eb; font-size: 14px; }
 .footer-meta { border-top: 1px solid #374151; color: #9ca3af; display: flex; font-size: 12px; gap: 24px; justify-content: space-between; margin-top: 40px; padding-top: 20px; }
 
@@ -560,6 +561,9 @@ main { min-height: 70vh; }
   .ranking-editorial-byline { border-left: 0; border-top: 1px solid var(--color-border); grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 20px 0 0; }
   .ranking-buying-guide-grid { grid-template-columns: 1fr; }
   .compare-answer-grid { grid-template-columns: 1fr; }
+  .site-footer { padding-left: 24px; padding-right: 24px; }
+  .footer-inner { gap: 36px; grid-template-columns: 1fr; }
+  .footer-inner nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 600px) {
@@ -608,8 +612,11 @@ main { min-height: 70vh; }
   .method-grid, .trust-strip { grid-template-columns: 1fr; }
   .newsletter-section { gap: 24px; padding-bottom: 56px; padding-top: 56px; }
   .newsletter-form { grid-template-columns: 1fr; }
-  .footer-inner { grid-template-columns: 1fr; }
-  .footer-inner nav { display: grid; gap: 14px; }
+  .site-footer { padding: 36px 16px 20px; }
+  .footer-inner { gap: 32px; }
+  .footer-brand { flex-wrap: nowrap; }
+  .footer-brand > span:last-child { font-size: 15px; white-space: nowrap; }
+  .footer-inner nav { gap: 12px 20px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-meta { display: grid; }
   .subpage-hero h1, .compare-intro h1, .product-detail-copy h1 { font-size: 36px; }
   .subpage-hero, .compare-intro { padding-bottom: 40px; padding-top: 48px; }

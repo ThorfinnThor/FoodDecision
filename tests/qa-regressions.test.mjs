@@ -38,6 +38,20 @@ test("mobile comparisons expose every value as a labeled stacked row", async () 
   assert.match(css, /\.comparison-table thead \{ display: none; \}/);
 });
 
+test("comparison energy rows explain the measurable difference without claiming a universal winner", async () => {
+  const page = await readFile(new URL("../app/[locale]/compare/[pair]/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /kcal weniger/);
+  assert.match(page, /fewer kcal/);
+  assert.doesNotMatch(page, /label: copy\("Energie", "Energy"\).*Kein klarer Vorteil/);
+});
+
+test("footer keeps a readable brand column and responsive link grid", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /grid-template-columns: minmax\(280px, 0\.7fr\) minmax\(0, 1\.3fr\)/);
+  assert.match(css, /\.footer-inner nav \{ display: grid;/);
+  assert.match(css, /\.footer-brand > span:last-child \{ font-size: 15px; white-space: nowrap; \}/);
+});
+
 test("mobile navigation uses a stateful button", async () => {
   const source = await readFile(new URL("../components/MobileMenu.tsx", import.meta.url), "utf8");
   assert.match(source, /<button aria-controls="mobile-navigation" aria-expanded=\{open\}/);

@@ -35,3 +35,15 @@ The page said there was no clear advantage without explaining that one product c
 The generator produced a fixed set of combinations from the highest scoring products, but there was no full catalog integrity gate.
 
 **Prevention:** Pair generation is relevance first. Every generated pair is checked during export and again by the comparison integrity audit in CI. Search indexing uses the same shared rules.
+
+## 7. Neutral metrics used the same wording as inconclusive metrics
+
+Energy intake is goal dependent, so lower calories should not automatically be called healthier. The comparison table nevertheless used the same generic no advantage wording that also represented ties and insignificant differences. A visible 28 kcal gap therefore looked like a calculation failure.
+
+**Prevention:** Goal dependent metrics now state the measurable direction and magnitude, such as 28 fewer kcal, while avoiding a universal winner claim. Ties, missing data, and small differences keep separate language.
+
+## 8. Footer navigation was allowed to compress the brand column
+
+The desktop footer used an automatic width for a large flex navigation. At some viewport and content combinations the navigation consumed most of the row and squeezed the brand and description into an unreadably narrow column.
+
+**Prevention:** The footer now reserves a minimum brand width, uses a bounded grid for navigation links, switches to one column at tablet width, and keeps the mobile brand name on one line.

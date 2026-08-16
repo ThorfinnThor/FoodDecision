@@ -104,9 +104,19 @@ export default async function ComparePairPage({ params }: Props) {
     if (firstValue === secondValue) return copy("Gleichstand", "Tie");
     return copy("Unterschied zu klein", "Difference too small");
   };
+  const energyContext = () => {
+    const firstValue = first.nutrition.energyKcal;
+    const secondValue = second.nutrition.energyKcal;
+    if (firstValue === null || secondValue === null) return copy("Nicht vollständig belegt", "Incomplete data");
+    if (!comparable) return copy("Nicht direkt vergleichbar", "Not directly comparable");
+    if (firstValue === secondValue) return copy("Gleicher Energiegehalt", "Same energy value");
+    const lowerEnergy = firstValue < secondValue ? first : second;
+    const difference = Math.abs(firstValue - secondValue).toLocaleString(locale === "de-DE" ? "de-DE" : "en-US", { maximumFractionDigits: 1 });
+    return copy(`${difference} kcal weniger: ${comparisonProductLabel(lowerEnergy)}`, `${difference} fewer kcal: ${comparisonProductLabel(lowerEnergy)}`);
+  };
   const rows = [
     { label: copy("Gesamturteil", "Overall score"), first: overallFirst, second: overallSecond, unit: "/100", advantage: rowAdvantage(overallFirst, overallSecond, "overall") },
-    { label: copy("Energie", "Energy"), first: first.nutrition.energyKcal, second: second.nutrition.energyKcal, unit: " kcal", advantage: copy("Abhängig von deinem Ziel", "Depends on your goal") },
+    { label: copy("Energie", "Energy"), first: first.nutrition.energyKcal, second: second.nutrition.energyKcal, unit: " kcal", advantage: energyContext() },
     { label: copy("Zucker", "Sugar"), first: first.nutrition.sugar, second: second.nutrition.sugar, unit: " g", advantage: rowAdvantage(first.nutrition.sugar, second.nutrition.sugar, "sugar") },
     { label: copy("Protein", "Protein"), first: first.nutrition.protein, second: second.nutrition.protein, unit: " g", advantage: rowAdvantage(first.nutrition.protein, second.nutrition.protein, "protein") },
     { label: copy("Gesättigte Fettsäuren", "Saturated fat"), first: first.nutrition.saturatedFat, second: second.nutrition.saturatedFat, unit: " g", advantage: rowAdvantage(first.nutrition.saturatedFat, second.nutrition.saturatedFat, "saturatedFat") },
