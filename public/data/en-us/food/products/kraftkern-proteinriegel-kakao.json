@@ -50,7 +50,7 @@
     {
       "type": "nutrition",
       "label": "Nutrition score",
-      "score": 93,
+      "score": 86,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -58,7 +58,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "ingredient_quality",
@@ -74,12 +74,12 @@
         "Additives or flavorings detected."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "protein",
       "label": "Protein score",
-      "score": 100,
+      "score": 96,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -87,12 +87,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "low_sugar",
       "label": "Sugar score",
-      "score": 100,
+      "score": 92,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -100,13 +100,13 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "family",
       "label": "Family score",
-      "score": 86,
-      "grade": "excellent",
+      "score": 83,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Conservative assessment based on sugar, ingredients, and salt."
@@ -115,7 +115,7 @@
         "Check allergens: Milk, Almonds."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "vegan",
@@ -126,13 +126,13 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "overall_match",
       "label": "Overall score",
-      "score": 87,
-      "grade": "excellent",
+      "score": 82,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "The overall score combines nutrition and ingredients without counting individual nutrients twice."
@@ -142,7 +142,7 @@
         "Additives or flavorings detected."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     }
   ]
 }

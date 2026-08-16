@@ -32,8 +32,8 @@ test("comparison picker limits searchable results instead of rendering the whole
 test("mobile comparisons expose every value as a labeled stacked row", async () => {
   const page = await readFile(new URL("../app/[locale]/compare/[pair]/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(page, /data-label=\{first\.name\}/);
-  assert.match(page, /data-label=\{second\.name\}/);
+  assert.match(page, /data-label=\{firstLabel\}/);
+  assert.match(page, /data-label=\{secondLabel\}/);
   assert.match(css, /content: attr\(data-label\)/);
   assert.match(css, /\.comparison-table thead \{ display: none; \}/);
 });

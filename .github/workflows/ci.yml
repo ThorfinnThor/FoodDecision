@@ -37,6 +37,9 @@ jobs:
       - name: Audit ranking integrity
         run: npm run audit:ranking-integrity
 
+      - name: Audit prepared comparison integrity
+        run: npm run audit:comparison-integrity
+
       - name: Validate SEO publication gates
         run: npm run seo:validate
 

@@ -17,9 +17,9 @@
       "categoryLabel": "Oat milk",
       "market": "US",
       "locale": "en-US",
-      "overallScore": 87,
-      "lowSugarScore": 100,
-      "proteinScore": 31,
+      "overallScore": 88,
+      "lowSugarScore": 92,
+      "proteinScore": 61,
       "publishability": "ranking_eligible",
       "labels": [
         "vegan",
@@ -39,9 +39,9 @@
       "categoryLabel": "Oat milk",
       "market": "US",
       "locale": "en-US",
-      "overallScore": 78,
-      "lowSugarScore": 71,
-      "proteinScore": 29,
+      "overallScore": 80,
+      "lowSugarScore": 66,
+      "proteinScore": 60,
       "publishability": "published",
       "labels": [
         "vegan"

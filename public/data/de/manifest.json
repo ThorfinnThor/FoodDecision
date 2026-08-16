@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T02:25:31.302Z",
+  "generatedAt": "2026-08-15T22:03:00.239Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locale": "de-DE",
@@ -8,7 +8,7 @@
     "products": 6,
     "categories": 18,
     "rankings": 36,
-    "comparisons": 1
+    "comparisons": 0
   },
   "productSlugs": [
     "nordhafer-barista-ohne-zucker",
@@ -220,9 +220,7 @@
       "file": "de/rankings/gute-zutaten-cracker.json"
     }
   ],
-  "comparisonPairs": [
-    "nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic"
-  ],
+  "comparisonPairs": [],
   "productIndexFiles": [
     "de/food/products/index-1.json"
   ],
@@ -541,14 +539,9 @@
       "sha256": "b820f06a8932bccb820d02d058106e8615e06b15f15f3a6b333765225d94cc67"
     },
     {
-      "path": "public/data/de/comparisons/nordhafer-barista-ohne-zucker-vs-oatly-style-haferdrink-classic.json",
-      "bytes": 1121,
-      "sha256": "20391d7e2c3620fa400e13ae1aeef1abac4ce3fada396cd542c19633f75257d5"
-    },
-    {
       "path": "public/data/de/quality-report.json",
       "bytes": 8298,
-      "sha256": "5279355dd05803b489c61fe8cb0fac951b8b34b044420993fb255c542c550586"
+      "sha256": "cf5880628c1b862a9187dd8e25b83bab4c7b46d7a2c9f405820ee8e072defeec"
     }
   ]
 }

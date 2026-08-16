@@ -1,4 +1,5 @@
 import { scoreByType } from "./scoring.ts";
+import { isPreparedComparisonPair } from "./comparison-quality.ts";
 import type { CatalogQualityReport, CategorySlug, Product } from "./types.ts";
 
 export const indexableStaticPaths = ["/methodology", "/data-quality"] as const;
@@ -40,15 +41,6 @@ export function isProductIndexable(report: CatalogQualityReport, product: Produc
     && Boolean(product.imageUrl && product.imageLicense && product.imageSourceUrl);
 }
 
-function comparisonDifferenceCount(first: Product, second: Product) {
-  const nutritionKeys = ["energyKcal", "saturatedFat", "sugar", "protein", "salt"] as const;
-  const nutritionDifferences = nutritionKeys.filter((key) => first.nutrition[key] !== second.nutrition[key]).length;
-  const firstIngredients = first.ingredients.map((item) => item.toLocaleLowerCase(first.locale)).join("|");
-  const secondIngredients = second.ingredients.map((item) => item.toLocaleLowerCase(second.locale)).join("|");
-  const scoreDifference = scoreByType(first, "overall_match")?.score !== scoreByType(second, "overall_match")?.score ? 1 : 0;
-  return nutritionDifferences + (firstIngredients !== secondIngredients ? 1 : 0) + scoreDifference;
-}
-
 export function isComparisonIndexable(
   report: CatalogQualityReport,
   first: Product,
@@ -56,10 +48,7 @@ export function isComparisonIndexable(
   prepared: boolean,
 ) {
   return prepared
-    && first.slug !== second.slug
-    && first.category === second.category
-    && first.nutrition.basis === second.nutrition.basis
+    && isPreparedComparisonPair(first, second)
     && isProductIndexable(report, first)
-    && isProductIndexable(report, second)
-    && comparisonDifferenceCount(first, second) >= 2;
+    && isProductIndexable(report, second);
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T02:25:31.322Z",
+  "generatedAt": "2026-08-15T22:03:00.259Z",
   "source": "fixtures",
   "version": "food-static-data-v2",
   "locales": [
@@ -11,7 +11,7 @@
         "products": 6,
         "categories": 18,
         "rankings": 36,
-        "comparisons": 1
+        "comparisons": 0
       }
     },
     {
@@ -22,7 +22,7 @@
         "products": 6,
         "categories": 18,
         "rankings": 36,
-        "comparisons": 1
+        "comparisons": 0
       }
     }
   ]

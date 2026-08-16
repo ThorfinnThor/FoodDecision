@@ -50,7 +50,7 @@
     {
       "type": "nutrition",
       "label": "Nährwertbewertung",
-      "score": 93,
+      "score": 86,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -58,7 +58,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "ingredient_quality",
@@ -74,12 +74,12 @@
         "Zusatzstoffe oder Aromen erkannt."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "protein",
       "label": "Proteinbewertung",
-      "score": 100,
+      "score": 96,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -87,12 +87,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "low_sugar",
       "label": "Zuckerbewertung",
-      "score": 100,
+      "score": 92,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -100,13 +100,13 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "family",
       "label": "Bewertung für Familien",
-      "score": 86,
-      "grade": "excellent",
+      "score": 83,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Konservative Bewertung aus Zucker, Zutatenliste und Salz."
@@ -115,7 +115,7 @@
         "Allergene prüfen: Milch, Mandeln."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "vegan",
@@ -126,13 +126,13 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "overall_match",
       "label": "Gesamtbewertung",
-      "score": 87,
-      "grade": "excellent",
+      "score": 82,
+      "grade": "good",
       "confidence": "high",
       "positives": [
         "Das Gesamturteil kombiniert Nährwerte und Zutaten, ohne einzelne Nährwerte doppelt zu zählen."
@@ -142,7 +142,7 @@
         "Zusatzstoffe oder Aromen erkannt."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     }
   ]
 }

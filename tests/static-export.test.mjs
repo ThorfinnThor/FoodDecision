@@ -179,10 +179,16 @@ test("generates an expanded but bounded prepared comparison library within categ
     id: `${seed.id}-${index}`,
     gtin: `${seed.gtin.slice(0, -1)}${index}`,
     slug: `${seed.slug}-${index}`,
+    name: `${seed.name} ${index + 1}`,
+    brand: `${seed.brand} ${index + 1}`,
     imageUrl: "/images/test.webp",
     imageLicense: "CC BY-SA",
     imageSourceUrl: "https://example.com/source",
-    nutrition: { ...seed.nutrition, sugar: (seed.nutrition.sugar ?? 0) + index },
+    nutrition: {
+      ...seed.nutrition,
+      sugar: (seed.nutrition.sugar ?? 0) + index,
+      protein: (seed.nutrition.protein ?? 0) + index,
+    },
   }));
   const pairs = comparisonPairs(comparisonProducts);
   const bySlug = new Map(comparisonProducts.map((product) => [product.slug, product]));

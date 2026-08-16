@@ -4,7 +4,7 @@
     "slug": "nordhafer-barista-ohne-zucker",
     "name": "Nordhafer Barista No Added Sugar",
     "brand": "Nordhafer",
-    "score": 87,
+    "score": 88,
     "category": "hafermilch",
     "filterValues": {
       "labels": [
@@ -25,7 +25,7 @@
     "slug": "oatly-style-haferdrink-classic",
     "name": "Oatly Style Original Oat Drink",
     "brand": "Oatly Style",
-    "score": 78,
+    "score": 80,
     "category": "hafermilch",
     "filterValues": {
       "labels": [
@@ -44,7 +44,7 @@
     "slug": "kraftkern-proteinriegel-kakao",
     "name": "Kraftkern Cocoa Protein Bar",
     "brand": "Kraftkern",
-    "score": 87,
+    "score": 82,
     "category": "proteinriegel",
     "filterValues": {
       "labels": [
@@ -65,7 +65,7 @@
     "slug": "morgenfeld-basis-muesli",
     "name": "Morgenfeld Whole Grain Muesli",
     "brand": "Morgenfeld",
-    "score": 96,
+    "score": 93,
     "category": "muesli",
     "filterValues": {
       "labels": [
@@ -87,7 +87,7 @@
     "slug": "fjordgut-skyr-natur",
     "name": "Fjordgut Plain Skyr",
     "brand": "Fjordgut",
-    "score": 98,
+    "score": 93,
     "category": "joghurt-skyr",
     "filterValues": {
       "labels": [
@@ -107,7 +107,7 @@
     "slug": "gruenbiss-linsen-cracker",
     "name": "Green Bite Lentil Crackers",
     "brand": "Gruenbiss",
-    "score": 91,
+    "score": 88,
     "category": "vegane-snacks",
     "filterValues": {
       "labels": [

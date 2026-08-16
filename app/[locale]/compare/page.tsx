@@ -8,6 +8,7 @@ import { BRAND_NAME } from "@/lib/brand";
 import { localizedPath, pick } from "@/lib/i18n";
 import { localeAlternates, requireLocale } from "@/lib/locale-page";
 import { getCatalog } from "@/lib/static-data";
+import { comparisonProductLabel } from "@/lib/comparison-quality";
 
 type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ first?: string; category?: string }> };
 
@@ -60,7 +61,7 @@ export default async function ComparePage({ params, searchParams }: Props) {
       </div>
       <div className="prepared-comparison-grid">{visiblePrepared.map(({ pair, firstProduct, secondProduct }) => <Link className="prepared-comparison-card" href={path(`/compare/${pair}`)} key={pair}>
         <span className="prepared-comparison-visuals"><ProductVisual compact product={firstProduct} /><b>{pick(locale, "oder", "or")}</b><ProductVisual compact product={secondProduct} /></span>
-        <strong>{firstProduct.name} {pick(locale, "oder", "or")} {secondProduct.name}</strong>
+        <strong>{comparisonProductLabel(firstProduct)} {pick(locale, "oder", "or")} {comparisonProductLabel(secondProduct)}</strong>
         <small>{firstProduct.categoryLabel}</small>
       </Link>)}</div>
     </section> : null}

@@ -14,6 +14,11 @@ import { assessDataFreshness } from "../../lib/data-freshness.ts";
 import { calculateScores, scoreByType } from "../../lib/scoring.ts";
 import { compareRankedProducts } from "../../lib/ranking-order.ts";
 import { isRankingEligibleForGoal } from "../../lib/ranking-eligibility.ts";
+import {
+  comparisonCohort,
+  hasPlausibleComparisonCategory,
+  isPreparedComparisonPair,
+} from "../../lib/comparison-quality.ts";
 import { inferBrandFromProductName, normalizeBrandName, normalizeListingName, slugify } from "../../lib/normalization.ts";
 import type { CatalogQualityStatus, CategorySlug, MarketCode, Product, RankingPage, SiteLocale } from "../../lib/types.ts";
 
@@ -430,23 +435,35 @@ export function comparisonPairs(products: Product[]) {
   const localizedProducts = [...new Map(
     products.filter((product) => product.locale === locale).map((product) => [product.slug, product]),
   ).values()];
-  const pairIndexes = [
-    [0, 1], [0, 2], [0, 3], [1, 2], [1, 3],
-    [1, 4], [2, 3], [2, 4], [2, 5], [3, 4],
-  ] as const;
   for (const category of localizedCategoryCatalog(locale)) {
     const candidates = localizedProducts
       .filter((product) => product.category === category.slug && isRankingEligibleForGoal(product, "overall_match"))
       .filter((product) => Boolean(product.imageUrl && product.imageLicense && product.imageSourceUrl))
       .filter((product) => !/unbekannte marke|unknown brand/i.test(product.brand))
-      .sort((a, b) => compareRankedProducts(a, b, "overall_match"))
-      .slice(0, 6);
-    if (candidates.length < 2) continue;
-    for (const [firstIndex, secondIndex] of pairIndexes) {
-      const first = candidates[firstIndex];
-      const second = candidates[secondIndex];
-      if (first && second) pairs.push(`${first.slug}-vs-${second.slug}`);
-    }
+      .filter(hasPlausibleComparisonCategory)
+      .sort((a, b) => compareRankedProducts(a, b, "overall_match"));
+    const rankedIndex = new Map(candidates.map((product, index) => [product.slug, index]));
+    const cohorts = Map.groupBy(candidates, comparisonCohort);
+    const categoryPairs = [...cohorts.values()].flatMap((cohortProducts) => {
+      const cohortCandidates = cohortProducts.slice(0, 8);
+      const cohortPairs: Array<{ first: Product; second: Product; rank: number }> = [];
+      for (let firstIndex = 0; firstIndex < cohortCandidates.length; firstIndex += 1) {
+        for (let secondIndex = firstIndex + 1; secondIndex < cohortCandidates.length; secondIndex += 1) {
+          const first = cohortCandidates[firstIndex];
+          const second = cohortCandidates[secondIndex];
+          if (!isPreparedComparisonPair(first, second)) continue;
+          cohortPairs.push({
+            first,
+            second,
+            rank: (rankedIndex.get(first.slug) ?? 999) + (rankedIndex.get(second.slug) ?? 999),
+          });
+        }
+      }
+      return cohortPairs;
+    }).sort((left, right) => left.rank - right.rank
+      || left.first.slug.localeCompare(right.first.slug)
+      || left.second.slug.localeCompare(right.second.slug));
+    pairs.push(...categoryPairs.slice(0, 10).map(({ first, second }) => `${first.slug}-vs-${second.slug}`));
   }
   return pairs;
 }
@@ -518,6 +535,14 @@ async function exportStaticData() {
     }
 
     const pairs = comparisonPairs(products);
+    for (const pair of pairs) {
+      const [firstSlug, secondSlug] = pair.split("-vs-");
+      const first = products.find((product) => product.slug === firstSlug);
+      const second = products.find((product) => product.slug === secondSlug);
+      if (!first || !second || !isPreparedComparisonPair(first, second)) {
+        throw new Error(`Comparison integrity check failed during export: ${pair}`);
+      }
+    }
     for (const pair of pairs) {
       const [a, b] = pair.split("-vs-");
       const productA = products.find((product) => product.slug === a);

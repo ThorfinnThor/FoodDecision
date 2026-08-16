@@ -45,7 +45,7 @@
     {
       "type": "nutrition",
       "label": "Nährwertbewertung",
-      "score": 100,
+      "score": 93,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -53,7 +53,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "ingredient_quality",
@@ -67,12 +67,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "protein",
       "label": "Proteinbewertung",
-      "score": 100,
+      "score": 90,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -80,12 +80,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "low_sugar",
       "label": "Zuckerbewertung",
-      "score": 100,
+      "score": 92,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -93,12 +93,12 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "family",
       "label": "Bewertung für Familien",
-      "score": 97,
+      "score": 93,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -108,7 +108,7 @@
         "Allergene prüfen: Milch."
       ],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "vegan",
@@ -119,12 +119,12 @@
       "positives": [],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     },
     {
       "type": "overall_match",
       "label": "Gesamtbewertung",
-      "score": 98,
+      "score": 93,
       "grade": "excellent",
       "confidence": "high",
       "positives": [
@@ -132,7 +132,7 @@
       ],
       "negatives": [],
       "missingData": [],
-      "ruleVersion": "2026.08.2"
+      "ruleVersion": "2026.08.3"
     }
   ]
 }
